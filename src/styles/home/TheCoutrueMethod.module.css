@@ -1,0 +1,257 @@
+/* ==========================================================================
+   TheCoutrueMethod — BEM Stylesheet & Circular Video Visual
+   ========================================================================== */
+
+/* 1. Root Section */
+.the-coutrue-method {
+    padding: 120px 40px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #FFEDD6 0%, #FDF8F2 100%);
+}
+
+.the-coutrue-method__circle {
+    width: 485px;
+    height: 485px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate(50%, -50%);
+    z-index: 0;
+}
+
+.the-coutrue-method__circle>span {
+    position: absolute;
+    border-radius: 50%;
+    box-sizing: border-box;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    background: linear-gradient(254deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
+}
+
+.the-coutrue-method__circle-1 {
+    inset: 0;
+    padding: 2px;
+
+}
+
+.the-coutrue-method__circle-2 {
+    inset: 38px;
+    padding: 2px;
+
+}
+
+/* 2. Container & Layout */
+.the-coutrue-method__container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.the-coutrue-method__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 200px;
+}
+
+/* 3. Left Column: Circular Video Visual */
+.the-coutrue-method__visual-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.the-coutrue-method__circle-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SVG with Curved Text "How we teach" & Outer Thin Ring */
+.the-coutrue-method__curved-svg {
+    position: absolute;
+    --inset-out: 70px;
+    margin-left: -2px;
+    margin-top: -3px;
+    inset: calc(var(--inset-out) * -1);
+    width: calc(100% + var(--inset-out) * 2);
+    height: calc(100% + var(--inset-out) * 2);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.the-coutrue-method__curved-text {
+    font-family: 'Mr De Haviland', cursive;
+    font-size: 46px;
+    fill: #191713;
+    letter-spacing: 0.5px;
+}
+
+/* Circular Frame with soft peach gradient rim */
+.the-coutrue-method__video-frame {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #FDE6CE 0%, #F8D5AF 100%);
+    box-shadow: 0 10px 30px rgba(222, 187, 116, 0.15), inset 0 0 16px rgba(230, 185, 130, 0.3);
+    position: relative;
+    z-index: 1;
+    box-shadow: 2px 2px 10px 1px #0000001A inset;
+
+}
+
+.the-coutrue-method__video-frame::before {
+    content: '';
+    position: absolute;
+    inset: -28px;
+    border-radius: 50%;
+    background: linear-gradient(120deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
+
+}
+
+/* Inner Circle Container for the Video */
+.the-coutrue-method__video-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.the-coutrue-method__video-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    box-shadow: 2px 2px 10px 1px #0000001A inset;
+}
+
+/* Video Animation */
+.the-coutrue-method__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    mix-blend-mode: hard-light;
+    display: block;
+    box-shadow: 2px 2px 10px 1px #0000001A inset;
+}
+
+/* 4. Right Column: Course Info (Scaffolding) */
+.the-coutrue-method__info-wrapper {
+    flex: 1;
+}
+
+.the-coutrue-method__title {
+    font-family: 'Inter';
+    font-size: 12px;
+    margin-bottom: 24px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 14%;
+    text-transform: uppercase;
+    color: #996100;
+}
+
+.the-coutrue-method__list-courses {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    padding-right: 50px;
+}
+
+.the-coutrue-method__course-item-wrapper {
+    background-color: rgba(255, 255, 255, 0);
+    padding: 24px 0;
+}
+
+.the-coutrue-method__course-item-wrapper:not(:last-child) {
+    border-bottom: 1px solid #DDD6C9;
+}
+
+.the-coutrue-method__list-courses__item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background-color: rgba(240, 128, 128, 0);
+}
+
+.the-coutrue-method__item-number-box {
+    background-color: rgba(144, 238, 144, 0);
+}
+
+.the-coutrue-method__item-number {
+    background: linear-gradient(180deg, #E0D0AE 0%, #DEBB74 45%, #CFAD6D 55%, #CDB688 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    font-family: 'Fraunces';
+    font-weight: 400;
+    font-size: 72px;
+    line-height: 102%;
+    letter-spacing: -2%;
+    text-align: center;
+    width: 44px;
+
+}
+
+.the-coutrue-method__item-text {
+    flex: 1;
+    background-color: rgba(173, 216, 230, 0);
+}
+
+.the-coutrue-method__item-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: #8A7043;
+    line-height: 140%;
+    margin: 0 0 4px 0;
+}
+
+.the-coutrue-method__item-desc {
+    font-size: 14px;
+    line-height: 160%;
+    color: #4A453D;
+    margin: 0;
+}
+
+.the-coutrue-method__lines {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.the-coutrue-method__line {
+    width: 100%;
+    background-color: #FDE9D0;
+}
+
+.the-coutrue-method__line-1 {
+    height: 2px;
+}
+
+.the-coutrue-method__line-2 {
+    height: 5px;
+}
+
+.the-coutrue-method__line-3 {
+    height: 10px;
+}

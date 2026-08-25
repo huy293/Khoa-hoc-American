@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Frank+Ruhl+Libre:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   OurImpact — BEM Selectors & Luxury Beauty Theme Styling
+   ========================================================================== */
+
+/* 1. BLOCK: Root Section */
+.our-impact {
+    background: #FDF8F2;
+    padding-top: 140px;
+    padding-bottom: 140px;
+    position: relative;
+    overflow: hidden;
+    padding-right: 40px;
+    padding-left: 40px;
+}
+
+/* 2. Container */
+.our-impact__container {
+    max-width: 1540px;
+    margin: 0 auto;
+}
+
+
+
+/* 3. Header Row: Left & Right Columns */
+.our-impact__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 64px;
+    gap: 40px;
+}
+
+.our-impact__header-left {
+    max-width: 720px;
+}
+
+.our-impact__eyebrow {
+    display: inline-block;
+    color: #996100;
+    border-bottom: 1.5px solid #996100;
+    padding-bottom: 10px;
+    padding-right: 80px;
+    margin-bottom: 24px;
+    font-family: sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
+
+
+}
+
+.our-impact__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: #1E1E1E;
+}
+
+.our-impact__header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: 16px;
+    max-width: 480px;
+}
+
+.our-impact__description {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+    color: #4A453D;
+}
+
+.our-impact__link {
+    color: #AC5600;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid;
+    border-image-source: linear-gradient(270deg, rgba(253, 235, 213, 0) 0%, #AC5600 100%);
+    border-image-slice: 1;
+    padding: 0.8em 0;
+}
+
+
+
+.our-impact__link-icon {
+    width: 14px;
+    height: 10px;
+    stroke: currentColor;
+    transition: transform 0.2s ease;
+}
+
+
+/* 4. Impact Cards Grid */
+.our-impact__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+}
+
+.our-impact__card {
+    position: relative;
+    background: linear-gradient(82.46deg, #FFF8EF 5.82%, #FFFFFF 50.01%, #FFF8EF 94.2%);
+    border: 1px solid #E8D7B8;
+    border-radius: 16px;
+    padding: 32px 48px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 10px 30px -5px rgba(220, 180, 130, 0.15);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+
+
+/* 5. Card Top-Left Decorative Arc & Star */
+.our-impact__card-decor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 88px;
+    height: 88px;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.our-impact__card-decor::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 100%;
+    height: 100%;
+    border-top-left-radius: 100%;
+    background: linear-gradient(40.02deg, rgba(253, 233, 208, 0) 6.43%, #FDE9D0 25.94%, #FFD8A8 49.95%, #FDE9D0 72.07%, rgba(251, 225, 188, 0) 94.33%);
+    padding-top: 2px;
+    padding-left: 2px;
+    box-sizing: border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.our-impact__card-decor svg {
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    right: 14%;
+    top: 17%;
+}
+
+/* 6. Stat & Script Typography */
+.our-impact__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.our-impact__number {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 72px;
+    line-height: 100%;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, #E0D0AE 0%, #DEBB74 45%, #CFAD6D 55%, #CDB688 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.our-impact__script {
+    font-family: 'Mr De Haviland', cursive;
+    font-size: 44px;
+    line-height: 110%;
+    color: #4A453D;
+    margin-top: -5px;
+}
+
+/* 7. Card Center Star Divider */
+.our-impact__divider {
+    position: relative;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.our-impact__divider-line {
+    background: linear-gradient(90deg, rgba(221, 214, 201, 0) 0%, #DEBC78 50%, rgba(250, 233, 211, 0) 100%);
+    width: 100%;
+    height: 2px;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: -1;
+}
+
+.our-impact__divider-star {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* 8. Card Bottom Label */
+.our-impact__label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 120%;
+    letter-spacing: 16%;
+    text-transform: uppercase;
+    color: var(--text-primary, #191713);
+
+}
+
+/* 9. Responsive Adjustments */
+@media (max-width: 1200px) {
+    .our-impact__title {
+        font-size: 36px;
+    }
+
+    .our-impact__number {
+        font-size: 54px;
+    }
+
+    .our-impact__script {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 900px) {
+    .our-impact__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .our-impact__header-right {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .our-impact__grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .our-impact__card {
+        padding: 40px 24px 32px;
+    }
+}

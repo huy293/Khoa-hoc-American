@@ -1,0 +1,494 @@
+/* ==========================================================================
+   Testimonial (Student Stories) — BEM Stylesheet & Visual Collage
+   ========================================================================== */
+
+/* 1. Root Section */
+.testimonial {
+    position: relative;
+    padding: 120px 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #FFFBF3 0%, #FFECD5 100%);
+
+}
+
+/* 2. Background Concentric Decorative Rings */
+.testimonial__circle {
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.testimonial__circle_1 {
+    top: -60px;
+    left: -160px;
+}
+
+.testimonial__circle_2 {
+    bottom: -80px;
+    right: -160px;
+}
+
+.testimonial__circle>span {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: drop-shadow(0px 0px 2px rgba(255, 227, 172, 0.9)) drop-shadow(0px 0px 6px rgba(222, 187, 116, 0.5));
+}
+
+.testimonial__circle>span::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-sizing: border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.testimonial__circle_1>span:nth-of-type(1) {
+    inset: 0;
+    transform: rotate(74deg);
+}
+
+.testimonial__circle_1>span:nth-of-type(1)::before {
+    padding: 1px;
+    background: linear-gradient(10.94deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
+}
+
+.testimonial__circle_1>span:nth-of-type(2) {
+    inset: 42px;
+    transform: rotate(165deg);
+}
+
+.testimonial__circle_1>span:nth-of-type(2)::before {
+    padding: 0.75px;
+    background: linear-gradient(10.94deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
+}
+
+.testimonial__circle_2>span:nth-of-type(1) {
+    inset: 0;
+}
+
+.testimonial__circle_2>span:nth-of-type(1)::before {
+    padding: 1px;
+    background: linear-gradient(10.94deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
+}
+
+.testimonial__circle_2>span:nth-of-type(2) {
+    inset: 48px;
+    transform: rotate(110deg);
+}
+
+.testimonial__circle_2>span:nth-of-type(2)::before {
+    padding: 0.75px;
+    background: linear-gradient(10.94deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
+}
+
+/* 3. Main Container & Grid Wrapper */
+.testimonial__container {
+    max-width: 1420px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.testimonial__wrapper {
+    display: grid;
+    grid-template-columns: 1.18fr 0.92fr;
+    gap: 12px;
+    align-items: center;
+}
+
+/* 4. Left Card (Student Story Card) */
+.testimonial__card {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 64px 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 490px;
+    background: linear-gradient(293.48deg, rgba(255, 255, 255, 0.3) -0.98%, rgba(253, 233, 209, 0.5) 98.29%);
+    gap: 24px;
+}
+
+/* Header */
+.testimonial__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.testimonial__eyebrow-line {
+    display: block;
+    width: 160px;
+    height: 2px;
+    background: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
+
+
+}
+
+.testimonial__eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #996100;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.testimonial__title {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    font-weight: 400;
+    color: #191713;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0;
+}
+
+/* Quote Box */
+.testimonial__quote-box {
+    padding: 28px 0;
+}
+
+.testimonial__quote-mark {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.testimonial__quote-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: #4A453D;
+    font-weight: 400;
+    border-left: 1.5px solid #EADBCC;
+    padding-left: 24px;
+    margin: 0 0 0 2px;
+    transition: opacity 0.3s ease;
+}
+
+/* Footer: Author & Nav */
+.testimonial__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 18px;
+    margin-top: auto;
+}
+
+.testimonial__author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.testimonial__avatar-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1.5px solid #F5D6AF;
+    flex-shrink: 0;
+    background-color: #F8DAB3;
+}
+
+.testimonial__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.testimonial__author-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.testimonial__author-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #191713;
+    margin: 0;
+}
+
+.testimonial__author-role {
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #996100;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.testimonial__author-dash {
+    color: #996100;
+    margin-right: 2px;
+}
+
+/* Carousel Buttons */
+.testimonial__nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.testimonial__nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #FCE8CE;
+    border: 1px solid #F6D6B0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonial__nav-btn:hover {
+    background: #F9D8AF;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(188, 115, 0, 0.15);
+}
+
+.testimonial__nav-btn:active {
+    transform: scale(0.96);
+}
+
+/* 5. Right Visual Collage */
+.testimonial__visual {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 0;
+}
+
+.testimonial__visual-wrap__1 {
+    width: 44%;
+    align-self: flex-end;
+}
+
+.testimonial__visual-wrap__2 {
+    width: 55%;
+}
+
+.testimonial__visual-wrap__3 {
+    width: 66%;
+}
+
+.testimonial__visual-wrap__4 {
+    width: 33%;
+}
+
+/* Rating Floating Card */
+.testimonial__badge-rating {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 24px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: -24px;
+    border: 1px solid var(--border-accent, #BC9E62);
+    box-shadow: 2px 2px 10px 1px #0000001A inset;
+}
+
+.testimonial__rating-score {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    font-weight: 600;
+    background: linear-gradient(180deg, #E0D0AE 0%, #DEBB74 45%, #CFAD6D 55%, #CDB688 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 6px;
+    line-height: 110.00000000000001%;
+    letter-spacing: 0%;
+
+}
+
+.testimonial__rating-stars {
+    font-size: 15px;
+    letter-spacing: 3px;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(180deg, #E0D0AE 0%, #DEBB74 45%, #CFAD6D 55%, #CDB688 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 400;
+    line-height: 160%;
+    letter-spacing: 0%;
+
+}
+
+.testimonial__rating-label {
+    font-family: 'Inter', sans-serif;
+    color: #4A453D;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 11.5px;
+    line-height: 120%;
+    letter-spacing: 16%;
+    text-transform: uppercase;
+}
+
+/* Top Right Image */
+.testimonial__image-wrapper--primary {
+    margin-bottom: -50px;
+}
+
+.testimonial__image--primary {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 5px solid #FFFFFF;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+
+    display: block;
+}
+
+/* Bottom Group Image */
+.testimonial__image-wrapper--secondary {
+    z-index: 2;
+}
+
+.testimonial__image--secondary {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 5px solid #FFFFFF;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+
+    display: block;
+}
+
+/* Dark Floating Graduates Badge */
+.testimonial__badge-graduates {
+    border-radius: 12px;
+    padding: 24px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-right: -26px;
+    background: var(--action-primary-bg-hover, #2B2822);
+    box-shadow: 2px 2px 10px 1px #0000001A inset;
+    border: 2px solid var(--border-accent, #BC9E62)
+}
+
+.testimonial__graduates-count {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    font-weight: 500;
+    line-height: 110%;
+    margin-bottom: 6px;
+    background: linear-gradient(180deg, #E0D0AE 0%, #DEBB74 45%, #CFAD6D 55%, #CDB688 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+
+
+}
+
+.testimonial__graduates-label {
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    background: linear-gradient(180deg, #E0D0AE 0%, #DEBB74 45%, #CFAD6D 55%, #CDB688 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 120%;
+    letter-spacing: 16%;
+    text-transform: uppercase;
+
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 1080px) {
+    .testimonial__wrapper {
+        grid-template-columns: 1fr;
+        gap: 60px;
+    }
+
+    .testimonial__visual {
+        max-width: 540px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .testimonial {
+        padding: 80px 20px;
+    }
+
+    .testimonial__card {
+        padding: 36px 24px;
+        min-height: auto;
+    }
+
+    .testimonial__title {
+        font-size: 28px;
+    }
+
+    .testimonial__visual {
+        height: 420px;
+    }
+
+    .testimonial__image-wrapper--primary {
+        width: 180px;
+        right: 0;
+    }
+
+    .testimonial__image--primary {
+        height: 200px;
+    }
+
+    .testimonial__image-wrapper--secondary {
+        width: 270px;
+        left: 0;
+        bottom: 10px;
+    }
+
+    .testimonial__image--secondary {
+        height: 170px;
+    }
+
+    .testimonial__badge-rating {
+        top: 20px;
+        left: -10px;
+        padding: 14px 18px;
+    }
+
+    .testimonial__rating-score {
+        font-size: 26px;
+    }
+
+    .testimonial__badge-graduates {
+        bottom: 20px;
+        right: -10px;
+        padding: 12px 16px;
+    }
+
+    .testimonial__graduates-count {
+        font-size: 22px;
+    }
+}

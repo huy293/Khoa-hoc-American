@@ -4,28 +4,37 @@
 
 /* 1. BLOCK: Root Section */
 .who-we-teach {
-    background-color: rgba(240, 235, 224, 0);
+    background: linear-gradient(88.86deg, #FFF5EB 11.56%, #FFEBD1 99.35%);
+    padding-top: 120px;
+    position: relative;
 }
 
 /* 2. Top Decorative Lines */
 .who-we-teach__lines {
-    background-color: rgba(182, 137, 63, 0);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
 }
 
 .who-we-teach__line {
-    background-color: rgba(220, 200, 150, 0);
+    background-color: #FDE9D0;
+    width: 100%;
 }
 
 .who-we-teach__line--1 {
-    background-color: rgba(210, 180, 140, 0);
+    height: 2.5px;
 }
 
 .who-we-teach__line--2 {
-    background-color: rgba(188, 143, 143, 0);
+    height: 5px;
 }
 
 .who-we-teach__line--3 {
-    background-color: rgba(205, 133, 63, 0);
+    height: 10px;
 }
 
 /* 3. Content Wrapper & Grid Container */
@@ -34,86 +43,204 @@
 }
 
 .who-we-teach__container {
-    background-color: rgba(100, 149, 237, 0);
+    max-width: 1540px;
+    margin: 0 auto;
+    display: flex;
 }
 
 /* 4. Left Column: Visual, Circles & Images */
 .who-we-teach__visual {
-    background-color: rgba(60, 179, 113, 0);
+    width: 50%;
+    padding-right: 100px;
+    box-sizing: border-box;
+    align-self: center;
+}
+
+.who-we-teach__visual-wrapper {
+    position: relative;
+    padding: 110px 0;
+    z-index: 0;
 }
 
 .who-we-teach__circle {
-    background-color: rgba(255, 215, 0, 0);
+    position: absolute;
 }
 
 .who-we-teach__circle--1 {
-    background-color: rgba(255, 105, 180, 0);
+    background: linear-gradient(280.94deg, rgba(253, 233, 208, 0) 21.05%, #F9D8A8 95.14%);
+    inset: 0 50px 0 -100px;
+    z-index: -1;
+    border-radius: 50%;
+
 }
 
 .who-we-teach__circle--2 {
-    background-color: rgba(138, 43, 226, 0);
+    background: linear-gradient(144.4deg, rgba(253, 233, 208, 0) -7.33%, #F9D8A8 91.85%);
+    opacity: 50%;
+    width: 295px;
+    height: 295px;
+    right: -50px;
+    border-radius: 50%;
+    z-index: -1;
+    top: 50%;
+    transform: rotate(-52deg) translateY(-50%);
+    transform-origin: top;
 }
 
 .who-we-teach__circle--3 {
-    background-color: rgba(0, 206, 209, 0);
+    width: 360px;
+    height: 360px;
+    top: 0;
+    right: 0;
+    border-radius: 50%;
+    z-index: -1;
+
+    /* Tạo viền gradient 1px dạng tròn */
+    background: linear-gradient(299.5deg, #FFA200 22.5%, #FFE8C0 78.74%);
+    padding: 1px;
+    /* Độ dày viền */
+    box-sizing: border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
 }
 
 .who-we-teach__circle--4 {
-    background-color: rgba(255, 140, 0, 0);
+    width: 360px;
+    height: 360px;
+    bottom: 0;
+    left: -120px;
+    border-radius: 50%;
+    z-index: -2;
+
+    /* Tạo viền gradient 1.5px dạng tròn */
+    background: linear-gradient(90deg, #FFA200 0%, #FFE8C0 100%);
+    padding: 1.25px;
+    /* Độ dày viền */
+    box-sizing: border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
 }
+
 
 .who-we-teach__image {
     background-color: rgba(147, 112, 219, 0);
 }
 
+.who-we-teach__image-wrapper--primary {
+    padding-right: 100px;
+}
+
 .who-we-teach__image--primary {
     background-color: rgba(72, 209, 204, 0);
+    border: 5px solid #FEF4EA;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+    border-radius: 12px;
+
+}
+
+.who-we-teach__image-wrapper--secondary {
+    background-color: transparent;
+    position: absolute;
+    width: 240px;
+    bottom: 130px;
+    right: 0px;
 }
 
 .who-we-teach__image--secondary {
     background-color: rgba(218, 112, 214, 0);
+    border: 5px solid #FEF4EA;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+    border-radius: 12px;
+
 }
 
 /* 5. Right Column: Info & Text Content */
 .who-we-teach__content {
-    background-color: rgba(30, 144, 255, 0);
+    width: 50%;
+    background: linear-gradient(113.48deg, rgba(255, 255, 255, 0.3) 1.71%, rgba(253, 233, 209, 0.5) 100.98%);
+    padding: 64px 72px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    align-self: center;
 }
 
 .who-we-teach__eyebrow {
-    background-color: rgba(255, 99, 71, 0);
+    font-weight: 500;
+    font-size: 12px;
+    color: #996100;
+    line-height: 120%;
+    letter-spacing: 14%;
+    text-transform: uppercase;
+
 }
 
 .who-we-teach__divider {
-    background-color: rgba(255, 228, 181, 0);
+    width: 160px;
+    height: 2px;
+    display: inline-block;
+    background-image: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
+
+
 }
 
 .who-we-teach__title {
-    background-color: rgba(182, 137, 63, 0);
+    font-family: Frank Ruhl Libre;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 110.00000000000001%;
+    letter-spacing: -1.5%;
+
 }
 
 .who-we-teach__description {
-    background-color: rgba(70, 130, 180, 0);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 170%;
+    color: #4A453D;
 }
 
 .who-we-teach__list {
     background-color: rgba(46, 139, 87, 0);
+    display: flex;
+    gap: 12px;
 }
 
 .who-we-teach__list-item {
-    background-color: rgba(205, 92, 92, 0);
+    background-color: #FFF6E8CC;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.8em 1em;
+    border: 1px solid #E5D3AE;
+    border-radius: 0.5em;
+}
+
+.who-we-teach__list-item svg {
+    width: 1.2em;
 }
 
 /* 6. Footer / Bottom: Instructor & CTA */
 .who-we-teach__footer {
-    background-color: rgba(123, 104, 238, 0);
+    display: flex;
+    justify-content: space-between;
 }
 
 .who-we-teach__instructor {
     background-color: rgba(64, 224, 208, 0);
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .who-we-teach__instructor-avatar {
-    background-color: rgba(244, 164, 96, 0);
+    width: 54px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .who-we-teach__instructor-info {
@@ -121,11 +248,21 @@
 }
 
 .who-we-teach__instructor-name {
-    background-color: rgba(176, 196, 222, 0);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 100%;
+
 }
 
 .who-we-teach__instructor-role {
-    background-color: rgba(255, 182, 193, 0);
+    margin-top: 7px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 16%;
+    text-transform: uppercase;
+
+    color: #4A453D;
 }
 
 .who-we-teach__cta {
@@ -134,8 +271,19 @@
 
 .who-we-teach__link {
     background-color: rgba(238, 130, 238, 0);
-}
+    color: #AC5600;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 16%;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    border-bottom: 1px solid;
+    border-image-source: linear-gradient(270deg, rgba(253, 235, 213, 0) 0%, #AC5600 100%);
+    border-image-slice: 1;
+    padding: 1em 0;
 
-.who-we-teach__link-arrow {
-    background-color: rgba(240, 230, 140, 0);
+
 }
