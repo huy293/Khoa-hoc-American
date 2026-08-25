@@ -1,0 +1,280 @@
+:root {
+    --CBA-tokens-space-section: 64px;
+    --label-MD-font-family: "Jost", sans-serif;
+    --label-MD-font-weight: 500;
+    --label-MD-font-size: 14px;
+    --label-MD-letter-spacing: 1.5px;
+    --label-MD-line-height: 20px;
+    --label-MD-font-style: normal;
+
+    --body-MD-font-family: "Jost", sans-serif;
+    --body-MD-font-weight: 400;
+    --body-MD-font-size: 16px;
+    --body-MD-letter-spacing: 0px;
+    --body-MD-line-height: 24px;
+    --body-MD-font-style: normal;
+
+    --body-sm-font-family: "Jost", sans-serif;
+    --body-sm-font-weight: 400;
+    --body-sm-font-size: 14px;
+    --body-sm-letter-spacing: 0px;
+    --body-sm-line-height: 20px;
+    --body-sm-font-style: normal;
+}
+
+.element-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 48px;
+    padding: 120px 250px 52px;
+    position: relative;
+    background-color: #2f2a27;
+    overflow: hidden;
+}
+
+.ellipse {
+    position: absolute;
+    top: 35px;
+    left: 1169px;
+    width: 640px;
+    height: 597px;
+    pointer-events: none;
+}
+
+.footer-top {
+    display: flex;
+    align-items: center;
+    gap: var(--CBA-tokens-space-section);
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.frame {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.text-wrapper {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1px;
+    font-family: var(--label-MD-font-family);
+    font-weight: var(--label-MD-font-weight);
+    color: #fffcf8;
+    font-size: var(--label-MD-font-size);
+    letter-spacing: var(--label-MD-letter-spacing);
+    line-height: var(--label-MD-line-height);
+    font-style: var(--label-MD-font-style);
+}
+
+.line {
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    height: 2px;
+}
+
+.footer-newsletter {
+    position: relative;
+    align-self: stretch;
+    font-family: "Fraunces", Helvetica, serif;
+    font-weight: 300;
+    color: #fffcf8;
+    font-size: 40px;
+    letter-spacing: -0.4px;
+    line-height: 48px;
+}
+
+.div {
+    position: relative;
+    width: 224px;
+    margin: 0;
+    font-family: var(--body-MD-font-family);
+    font-weight: var(--body-MD-font-weight);
+    color: #e8c37a;
+    font-size: var(--body-MD-font-size);
+    letter-spacing: var(--body-MD-letter-spacing);
+    line-height: var(--body-MD-line-height);
+    font-style: var(--body-MD-font-style);
+}
+
+.footer-newsletter-2 {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    position: relative;
+    flex: 1;
+    flex-grow: 1;
+    background-color: #ffefdc;
+    border-radius: 8px;
+    border: 2px solid #ffc67c;
+}
+
+.footer-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+}
+
+.footer-submit-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-newsletter-3 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    align-self: stretch;
+    font-family: var(--body-sm-font-family);
+    font-weight: var(--body-sm-font-weight);
+    color: #0d0d0c;
+    font-size: var(--body-sm-font-size);
+    letter-spacing: var(--body-sm-letter-spacing);
+    line-height: var(--body-sm-line-height);
+    font-style: var(--body-sm-font-style);
+}
+
+.footer-newsletter-3::placeholder {
+    color: #0d0d0c80;
+}
+
+.material-symbols {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    aspect-ratio: 1;
+}
+
+.footer-lower {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--CBA-tokens-space-section);
+    padding: 48px 0px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-color: transparent;
+    border-image: linear-gradient(270deg,
+            rgba(255, 228, 169, 1) 0%,
+            rgba(190, 158, 92, 1) 100%) 1;
+}
+
+.footer-nav-columns {
+    display: flex;
+    align-items: flex-start;
+    gap: 96px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.frame-2 {
+    display: flex;
+    flex-direction: column;
+    width: 299px;
+    height: 170px;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+}
+
+.image {
+    position: relative;
+    width: 254px;
+    height: 101px;
+    aspect-ratio: 2.51;
+}
+
+.img {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.frame-3 {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    flex: 1;
+    flex-grow: 1;
+}
+
+.div-2 {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    align-items: flex-start;
+    gap: 18px;
+    position: relative;
+}
+
+.menu {
+    position: relative;
+    width: fit-content;
+    margin-top: -1px;
+    font-family: "Jost", Helvetica, sans-serif;
+    font-weight: 600;
+    color: #e7c379;
+    font-size: 18px;
+    letter-spacing: 2.88px;
+    line-height: normal;
+}
+
+.text-wrapper-2 {
+    position: relative;
+    width: fit-content;
+    font-family: "Jost", Helvetica, sans-serif;
+    font-weight: 300;
+    color: #fffdf8;
+    font-size: 15px;
+    letter-spacing: 0;
+    line-height: normal;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.text-wrapper-2:hover {
+    opacity: 0.75;
+}
+
+.text-wrapper-3 {
+    position: relative;
+    width: fit-content;
+    margin-top: -1px;
+    font-family: "Jost", Helvetica, sans-serif;
+    font-weight: 600;
+    color: #e8c37a;
+    font-size: 18px;
+    letter-spacing: 2.88px;
+    line-height: normal;
+}
+
+.star {
+    position: absolute;
+    top: calc(50.00% - 171px);
+    left: calc(50.00% + 734px);
+    width: 39px;
+    height: 40px;
+    pointer-events: none;
+}

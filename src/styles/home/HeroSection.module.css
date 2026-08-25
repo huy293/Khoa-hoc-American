@@ -1,0 +1,149 @@
+/* ==========================================================================
+   HeroSection — BEM Selectors & Translucent Color Mapping (Alpha: 0)
+   ========================================================================== */
+
+
+/* 1. BLOCK: Hero Section Root */
+.hero {
+    position: relative;
+    padding-top: 152px;
+}
+
+/* 2. ELEMENT: Absolute Background Image */
+.hero__background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: -1;
+}
+
+/* 3. ELEMENT: Content Wrapper / Overlay */
+.hero__wrapper {
+    background-color: rgba(255, 99, 71, 0);
+    padding: 0 40px;
+
+}
+
+/* 4. ELEMENT: Grid Container (2 Columns) */
+.hero__container {
+    display: flex;
+    gap: 28px;
+    max-width: 1690px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+/* 5. ELEMENT: Left Column (Content & Info) */
+.hero__content {
+    background-color: rgba(30, 144, 255, 0);
+    flex: 558;
+}
+
+/* 6. ELEMENT: Eyebrow Container */
+.hero__eyebrow {
+    background-color: rgba(255, 215, 0, 0);
+}
+
+/* 7. ELEMENT: Eyebrow Text (Location & EST) */
+.hero__eyebrow-text {
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 14%;
+    text-align: center;
+    text-transform: uppercase;
+    color: #8B8478;
+}
+
+/* 8. ELEMENT: Eyebrow Divider Group (Line & Star SVG) */
+.hero__eyebrow-divider {
+    display: flex;
+    justify-content: center;
+}
+
+
+
+/* 11. ELEMENT: Brand Logo Image */
+.hero__logo {
+    background-color: rgba(147, 112, 219, 0);
+}
+
+/* 12. ELEMENT: Description Paragraph */
+.hero__description {
+    font-family: 'Inter';
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 170%;
+    letter-spacing: 0%;
+    text-align: center;
+    margin-top: 24px;
+
+}
+
+/* 13. ELEMENT: Actions / Button Group */
+.hero__actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+/* 14. ELEMENT: Base Button Style */
+.hero__btn {
+    font-size: 12px;
+    letter-spacing: 16%;
+    line-height: 1.2em;
+    padding: 1.33333em 2em;
+    border-radius: 0.2em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.hero__btn-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.hero__btn:hover .hero__btn-icon {
+    transform: translateX(3px);
+}
+
+/* 15. MODIFIER: Primary Button */
+.hero__btn--primary {
+    border: 1px solid #664400;
+}
+
+/* 16. MODIFIER: Secondary / Ghost Button */
+.hero__btn--secondary {
+    background-color: #191713;
+    color: #fff;
+}
+
+/* 17. ELEMENT: Right Column (Visual / Media) */
+.hero__visual {
+    background-color: rgba(46, 139, 87, 0);
+    flex: 1108;
+}
+
+/* 18. ELEMENT: Image Frame */
+.hero__image-frame {
+    position: relative;
+}
+
+.hero__image-radial-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(52.67% 46.39% at 49.95% 43.66%, #FFF6EC 0%, rgba(255, 249, 234, 0) 100%)
+        /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
+    ;
+    z-index: -1;
+}
+
+/* 19. ELEMENT: Member Image */
+.hero__image {
+    background-color: rgba(70, 130, 180, 0);
+}
