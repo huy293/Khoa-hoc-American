@@ -1,0 +1,440 @@
+/* ══════════════════════════════════════════════════════════ */
+/*  CTA VISIT SECTION                                         */
+/* ══════════════════════════════════════════════════════════ */
+
+.cta-section {
+    display: flex;
+    width: 100%;
+    padding: 120px 250px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(0deg, rgba(46, 42, 40, 0.72) 0%, rgba(46, 42, 40, 0.72) 100%),
+        url('/images/cta-bg.png') lightgray 50% / cover no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+/* ── LEFT COLUMN ─────────────────────────────────── */
+.cta-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* "PLAN YOUR VISIT" */
+.cta-label {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+    color: #F7F1E7;
+}
+
+/* Main heading */
+.cta-heading {
+    font-family: "Frank Ruhl Libre", serif;
+    font-size: 56px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 105%;
+    letter-spacing: -1.12px;
+    color: #F7F1E7;
+    margin: 0;
+}
+
+.cta-subtext {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 170%;
+    color: #A39784;
+    margin: 0;
+}
+
+/* Hours block */
+.hours-block {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    margin-top: 24px;
+}
+
+.hours-title {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 170%;
+    color: #F7F1E7;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 228, 169, 0.3);
+    margin: 16px 0;
+}
+
+.info-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 32px; /* Generous gap between MONDAY-SATURDAY and CAMPUS */
+    width: 100%;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.info-label {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 170%;
+    color: #F7F1E7;
+    min-width: 160px;
+    flex-shrink: 0;
+}
+
+.info-value {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 170%;
+    color: #F7F1E7;
+}
+
+/* Decorative concentric quarter-circles – center at section's bottom-left corner */
+.circle-decor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 195, 122, 0.22);
+}
+
+/* Center each circle at (0,0) = bottom-left corner of section */
+.circle:nth-child(1) {
+    width: 320px;
+    height: 320px;
+    bottom: -160px;
+    left: -160px;
+}
+
+.circle:nth-child(2) {
+    width: 520px;
+    height: 520px;
+    bottom: -260px;
+    left: -260px;
+}
+
+.circle:nth-child(3) {
+    width: 720px;
+    height: 720px;
+    bottom: -360px;
+    left: -360px;
+}
+
+/* ── RIGHT COLUMN ─────────────────────────────────── */
+.cta-right {
+    display: flex;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    z-index: 1;
+}
+
+/* Glass card */
+.form-card {
+    display: flex;
+    padding: 48px;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    border-radius: 12px;
+    border: 1px solid #E8DFC8;
+    background: rgba(251, 247, 230, 0.16);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(232, 223, 200, 0.20);
+    margin: 16px 0;
+}
+
+/* "Visit the academy" – Fraunces gradient */
+.form-title {
+    font-family: "Fraunces", serif;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 110%;
+    letter-spacing: -0.66px;
+    background: linear-gradient(161deg,
+            #DE8F00 -0.45%,
+            #E2AD49 8.85%,
+            #FFF4DD 27.12%,
+            #FBF8F1 29%,
+            #FFECC6 32.71%,
+            #EEB552 47.6%,
+            #FFDA90 60%,
+            #E2AD49 69.3%,
+            #DE8F00 77.05%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    align-self: flex-start;
+}
+
+/* ── FORM ELEMENTS ───────────────────────────────── */
+.visit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+    color: #FBF7E6;
+}
+
+.required {
+    color: #E8C37A;
+}
+
+.input {
+    display: flex;
+    height: 60px;
+    padding: 0 20px;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid #E8DFC8;
+    background: rgba(251, 247, 230, 0.12);
+    width: 100%;
+    color: rgba(242, 238, 231, 0.80);
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 160%;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    box-sizing: border-box;
+}
+
+.input::placeholder {
+    color: rgba(255, 253, 248, 0.35);
+}
+
+.input:focus {
+    border-color: rgba(255, 198, 124, 0.65);
+    background: rgba(255, 253, 248, 0.1);
+}
+
+.textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 4px;
+    border: 1px solid #E8DFC8;
+    background: rgba(251, 247, 230, 0.12);
+    color: rgba(242, 238, 231, 0.80);
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 160%;
+    outline: none;
+    resize: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    box-sizing: border-box;
+}
+
+.textarea::placeholder {
+    color: rgba(255, 253, 248, 0.35);
+}
+
+.textarea:focus {
+    border-color: rgba(255, 198, 124, 0.65);
+    background: rgba(255, 253, 248, 0.1);
+}
+
+.submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.submit-btn {
+    padding: 14px 32px;
+    border-radius: 4px;
+    background: #191713;
+    color: #F2EEE7;
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 1.76px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.submit-btn:hover {
+    background: #2E2A28;
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/*  RESPONSIVE                                                */
+/* ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 1400px) {
+    .cta-section {
+        padding: 100px 120px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .cta-section {
+        padding: 80px 60px;
+        gap: 48px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .cta-section {
+        padding: 72px 48px;
+        gap: 40px;
+    }
+
+    .form-card {
+        padding: 36px 32px;
+    }
+}
+
+@media (max-width: 900px) {
+    .cta-section {
+        flex-direction: column;
+        align-items: center;
+        padding: 64px 32px;
+        gap: 48px;
+    }
+
+    .cta-left {
+        width: 100%;
+        max-width: 560px;
+        gap: 24px;
+    }
+
+    .cta-right {
+        width: 100%;
+        max-width: 560px;
+        justify-content: center;
+    }
+
+    .circle-decor {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .cta-section {
+        padding: 56px 20px;
+        gap: 40px;
+    }
+
+    .form-card {
+        padding: 28px 20px;
+        gap: 20px;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cta-section {
+        padding: 48px 16px;
+    }
+
+    .cta-heading {
+        font-size: 32px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .submit-row {
+        justify-content: stretch;
+    }
+}

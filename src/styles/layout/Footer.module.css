@@ -165,7 +165,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 48px;
-    padding: 48px 0 0;
+    padding: 48px 0;
     position: relative;
     align-self: stretch;
     width: 100%;
@@ -279,6 +279,7 @@
     .element-footer {
         padding: 100px 160px 52px 160px;
     }
+
     .footer-newsletter {
         font-size: 36px;
     }
@@ -296,10 +297,12 @@
     .element-footer {
         padding: 80px 80px 48px 80px;
     }
+
     .footer-newsletter {
         font-size: 32px;
         white-space: normal;
     }
+
     .newsletter-subtitle {
         width: auto;
     }
@@ -310,9 +313,11 @@
     .element-footer {
         padding: 72px 60px 44px 60px;
     }
+
     .footer-newsletter {
         font-size: 30px;
     }
+
     .footer-nav-columns {
         gap: 40px;
     }
@@ -324,9 +329,11 @@
         padding: 64px 48px 40px 48px;
         gap: 36px;
     }
+
     .footer-newsletter {
         font-size: 28px;
     }
+
     /* Newsletter: frame+subtitle side by side, form full width below */
     .footer-top {
         display: grid;
@@ -334,20 +341,32 @@
         grid-template-rows: auto auto;
         gap: 20px 40px;
     }
-    .frame       { grid-column: 1; grid-row: 1; }
+
+    .frame {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
     .newsletter-subtitle {
-        grid-column: 2; grid-row: 1;
-        width: auto; align-self: center;
+        grid-column: 2;
+        grid-row: 1;
+        width: auto;
+        align-self: center;
     }
+
     .footer-form {
-        grid-column: 1 / -1; grid-row: 2;
-        width: 100%; min-width: unset;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        width: 100%;
+        min-width: unset;
     }
+
     /* Lower: stack brand row on top, nav 2×2 below */
     .footer-nav-columns {
         flex-direction: column;
         gap: 32px;
     }
+
     .brand-col {
         width: 100%;
         flex-direction: row;
@@ -356,16 +375,21 @@
         gap: 32px;
         flex-shrink: unset;
     }
+
     .logo {
         width: clamp(160px, 20vw, 220px);
     }
+
     /* Nav: 2×2 full width */
     .nav-columns {
         width: 100%;
         grid-template-columns: repeat(2, 1fr);
         gap: 36px 32px;
     }
-    .nav-col { padding-right: 0; }
+
+    .nav-col {
+        padding-right: 0;
+    }
 }
 
 /* ── 768px ── */
@@ -374,6 +398,7 @@
         padding: 56px 32px 40px 32px;
         gap: 32px;
     }
+
     /* Newsletter: full stack */
     .footer-top {
         display: flex;
@@ -381,25 +406,37 @@
         align-items: flex-start;
         gap: 18px;
     }
-    .footer-form   { width: 100%; min-width: unset; }
-    .newsletter-subtitle { width: 100%; }
+
+    .footer-form {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .newsletter-subtitle {
+        width: 100%;
+    }
 
     .footer-nav-columns {
         flex-direction: column;
         gap: 28px;
     }
+
     .brand-col {
         width: 100%;
         flex-direction: row;
         align-items: center;
         gap: 28px;
     }
+
     .nav-columns {
         width: 100%;
         grid-template-columns: repeat(2, 1fr);
         gap: 32px 24px;
     }
-    .nav-col { padding-right: 0; }
+
+    .nav-col {
+        padding-right: 0;
+    }
 }
 
 /* ── 576px ── */
@@ -408,18 +445,30 @@
         padding: 48px 24px 36px 24px;
         gap: 28px;
     }
-    .footer-newsletter { font-size: 26px; }
+
+    .footer-newsletter {
+        font-size: 26px;
+    }
+
     .brand-col {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
-    .logo { width: 160px; }
+
+    .logo {
+        width: 160px;
+    }
+
     .nav-columns {
         grid-template-columns: repeat(2, 1fr);
         gap: 28px 16px;
     }
-    .nav-heading { font-size: 15px; letter-spacing: 2px; }
+
+    .nav-heading {
+        font-size: 15px;
+        letter-spacing: 2px;
+    }
 }
 
 /* ── 480px ── */
@@ -428,12 +477,26 @@
         padding: 40px 16px 32px 16px;
         gap: 24px;
     }
-    .footer-newsletter { font-size: 22px; }
-    .stay-in-the-know  { font-size: 10px; letter-spacing: 1.5px; }
+
+    .footer-newsletter {
+        font-size: 22px;
+    }
+
+    .stay-in-the-know {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+    }
+
     .nav-columns {
         grid-template-columns: repeat(2, 1fr);
         gap: 24px 12px;
     }
-    .nav-col { gap: 12px; }
-    .social-icons { gap: 16px; }
+
+    .nav-col {
+        gap: 12px;
+    }
+
+    .social-icons {
+        gap: 16px;
+    }
 }
