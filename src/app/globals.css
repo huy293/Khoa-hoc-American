@@ -18,6 +18,26 @@
   font-style: normal;
 }
 
+/* ===== LOCAL FONTS: FRAUNCES ===== */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces/FrauncesVariable.woff2') format('woff2'),
+       url('/fonts/Fraunces/Fraunces-Regular.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+/* ===== LOCAL FONTS: MR DE HAVILAND ===== */
+@font-face {
+  font-family: 'Mr De Haviland';
+  src: url('/fonts/MrDeHaviland/MrDeHaviland.woff2') format('woff2'),
+       url('/fonts/MrDeHaviland/MrDeHaviland-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
 /* ===== DESIGN TOKENS (CSS VARIABLES) ===== */
 :root {
   /* Brand Colors */
