@@ -1,0 +1,141 @@
+/* ==========================================================================
+   WhoWeTeach — BEM Selectors & Translucent Color Mapping (Alpha: 0)
+   ========================================================================== */
+
+/* 1. BLOCK: Root Section */
+.who-we-teach {
+    background-color: rgba(240, 235, 224, 0);
+}
+
+/* 2. Top Decorative Lines */
+.who-we-teach__lines {
+    background-color: rgba(182, 137, 63, 0);
+}
+
+.who-we-teach__line {
+    background-color: rgba(220, 200, 150, 0);
+}
+
+.who-we-teach__line--1 {
+    background-color: rgba(210, 180, 140, 0);
+}
+
+.who-we-teach__line--2 {
+    background-color: rgba(188, 143, 143, 0);
+}
+
+.who-we-teach__line--3 {
+    background-color: rgba(205, 133, 63, 0);
+}
+
+/* 3. Content Wrapper & Grid Container */
+.who-we-teach__wrapper {
+    background-color: rgba(255, 248, 238, 0);
+}
+
+.who-we-teach__container {
+    background-color: rgba(100, 149, 237, 0);
+}
+
+/* 4. Left Column: Visual, Circles & Images */
+.who-we-teach__visual {
+    background-color: rgba(60, 179, 113, 0);
+}
+
+.who-we-teach__circle {
+    background-color: rgba(255, 215, 0, 0);
+}
+
+.who-we-teach__circle--1 {
+    background-color: rgba(255, 105, 180, 0);
+}
+
+.who-we-teach__circle--2 {
+    background-color: rgba(138, 43, 226, 0);
+}
+
+.who-we-teach__circle--3 {
+    background-color: rgba(0, 206, 209, 0);
+}
+
+.who-we-teach__circle--4 {
+    background-color: rgba(255, 140, 0, 0);
+}
+
+.who-we-teach__image {
+    background-color: rgba(147, 112, 219, 0);
+}
+
+.who-we-teach__image--primary {
+    background-color: rgba(72, 209, 204, 0);
+}
+
+.who-we-teach__image--secondary {
+    background-color: rgba(218, 112, 214, 0);
+}
+
+/* 5. Right Column: Info & Text Content */
+.who-we-teach__content {
+    background-color: rgba(30, 144, 255, 0);
+}
+
+.who-we-teach__eyebrow {
+    background-color: rgba(255, 99, 71, 0);
+}
+
+.who-we-teach__divider {
+    background-color: rgba(255, 228, 181, 0);
+}
+
+.who-we-teach__title {
+    background-color: rgba(182, 137, 63, 0);
+}
+
+.who-we-teach__description {
+    background-color: rgba(70, 130, 180, 0);
+}
+
+.who-we-teach__list {
+    background-color: rgba(46, 139, 87, 0);
+}
+
+.who-we-teach__list-item {
+    background-color: rgba(205, 92, 92, 0);
+}
+
+/* 6. Footer / Bottom: Instructor & CTA */
+.who-we-teach__footer {
+    background-color: rgba(123, 104, 238, 0);
+}
+
+.who-we-teach__instructor {
+    background-color: rgba(64, 224, 208, 0);
+}
+
+.who-we-teach__instructor-avatar {
+    background-color: rgba(244, 164, 96, 0);
+}
+
+.who-we-teach__instructor-info {
+    background-color: rgba(221, 160, 221, 0);
+}
+
+.who-we-teach__instructor-name {
+    background-color: rgba(176, 196, 222, 0);
+}
+
+.who-we-teach__instructor-role {
+    background-color: rgba(255, 182, 193, 0);
+}
+
+.who-we-teach__cta {
+    background-color: rgba(152, 251, 152, 0);
+}
+
+.who-we-teach__link {
+    background-color: rgba(238, 130, 238, 0);
+}
+
+.who-we-teach__link-arrow {
+    background-color: rgba(240, 230, 140, 0);
+}
