@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Footer } from '@/components/layout/Footer';
+import { CtaVisit } from '@/components/sections/CtaVisit';
 
 export const metadata: Metadata = {
   title: 'Khoa-hoc-American',
@@ -13,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CtaVisit />
+        <Footer />
+      </body>
     </html>
   );
 }
