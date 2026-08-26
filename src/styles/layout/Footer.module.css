@@ -23,23 +23,15 @@
 /* ══════════════════════════════════════════ */
 /*  DECORATIVE ELEMENTS                      */
 /* ══════════════════════════════════════════ */
-.ellipse {
+.footer-decor {
     position: absolute;
-    top: 35px;
-    right: -80px;
-    width: clamp(300px, 33vw, 640px);
-    height: clamp(280px, 31vw, 597px);
+    top: 0;
+    right: 0;
+    width: clamp(340px, 36vw, 680px);
+    height: auto;
     pointer-events: none;
-    opacity: 0.5;
-}
-
-.star {
-    position: absolute;
-    top: calc(50% - 171px);
-    right: clamp(16px, 11.5vw, 218px);
-    width: 39px;
-    height: 40px;
-    pointer-events: none;
+    user-select: none;
+    z-index: 1;
 }
 
 /* ══════════════════════════════════════════ */
@@ -50,6 +42,7 @@
     align-items: center;
     gap: clamp(40px, 6vw, 120px);
     position: relative;
+    z-index: 2;
     align-self: stretch;
     width: 100%;
     flex-wrap: wrap;
