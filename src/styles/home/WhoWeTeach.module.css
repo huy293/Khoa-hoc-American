@@ -1,5 +1,5 @@
 /* ==========================================================================
-   WhoWeTeach — BEM Selectors & Translucent Color Mapping (Alpha: 0)
+   WhoWeTeach — BEM Selectors & Responsive Breakpoints
    ========================================================================== */
 
 /* 1. BLOCK: Root Section */
@@ -7,6 +7,7 @@
     background: linear-gradient(88.86deg, #FFF5EB 11.56%, #FFEBD1 99.35%);
     padding-top: 120px;
     position: relative;
+    overflow: hidden;
 }
 
 /* 2. Top Decorative Lines */
@@ -18,6 +19,7 @@
     top: 0;
     left: 0;
     right: 0;
+    pointer-events: none;
 }
 
 .who-we-teach__line {
@@ -40,12 +42,14 @@
 /* 3. Content Wrapper & Grid Container */
 .who-we-teach__wrapper {
     background-color: rgba(255, 248, 238, 0);
+    padding: 0 40px;
 }
 
 .who-we-teach__container {
     max-width: 1540px;
     margin: 0 auto;
     display: flex;
+    gap: 40px;
 }
 
 /* 4. Left Column: Visual, Circles & Images */
@@ -64,6 +68,7 @@
 
 .who-we-teach__circle {
     position: absolute;
+    pointer-events: none;
 }
 
 .who-we-teach__circle--1 {
@@ -71,7 +76,6 @@
     inset: 0 50px 0 -100px;
     z-index: -1;
     border-radius: 50%;
-
 }
 
 .who-we-teach__circle--2 {
@@ -94,11 +98,8 @@
     right: 0;
     border-radius: 50%;
     z-index: -1;
-
-    /* Tạo viền gradient 1px dạng tròn */
     background: linear-gradient(299.5deg, #FFA200 22.5%, #FFE8C0 78.74%);
     padding: 1px;
-    /* Độ dày viền */
     box-sizing: border-box;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -112,20 +113,20 @@
     left: -120px;
     border-radius: 50%;
     z-index: -2;
-
-    /* Tạo viền gradient 1.5px dạng tròn */
     background: linear-gradient(90deg, #FFA200 0%, #FFE8C0 100%);
     padding: 1.25px;
-    /* Độ dày viền */
     box-sizing: border-box;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
 }
 
-
 .who-we-teach__image {
     background-color: rgba(147, 112, 219, 0);
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
 }
 
 .who-we-teach__image-wrapper--primary {
@@ -137,7 +138,6 @@
     border: 5px solid #FEF4EA;
     box-shadow: 4px 4px 10px 1px #4A453D33;
     border-radius: 12px;
-
 }
 
 .who-we-teach__image-wrapper--secondary {
@@ -153,7 +153,6 @@
     border: 5px solid #FEF4EA;
     box-shadow: 4px 4px 10px 1px #4A453D33;
     border-radius: 12px;
-
 }
 
 /* 5. Right Column: Info & Text Content */
@@ -166,6 +165,13 @@
     flex-direction: column;
     gap: 36px;
     align-self: center;
+    box-sizing: border-box;
+}
+
+.who-we-teach__header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .who-we-teach__eyebrow {
@@ -173,9 +179,8 @@
     font-size: 12px;
     color: #996100;
     line-height: 120%;
-    letter-spacing: 14%;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-
 }
 
 .who-we-teach__divider {
@@ -183,17 +188,15 @@
     height: 2px;
     display: inline-block;
     background-image: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
-
-
 }
 
 .who-we-teach__title {
-    font-family: Frank Ruhl Libre;
+    font-family: 'Frank Ruhl Libre', serif;
     font-weight: 400;
     font-size: 44px;
-    line-height: 110.00000000000001%;
-    letter-spacing: -1.5%;
-
+    line-height: 110%;
+    letter-spacing: -0.015em;
+    color: #191713;
 }
 
 .who-we-teach__description {
@@ -207,6 +210,9 @@
     background-color: rgba(46, 139, 87, 0);
     display: flex;
     gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
 .who-we-teach__list-item {
@@ -217,16 +223,22 @@
     padding: 0.8em 1em;
     border: 1px solid #E5D3AE;
     border-radius: 0.5em;
+    font-size: 14px;
+    color: #191713;
 }
 
 .who-we-teach__list-item svg {
     width: 1.2em;
+    height: 1.2em;
+    flex-shrink: 0;
 }
 
 /* 6. Footer / Bottom: Instructor & CTA */
 .who-we-teach__footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
 .who-we-teach__instructor {
@@ -241,6 +253,7 @@
     height: 54px;
     object-fit: cover;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .who-we-teach__instructor-info {
@@ -251,7 +264,7 @@
     font-weight: 500;
     font-size: 16px;
     line-height: 100%;
-
+    color: #191713;
 }
 
 .who-we-teach__instructor-role {
@@ -259,9 +272,8 @@
     font-weight: 500;
     font-size: 12px;
     line-height: 120%;
-    letter-spacing: 16%;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-
     color: #4A453D;
 }
 
@@ -275,7 +287,7 @@
     font-weight: 500;
     font-size: 12px;
     line-height: 120%;
-    letter-spacing: 16%;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     display: inline-flex;
     align-items: center;
@@ -284,6 +296,452 @@
     border-image-source: linear-gradient(270deg, rgba(253, 235, 213, 0) 0%, #AC5600 100%);
     border-image-slice: 1;
     padding: 1em 0;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.who-we-teach__link:hover {
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .who-we-teach__container {
+        max-width: 1400px;
+        gap: 32px;
+    }
+
+    .who-we-teach__visual {
+        padding-right: 60px;
+    }
+
+    .who-we-teach__content {
+        padding: 52px 56px;
+        gap: 30px;
+    }
 
 
+
+    .who-we-teach__image-wrapper--secondary {
+        width: 220px;
+        bottom: 110px;
+    }
+
+    .who-we-teach__circle--3,
+    .who-we-teach__circle--4 {
+        width: 320px;
+        height: 320px;
+    }
+
+    .who-we-teach__circle--2 {
+        width: 260px;
+        height: 260px;
+    }
+
+    .who-we-teach__list-item {
+        font-size: 13.5px;
+    }
+}
+
+/* 2. Medium Desktops / Laptop (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .who-we-teach {
+        padding-top: 100px;
+    }
+
+
+
+    .who-we-teach__wrapper {
+        padding: 0 32px;
+    }
+
+    .who-we-teach__container {
+        /* max-width: 1200px; */
+        gap: 24px;
+    }
+
+    .who-we-teach__visual {
+        padding-right: 40px;
+    }
+
+    .who-we-teach__visual-wrapper {
+        padding: 80px 0;
+    }
+
+    .who-we-teach__image-wrapper--primary {
+        padding-right: 70px;
+    }
+
+    .who-we-teach__image-wrapper--secondary {
+        width: 190px;
+        bottom: 90px;
+    }
+
+    .who-we-teach__content {
+        padding: 40px 44px;
+        gap: 28px;
+    }
+
+    .who-we-teach__title {
+        font-size: 40px;
+    }
+
+    .who-we-teach__description {
+        font-size: 15px;
+    }
+
+    .who-we-teach__list {
+        gap: 10px;
+    }
+
+    .who-we-teach__list-item {
+        padding: 0.7em 0.85em;
+        font-size: 13px;
+    }
+
+    .who-we-teach__circle--3,
+    .who-we-teach__circle--4 {
+        width: 280px;
+        height: 280px;
+    }
+
+    .who-we-teach__circle--2 {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+/* 3. Small Desktops / Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .who-we-teach {
+        padding-top: 80px;
+        padding-bottom: 60px;
+    }
+
+    .who-we-teach__wrapper {
+        padding: 0 24px;
+    }
+
+    .who-we-teach__container {
+        gap: 24px;
+    }
+
+    .who-we-teach__visual {
+        width: 48%;
+        padding-right: 20px;
+    }
+
+    .who-we-teach__visual-wrapper {
+        padding: 60px 0;
+    }
+
+    .who-we-teach__image-wrapper--primary {
+        padding-right: 50px;
+    }
+
+    .who-we-teach__image-wrapper--secondary {
+        width: 160px;
+        bottom: 70px;
+    }
+
+    .who-we-teach__content {
+        width: 52%;
+        padding: 38px 42px;
+        gap: 24px;
+    }
+
+
+
+    .who-we-teach__description {
+        font-size: 14px;
+        line-height: 160%;
+    }
+
+    .who-we-teach__list {
+        gap: 10px;
+    }
+
+    .who-we-teach__list-item {
+        font-size: 12px;
+        padding: 0.7em 0.9em;
+    }
+
+    .who-we-teach__footer {
+        gap: 16px;
+    }
+
+    .who-we-teach__circle--1 {
+        inset: 0 30px 0 -60px;
+    }
+
+    .who-we-teach__circle--3,
+    .who-we-teach__circle--4 {
+        width: 240px;
+        height: 240px;
+    }
+
+    .who-we-teach__circle--2 {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) */
+@media (max-width: 996px) {
+    .who-we-teach {
+        padding-top: 80px;
+        padding-bottom: 50px;
+    }
+
+    .who-we-teach__container {
+        flex-direction: column;
+        gap: 48px;
+        align-items: center;
+    }
+
+    .who-we-teach__visual {
+        width: 100%;
+        max-width: 560px;
+        padding-right: 0;
+        align-self: center;
+    }
+
+    .who-we-teach__visual-wrapper {
+        padding: 60px 20px;
+        margin: 0 auto;
+    }
+
+    .who-we-teach__image-wrapper--primary {
+        padding-right: 80px;
+    }
+
+    .who-we-teach__image-wrapper--secondary {
+        width: 200px;
+        bottom: 80px;
+        right: 10px;
+    }
+
+    .who-we-teach__content {
+        width: 100%;
+        max-width: 680px;
+        padding: 48px 40px;
+        align-self: center;
+    }
+
+    .who-we-teach__list {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .who-we-teach__list {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .who-we-teach__list-item {
+        flex: 1 1 calc(50% - 12px);
+    }
+
+    .who-we-teach__title {
+        font-size: 34px;
+    }
+
+    .who-we-teach__circle--3,
+    .who-we-teach__circle--4 {
+        width: 280px;
+        height: 280px;
+    }
+
+    .who-we-teach__circle--2 {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+/* 5. Large Mobile / Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .who-we-teach {
+        padding-top: 70px;
+        padding-bottom: 40px;
+    }
+
+    .who-we-teach__wrapper {
+        padding: 0 20px;
+    }
+
+    .who-we-teach__container {
+        gap: 40px;
+    }
+
+    .who-we-teach__visual {
+        max-width: 460px;
+    }
+
+    .who-we-teach__visual-wrapper {
+        padding: 40px 10px;
+    }
+
+    .who-we-teach__image-wrapper--primary {
+        padding-right: 60px;
+    }
+
+    .who-we-teach__image-wrapper--secondary {
+        width: 150px;
+        bottom: 50px;
+        right: 0;
+    }
+
+    .who-we-teach__content {
+        padding: 32px 24px;
+        gap: 20px;
+        border-radius: 12px;
+    }
+
+    .who-we-teach__title {
+        font-size: 34px;
+    }
+
+    .who-we-teach__description {
+        font-size: 14px;
+    }
+
+    .who-we-teach__list {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .who-we-teach__list-item {
+        flex: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .who-we-teach__footer {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .who-we-teach__link {
+        padding: 0.5em 0;
+    }
+
+    .who-we-teach__circle--1 {
+        inset: 0 20px 0 -40px;
+    }
+
+    .who-we-teach__circle--3,
+    .who-we-teach__circle--4 {
+        width: 220px;
+        height: 220px;
+    }
+
+    .who-we-teach__circle--2 {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* 6. Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .who-we-teach {
+        padding-top: 50px;
+        padding-bottom: 30px;
+    }
+
+    .who-we-teach__wrapper {
+        padding: 0 0px;
+    }
+
+    .who-we-teach__container {
+        gap: 5px;
+    }
+
+    .who-we-teach__visual {
+        max-width: 100%;
+        padding: 0 16px;
+    }
+
+    .who-we-teach__visual-wrapper {
+        padding: 30px 0;
+    }
+
+    .who-we-teach__image-wrapper--primary {
+        padding-right: 40px;
+    }
+
+    .who-we-teach__image-wrapper--secondary {
+        width: 120px;
+        bottom: 35px;
+        right: -5px;
+        border-width: 3px;
+    }
+
+    .who-we-teach__image--secondary {
+        border: 3px solid #FEF4EA;
+    }
+
+    .who-we-teach__image--primary {
+        border-width: 3px;
+    }
+
+    .who-we-teach__content {
+        padding: 24px 16px;
+        gap: 18px;
+    }
+
+    .who-we-teach__eyebrow {
+        font-size: 11px;
+    }
+
+    .who-we-teach__title {
+        font-size: 30px;
+    }
+
+    .who-we-teach__description {
+        font-size: 13px;
+        line-height: 155%;
+    }
+
+    .who-we-teach__list {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .who-we-teach__list-item {
+        font-size: 12px;
+        padding: 0.6em 0.8em;
+    }
+
+    .who-we-teach__instructor-avatar {
+        width: 44px;
+        height: 44px;
+    }
+
+    .who-we-teach__instructor-name {
+        font-size: 15px;
+    }
+
+    .who-we-teach__instructor-role {
+        font-size: 11px;
+    }
+
+    .who-we-teach__link {
+        font-size: 11px;
+    }
+
+    .who-we-teach__circle--3,
+    .who-we-teach__circle--4 {
+        width: 170px;
+        height: 170px;
+    }
+
+    .who-we-teach__circle--2 {
+        width: 130px;
+        height: 130px;
+    }
 }

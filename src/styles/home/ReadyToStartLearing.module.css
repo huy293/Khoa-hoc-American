@@ -1,0 +1,353 @@
+/* ==========================================================================
+   Ready To Start Learning — BEM Selectors & Luxury Beauty Theme Styling
+   ========================================================================== */
+
+/* 1. Root Section */
+.ready-to-start-learning {
+    position: relative;
+    padding: 120px 40px;
+    overflow: hidden;
+}
+
+/* 2. Background Hand Image */
+.ready-to-start-learning__hand-img {
+    position: absolute;
+    bottom: -30px;
+    right: 0;
+    z-index: 0;
+    pointer-events: none;
+    max-width: 70%;
+    object-fit: contain;
+}
+
+/* 3. Wrapper & Container */
+.ready-to-start-learning__wrapper {
+    max-width: 1420px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.ready-to-start-learning__container {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+/* 4. Header: Eyebrow & Title */
+.ready-to-start-learning__header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ready-to-start-learning__eyebrow {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #996100;
+}
+
+.ready-to-start-learning__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 110%;
+    letter-spacing: -0.015em;
+    color: #191713;
+}
+
+/* 5. Grid of Cards */
+.ready-to-start-learning__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* 6. Card Element */
+.ready-to-start-learning__card {
+    background: #FFF6E8;
+    border: 1px solid #DDD6C9;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ready-to-start-learning__card-image-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.ready-to-start-learning__card-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+}
+
+.ready-to-start-learning__card-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.ready-to-start-learning__card-text {
+    flex: 1;
+}
+
+.ready-to-start-learning__card-title {
+    color: #8A7043;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 140%;
+    margin: 0;
+}
+
+.ready-to-start-learning__card-description {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 160%;
+    letter-spacing: 0%;
+    color: #4A453D;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+.ready-to-start-learning__card-link {
+    color: #996100;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    align-self: flex-end;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    text-decoration: none;
+}
+
+.ready-to-start-learning__card-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .ready-to-start-learning {
+        padding: 100px 40px;
+    }
+
+    .ready-to-start-learning__wrapper {
+        max-width: 1360px;
+    }
+
+    .ready-to-start-learning__title {
+        /* font-size: 40px; */
+    }
+
+    .ready-to-start-learning__hand-img {
+        bottom: -20px;
+    }
+}
+
+/* 2. Medium Desktops / Laptop (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .ready-to-start-learning {
+        padding: 90px 32px;
+    }
+
+    .ready-to-start-learning__wrapper {
+        /* max-width: 1180px; */
+    }
+
+    .ready-to-start-learning__container {
+        gap: 40px;
+    }
+
+    .ready-to-start-learning__title {
+        font-size: 40px;
+    }
+
+    .ready-to-start-learning__grid {
+        gap: 20px;
+    }
+
+    .ready-to-start-learning__card-content {
+        padding: 20px;
+        gap: 24px;
+    }
+
+    .ready-to-start-learning__card-title {
+        font-size: 18px;
+    }
+
+    .ready-to-start-learning__card-description {
+        font-size: 13.5px;
+    }
+
+    .ready-to-start-learning__hand-img {
+        bottom: -15px;
+    }
+}
+
+/* 3. Small Desktops / Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .ready-to-start-learning {
+        padding: 80px 24px;
+    }
+
+    .ready-to-start-learning__title {
+        font-size: 38px;
+    }
+
+    .ready-to-start-learning__grid {
+        /* grid-template-columns: repeat(2, 1fr); */
+        gap: 20px;
+    }
+
+    .ready-to-start-learning__hand-img {
+        bottom: -10px;
+        opacity: 0.85;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) */
+@media (max-width: 996px) {
+    .ready-to-start-learning {
+        padding: 70px 20px;
+    }
+
+    .ready-to-start-learning__container {
+        gap: 36px;
+    }
+
+    .ready-to-start-learning__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .ready-to-start-learning__title {
+        font-size: 36px;
+    }
+
+    .ready-to-start-learning__card-content {
+        padding: 18px;
+        gap: 20px;
+    }
+
+    .ready-to-start-learning__card-title {
+        font-size: 17px;
+    }
+
+    .ready-to-start-learning__card-description {
+        font-size: 13px;
+    }
+
+    .ready-to-start-learning__hand-img {
+        bottom: 0;
+        opacity: 0.7;
+    }
+}
+
+/* 5. Large Mobile / Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .ready-to-start-learning {
+        padding: 60px 20px;
+    }
+
+    .ready-to-start-learning__container {
+        gap: 32px;
+    }
+
+    .ready-to-start-learning__header {
+        gap: 10px;
+    }
+
+    .ready-to-start-learning__eyebrow {
+        font-size: 11px;
+    }
+
+    .ready-to-start-learning__title {
+        font-size: 34px;
+    }
+
+    .ready-to-start-learning__grid {
+        gap: 12px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .ready-to-start-learning__card-content {
+        padding: 20px;
+        gap: 20px;
+    }
+
+
+
+
+    .ready-to-start-learning__hand-img {
+        bottom: 0;
+        opacity: 0.4;
+    }
+}
+
+/* 6. Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .ready-to-start-learning {
+        padding: 50px 16px;
+    }
+
+    /* .ready-to-start-learning__container {
+        gap: 24px;
+    } */
+
+    .ready-to-start-learning__eyebrow {
+        font-size: 11px;
+    }
+
+    .ready-to-start-learning__title {
+        font-size: 30px;
+        /* line-height: 120%; */
+    }
+
+    .ready-to-start-learning__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .ready-to-start-learning__card {
+        border-radius: 6px;
+    }
+
+    .ready-to-start-learning__card-content {
+        /* padding: 16px; */
+        /* gap: 16px; */
+    }
+
+    .ready-to-start-learning__card-description {
+        font-size: 13px;
+    }
+
+    .ready-to-start-learning__card-link {
+        font-size: 11px;
+    }
+
+    .ready-to-start-learning__hand-img {
+        bottom: 0;
+        opacity: 0.3;
+    }
+}

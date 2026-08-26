@@ -1,5 +1,5 @@
 /* ==========================================================================
-   OurSpecialized — BEM Selectors & Translucent Color Mapping (Alpha: 0)
+   OurSpecialized — BEM Selectors & Luxury Beauty Theme Styling
    ========================================================================== */
 
 /* 1. BLOCK: Root Section */
@@ -24,6 +24,7 @@
     top: 8px;
     left: 0;
     right: 0;
+    pointer-events: none;
 }
 
 .our-specialized__line {
@@ -53,12 +54,14 @@
     top: -41px;
     left: 50%;
     transform: translate(-50%, 0);
+    pointer-events: none;
 }
 
 .our-specialized__circle {
     width: 490px;
     height: 490px;
     position: absolute;
+    pointer-events: none;
 }
 
 .our-specialized__circle_1 {
@@ -138,6 +141,8 @@
 .our-specialized__container {
     max-width: 1280px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 /* 4. Header Section */
@@ -153,11 +158,11 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 120%;
-    letter-spacing: 14%;
+    letter-spacing: 0.14em;
     text-align: center;
     text-transform: uppercase;
     color: #FFE6BC;
-    font-family: "Inter"
+    font-family: "Inter", sans-serif;
 }
 
 .our-specialized__divider {
@@ -165,16 +170,14 @@
     width: 160px;
     display: inline-block;
     background: linear-gradient(90deg, #FFE3AC 0%, rgba(250, 233, 211, 0) 100%);
-
-
 }
 
 .our-specialized__title {
-    font-family: Frank Ruhl Libre;
+    font-family: 'Frank Ruhl Libre', serif;
     font-weight: 400;
     font-size: 44px;
-    line-height: 110.00000000000001%;
-    letter-spacing: -1.5%;
+    line-height: 110%;
+    letter-spacing: -0.015em;
     text-align: center;
 }
 
@@ -199,6 +202,7 @@
 
 .our-specialized__column--center {
     width: 300px;
+    flex-shrink: 0;
 }
 
 .our-specialized__image-wrapper {
@@ -261,13 +265,14 @@
     font-weight: 400;
     font-size: 72px;
     line-height: 110%;
-    letter-spacing: -1.5%;
-    font-family: "Fraunces";
-
+    letter-spacing: -0.015em;
+    font-family: "Fraunces", serif;
+    flex-shrink: 0;
 }
 
 .our-specialized__item-info {
     background-color: rgba(135, 206, 235, 0);
+    flex: 1;
 }
 
 .our-specialized__item-title {
@@ -288,19 +293,19 @@
     letter-spacing: 0%;
     color: #FFFBF5CC;
     margin-top: 8px;
-
 }
 
 .our-specialized__item-line-wrapper {
     position: relative;
     display: flex;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 .our-specialized__item-line {
     min-width: 65px;
     height: 1px;
     display: inline-block;
-
 }
 
 .our-specialized__column--left .our-specialized__item-line {
@@ -340,5 +345,467 @@
     border-top-left-radius: 138px;
     border-top-right-radius: 138px;
     box-shadow: 0px 0px 10px 0px #F6D48ECC;
+}
 
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .our-specialized {
+        padding: 160px 40px 140px;
+    }
+
+    .our-specialized__container {
+        max-width: 1200px;
+    }
+
+    .our-specialized__circle {
+        width: 420px;
+        height: 420px;
+    }
+
+    .our-specialized__circle_1 {
+        top: -40px;
+        left: -270px;
+    }
+
+    .our-specialized__circle_2 {
+        bottom: -60px;
+        right: -290px;
+    }
+
+    .our-specialized__content {
+        gap: 20px;
+    }
+
+    .our-specialized__column--center {
+        width: 280px;
+    }
+
+    .our-specialized__column--left,
+    .our-specialized__column--right {
+        gap: 40px;
+    }
+
+    .our-specialized__item {
+        gap: 24px;
+    }
+
+    /* .our-specialized__title {
+        font-size: 40px;
+    } */
+
+    .our-specialized__item-number {
+        font-size: 64px;
+    }
+
+    .our-specialized__item-line {
+        min-width: 45px;
+    }
+}
+
+/* 2. Medium Desktops / Laptop (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .our-specialized {
+        padding: 140px 40px 125px;
+    }
+
+
+
+    .our-specialized__circle {
+        width: 360px;
+        height: 360px;
+    }
+
+    .our-specialized__circle_1 {
+        top: -30px;
+        left: -230px;
+    }
+
+    .our-specialized__circle_2 {
+        bottom: -50px;
+        right: -250px;
+    }
+
+    .our-specialized__content {
+        gap: 16px;
+    }
+
+    .our-specialized__column--center {
+        width: 250px;
+    }
+
+    .our-specialized__column--left,
+    .our-specialized__column--right {
+        gap: 36px;
+    }
+
+    .our-specialized__item {
+        gap: 22px;
+    }
+
+    .our-specialized__header {
+        margin-bottom: 40px;
+        gap: 16px;
+    }
+
+    .our-specialized__title {
+        font-size: 40px;
+    }
+
+    .our-specialized__item-number {
+        font-size: 60px;
+    }
+
+    .our-specialized__item-title {
+        font-size: 19px;
+    }
+
+    .our-specialized__item-description {
+        font-size: 14px;
+    }
+
+    .our-specialized__item-line {
+        min-width: 50px;
+    }
+
+    .our-specialized__elip {
+        /* width: 750px;
+        height: 750px; */
+    }
+}
+
+/* 3. Small Desktops / Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .our-specialized {
+        padding: 120px 24px 100px;
+    }
+
+    .our-specialized__container {
+        max-width: 100%;
+    }
+
+    .our-specialized__content {
+        gap: 12px;
+    }
+
+    .our-specialized__column--center {
+        width: 220px;
+    }
+
+    .our-specialized__column--left,
+    .our-specialized__column--right {
+        gap: 32px;
+    }
+
+    .our-specialized__item {
+        gap: 18px;
+    }
+
+    .our-specialized__item-line {
+        min-width: 24px;
+    }
+
+    .our-specialized__title {
+        font-size: 40px;
+    }
+
+    .our-specialized__item-number {
+        font-size: 52px;
+    }
+
+    .our-specialized__item-title {
+        font-size: 17px;
+    }
+
+    .our-specialized__item-description {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) — 3 Columns Nằm Ngang */
+@media (max-width: 996px) {
+    .our-specialized {
+        padding: 80px 20px 70px;
+    }
+
+    .our-specialized__header {
+        margin-bottom: 32px;
+        gap: 12px;
+    }
+
+    .our-specialized__title {
+        font-size: 36px;
+    }
+
+    .our-specialized__content {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .our-specialized__column--left,
+    .our-specialized__column--right {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+        gap: 20px;
+    }
+
+    .our-specialized__column--center {
+        width: 200px;
+        flex-shrink: 0;
+    }
+
+    .our-specialized__item {
+        gap: 14px;
+    }
+
+    .our-specialized__item-number {
+        font-size: 42px;
+    }
+
+    .our-specialized__item-title {
+        font-size: 14px;
+    }
+
+    .our-specialized__item-description {
+        font-size: 11.5px;
+        line-height: 150%;
+        margin-top: 4px;
+    }
+
+    .our-specialized__item-line-wrapper {
+        display: flex;
+    }
+
+    .our-specialized__item-line {
+        min-width: 14px;
+    }
+
+    .our-specialized__item-dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .our-specialized__elip {
+        /* width: 500px;
+        height: 500px; */
+    }
+
+    .our-specialized__circle {
+        width: 260px;
+        height: 260px;
+        opacity: 0.55;
+    }
+
+    .our-specialized__circle_1 {
+        top: -30px;
+        left: -180px;
+    }
+
+    .our-specialized__circle_2 {
+        bottom: -40px;
+        right: -185px;
+    }
+}
+
+/* 5. Large Mobile / Small Tablets (max-width: 768px) — Thả xuống 1 cột dọc */
+@media (max-width: 768px) {
+    .our-specialized {
+        padding: 80px 20px 60px;
+    }
+
+    .our-specialized__header {
+        margin-bottom: 36px;
+        gap: 12px;
+    }
+
+    .our-specialized__title {
+        font-size: 34px;
+    }
+
+    .our-specialized__content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        align-items: center;
+    }
+
+    /* Display contents makes individual items direct flex children */
+    .our-specialized__column--left,
+    .our-specialized__column--right {
+        display: contents;
+    }
+
+    .our-specialized__column--center {
+        order: 1;
+        /* max-width: 480px; */
+        margin-bottom: 20px;
+        width: 350px;
+    }
+
+    .our-specialized__image {
+        border-top-left-radius: 195px;
+        border-top-right-radius: 195px;
+    }
+
+    .our-specialized__image-wrapper::before {
+        border-top-left-radius: 200px;
+        border-top-right-radius: 200px;
+    }
+
+    .our-specialized__image-wrapper {
+        border-top-left-radius: 200px;
+        border-top-right-radius: 200px;
+    }
+
+    /* Numerical sequential order: 01 -> 02 -> 03 -> 04 */
+    .our-specialized__item--01 {
+        order: 2;
+    }
+
+    .our-specialized__item--02 {
+        order: 3;
+    }
+
+    .our-specialized__item--03 {
+        order: 4;
+    }
+
+    .our-specialized__item--04 {
+        order: 5;
+    }
+
+    .our-specialized__item {
+        width: 100%;
+        max-width: 520px;
+        gap: 16px;
+    }
+
+    /* Hide horizontal pointer connector lines on 1-column mobile */
+    .our-specialized__item-line-wrapper {
+        display: none;
+    }
+
+    /* Standardize order: number on the left, info on the right */
+    .our-specialized__column--right .our-specialized__item-number {
+        order: 1;
+    }
+
+    .our-specialized__column--right .our-specialized__item-info {
+        order: 2;
+    }
+
+    .our-specialized__item-number {
+        font-size: 44px;
+        min-width: 50px;
+    }
+
+    .our-specialized__item-title {
+        font-size: 17px;
+    }
+
+    .our-specialized__item-description {
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    .our-specialized__elip {
+        /* width: 500px;
+        height: 500px; */
+    }
+
+    .our-specialized__circle {
+        width: 240px;
+        height: 240px;
+        opacity: 0.45;
+    }
+
+    .our-specialized__circle_1 {
+        top: -30px;
+        left: -180px;
+    }
+
+    .our-specialized__circle_2 {
+        bottom: -40px;
+        right: -180px;
+    }
+}
+
+/* 6. Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .our-specialized {
+        padding: 82px 16px 50px;
+    }
+
+    .our-specialized__header {
+        margin-bottom: 34px;
+        gap: 10px;
+    }
+
+    .our-specialized__eyebrow {
+        font-size: 11px;
+    }
+
+    .our-specialized__divider {
+        width: 120px;
+    }
+
+    .our-specialized__title {
+        font-size: 30px;
+    }
+
+    .our-specialized__content {
+        gap: 20px;
+    }
+
+    .our-specialized__column--center {
+        width: 300px;
+        margin-bottom: 16px;
+    }
+
+    .our-specialized__item {
+        gap: 16px;
+    }
+
+    .our-specialized__item-number {
+        min-width: 55px;
+    }
+
+    .our-specialized__item-title {
+        font-size: 16px;
+    }
+
+    .our-specialized__item-description {
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .our-specialized__elip {
+        width: 400px;
+        height: 400px;
+    }
+
+    .our-specialized__circle {
+        width: 200px;
+        height: 200px;
+        opacity: 0.35;
+    }
+
+    .our-specialized__circle_1 {
+        top: -30px;
+        left: -160px;
+    }
+
+    .our-specialized__circle_2 {
+        bottom: -30px;
+        right: -160px;
+    }
 }

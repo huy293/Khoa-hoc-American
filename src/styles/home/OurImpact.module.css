@@ -21,8 +21,6 @@
     margin: 0 auto;
 }
 
-
-
 /* 3. Header Row: Left & Right Columns */
 .our-impact__header {
     display: flex;
@@ -39,7 +37,6 @@
 .our-impact__eyebrow {
     display: inline-block;
     color: #996100;
-    border-bottom: 1.5px solid #996100;
     padding-bottom: 10px;
     padding-right: 80px;
     margin-bottom: 24px;
@@ -52,8 +49,6 @@
     border-bottom: 2px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
-
-
 }
 
 .our-impact__title {
@@ -95,17 +90,14 @@
     border-image-source: linear-gradient(270deg, rgba(253, 235, 213, 0) 0%, #AC5600 100%);
     border-image-slice: 1;
     padding: 0.8em 0;
+    text-decoration: none;
 }
-
-
 
 .our-impact__link-icon {
     width: 14px;
     height: 10px;
     stroke: currentColor;
-    transition: transform 0.2s ease;
 }
-
 
 /* 4. Impact Cards Grid */
 .our-impact__grid {
@@ -130,8 +122,6 @@
     backdrop-filter: blur(10px);
     overflow: hidden;
 }
-
-
 
 /* 5. Card Top-Left Decorative Arc & Star */
 .our-impact__card-decor {
@@ -228,45 +218,372 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 120%;
-    letter-spacing: 16%;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-primary, #191713);
-
 }
 
-/* 9. Responsive Adjustments */
-@media (max-width: 1200px) {
-    .our-impact__title {
-        font-size: 36px;
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .our-impact {
+        padding-top: 120px;
+        padding-bottom: 120px;
+    }
+
+    .our-impact__container {
+        max-width: 1400px;
+    }
+
+
+
+    .our-impact__grid {
+        gap: 36px;
+    }
+
+    .our-impact__card {
+        padding: 28px 36px;
     }
 
     .our-impact__number {
-        font-size: 54px;
+        font-size: 64px;
+    }
+
+    .our-impact__script {
+        font-size: 40px;
+    }
+}
+
+/* 2. Medium Desktops / Laptop (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .our-impact {
+        padding-top: 100px;
+        padding-bottom: 100px;
+
+    }
+
+    /* .our-impact__container {
+        max-width: 1200px;
+    } */
+
+    .our-impact__header {
+        margin-bottom: 48px;
+        gap: 32px;
+    }
+
+    .our-impact__title {
+        font-size: 40px;
+    }
+
+    .our-impact__description {
+        font-size: 15px;
+    }
+
+    .our-impact__grid {
+        gap: 24px;
+    }
+
+    .our-impact__card {
+        padding: 28px 24px;
+    }
+
+    .our-impact__number {
+        font-size: 56px;
+    }
+
+    .our-impact__script {
+        font-size: 36px;
+    }
+
+    .our-impact__label {
+        font-size: 13px;
+    }
+}
+
+/* 3. Small Desktops / Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .our-impact {
+        padding-top: 100px;
+        padding-bottom: 100px;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    .our-impact__header {
+        margin-bottom: 40px;
+        gap: 24px;
+    }
+
+
+
+    .our-impact__description {
+        font-size: 14px;
+    }
+
+    .our-impact__grid {
+        gap: 20px;
+    }
+
+    .our-impact__card {
+        padding: 24px 18px;
+    }
+
+    .our-impact__card-decor {
+        width: 72px;
+        height: 72px;
+    }
+
+    .our-impact__number {
+        font-size: 48px;
     }
 
     .our-impact__script {
         font-size: 32px;
     }
+
+    .our-impact__label {
+        font-size: 12px;
+    }
 }
 
-@media (max-width: 900px) {
+/* 4. Tablets Portrait (max-width: 996px) — Vẫn giữ 1 dòng ngang (3 columns) */
+@media (max-width: 996px) {
+    .our-impact {
+        padding-top: 72px;
+        padding-bottom: 72px;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
     .our-impact__header {
-        flex-direction: column;
-        align-items: flex-start;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
         gap: 24px;
+        margin-bottom: 36px;
+    }
+
+    .our-impact__header-left {
+        max-width: 55%;
+    }
+
+    .our-impact__eyebrow {
+        font-size: 11px;
+        margin-bottom: 14px;
+        padding-right: 40px;
+    }
+
+    .our-impact__title {
+        font-size: 36px;
     }
 
     .our-impact__header-right {
+        max-width: 42%;
+        align-items: flex-end;
+        text-align: right;
+        gap: 12px;
+    }
+
+    .our-impact__description {
+        font-size: 13.5px;
+        line-height: 155%;
+    }
+
+    .our-impact__link {
+        font-size: 11.5px;
+    }
+
+    .our-impact__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .our-impact__card {
+        padding: 22px 14px 20px;
+        border-radius: 12px;
+    }
+
+    .our-impact__card-decor {
+        width: 58px;
+        height: 58px;
+    }
+
+    .our-impact__card-decor svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .our-impact__number {
+        font-size: 40px;
+    }
+
+    .our-impact__script {
+        font-size: 28px;
+    }
+
+    .our-impact__label {
+        font-size: 10.5px;
+        letter-spacing: 0.1em;
+    }
+
+    .our-impact__divider-star {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+/* 5. Large Mobile / Small Tablets (max-width: 768px) — Rớt xuống 1 cột dọc */
+@media (max-width: 768px) {
+    .our-impact {
+        padding-top: 60px;
+        padding-bottom: 60px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .our-impact__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 36px;
+    }
+
+    .our-impact__header-left {
+        max-width: 100%;
+    }
+
+    .our-impact__eyebrow {
+        font-size: 11px;
+        margin-bottom: 14px;
+        padding-right: 40px;
+    }
+
+    .our-impact__title {
+        font-size: 34px;
+    }
+
+    .our-impact__title br {
+        display: none;
+    }
+
+    .our-impact__header-right {
+        max-width: 100%;
         align-items: flex-start;
         text-align: left;
+        gap: 8px;
+    }
+
+    .our-impact__description {
+        font-size: 14px;
     }
 
     .our-impact__grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        max-width: 480px;
+        margin: 0 auto;
+        gap: 16px;
     }
 
     .our-impact__card {
-        padding: 40px 24px 32px;
+        padding: 28px 20px;
+        border-radius: 14px;
+    }
+
+    .our-impact__card-decor {
+        width: 68px;
+        height: 68px;
+    }
+
+    .our-impact__card-decor svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .our-impact__number {
+        font-size: 48px;
+    }
+
+    .our-impact__script {
+        font-size: 32px;
+    }
+
+    .our-impact__label {
+        font-size: 12px;
+    }
+}
+
+/* 6. Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .our-impact {
+        padding-top: 50px;
+        padding-bottom: 28px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .our-impact__header {
+        margin-bottom: 40px;
+        gap: 12px;
+    }
+
+    .our-impact__eyebrow {
+        font-size: 11px;
+        margin-bottom: 12px;
+    }
+
+    .our-impact__title {
+        font-size: 30px;
+    }
+
+    .our-impact__description {
+        font-size: 13px;
+    }
+
+    .our-impact__link {
+        font-size: 11px;
+    }
+
+    .our-impact__grid {
+        max-width: 100%;
+        gap: 14px;
+    }
+
+    .our-impact__header-right {
+        gap: 6px;
+    }
+
+    .our-impact__card {
+        padding: 24px 16px;
+        border-radius: 12px;
+    }
+
+    .our-impact__card-decor {
+        width: 60px;
+        height: 60px;
+    }
+
+    .our-impact__card-decor svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .our-impact__number {
+        font-size: 40px;
+    }
+
+    .our-impact__script {
+        font-size: 28px;
+    }
+
+    .our-impact__label {
+        font-size: 11px;
+        letter-spacing: 0.12em;
     }
 }
