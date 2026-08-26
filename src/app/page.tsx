@@ -5,6 +5,9 @@ import OurPeople from "@/components/home/OurPeople";
 import OurSpecialized from "@/components/home/OurSpecialized";
 import TheCoutrueMethod from "@/components/home/TheCoutrueMethod";
 import Testimonial from "@/components/home/Testimonial";
+import Partner from "@/components/home/Partner";
+import ReadyToStartLearing from "@/components/home/ReadyToStartLearing";
+
 
 export default function HomePage() {
   return (
@@ -16,6 +19,8 @@ export default function HomePage() {
       <OurSpecialized />
       <TheCoutrueMethod />
       <Testimonial />
+      <Partner />
+      <ReadyToStartLearing />
     </main>
   );
 }

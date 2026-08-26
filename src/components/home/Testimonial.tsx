@@ -61,6 +61,8 @@ export default function Testimonial() {
                 <span></span>
             </div>
 
+            {/* <span className={styles['testimonial__elip']}></span> */}
+
             <div className={styles["testimonial__container"]}>
                 <div className={styles["testimonial__wrapper"]}>
                     {/* Left Card: Student Stories & Testimonial */}

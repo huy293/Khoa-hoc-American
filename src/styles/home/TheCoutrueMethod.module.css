@@ -4,7 +4,7 @@
 
 /* 1. Root Section */
 .the-coutrue-method {
-    padding: 120px 40px;
+    padding: 120px 40px 120px 120px;
     position: relative;
     overflow: hidden;
     background: linear-gradient(180deg, #FFEDD6 0%, #FDF8F2 100%);
@@ -18,6 +18,7 @@
     top: 50%;
     transform: translate(50%, -50%);
     z-index: 0;
+    pointer-events: none;
 }
 
 .the-coutrue-method__circle>span {
@@ -34,19 +35,19 @@
 .the-coutrue-method__circle-1 {
     inset: 0;
     padding: 2px;
-
 }
 
 .the-coutrue-method__circle-2 {
     inset: 38px;
     padding: 2px;
-
 }
 
 /* 2. Container & Layout */
 .the-coutrue-method__container {
     max-width: 1280px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .the-coutrue-method__content {
@@ -104,8 +105,6 @@
     box-shadow: 0 10px 30px rgba(222, 187, 116, 0.15), inset 0 0 16px rgba(230, 185, 130, 0.3);
     position: relative;
     z-index: 1;
-    box-shadow: 2px 2px 10px 1px #0000001A inset;
-
 }
 
 .the-coutrue-method__video-frame::before {
@@ -114,7 +113,7 @@
     inset: -28px;
     border-radius: 50%;
     background: linear-gradient(120deg, rgba(253, 233, 208, 0) 17.81%, #F9D8A8 51.15%);
-
+    pointer-events: none;
 }
 
 /* Inner Circle Container for the Video */
@@ -135,6 +134,7 @@
     inset: 0px;
     border-radius: 50%;
     box-shadow: 2px 2px 10px 1px #0000001A inset;
+    pointer-events: none;
 }
 
 /* Video Animation */
@@ -144,21 +144,20 @@
     object-fit: cover;
     mix-blend-mode: hard-light;
     display: block;
-    box-shadow: 2px 2px 10px 1px #0000001A inset;
 }
 
-/* 4. Right Column: Course Info (Scaffolding) */
+/* 4. Right Column: Course Info */
 .the-coutrue-method__info-wrapper {
     flex: 1;
 }
 
 .the-coutrue-method__title {
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-size: 12px;
     margin-bottom: 24px;
     font-weight: 500;
     line-height: 120%;
-    letter-spacing: 14%;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #996100;
 }
@@ -199,14 +198,14 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
-    font-family: 'Fraunces';
+    font-family: 'Fraunces', serif;
     font-weight: 400;
     font-size: 72px;
     line-height: 102%;
-    letter-spacing: -2%;
+    letter-spacing: -0.02em;
     text-align: center;
     width: 44px;
-
+    flex-shrink: 0;
 }
 
 .the-coutrue-method__item-text {
@@ -229,6 +228,7 @@
     margin: 0;
 }
 
+/* 5. Bottom Decorative Lines */
 .the-coutrue-method__lines {
     position: absolute;
     bottom: 0;
@@ -237,6 +237,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    pointer-events: none;
 }
 
 .the-coutrue-method__line {
@@ -254,4 +255,311 @@
 
 .the-coutrue-method__line-3 {
     height: 10px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops (max-width: 1600px) */
+@media (max-width: 1600px) {
+
+
+    .the-coutrue-method__content {
+        gap: 190px;
+    }
+
+    .the-coutrue-method__curved-text {
+        /* font-size: 49px; */
+    }
+
+    .the-coutrue-method__list-courses {
+        padding-right: 36px;
+    }
+
+    /* .the-coutrue-method__item-number {
+        font-size: 64px;
+        width: 40px;
+    }
+
+    .the-coutrue-method__item-title {
+        font-size: 19px;
+    } */
+}
+
+/* 2. Medium Desktops / Laptop (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .the-coutrue-method {
+        padding: 120px 40px 120px 100px;
+    }
+
+    .the-coutrue-method__content {
+        gap: 160px;
+    }
+
+    .the-coutrue-method__curved-svg {
+        --inset-out: 64px;
+    }
+
+    .the-coutrue-method__curved-text {
+        font-size: 48px;
+    }
+
+    .the-coutrue-method__video-frame::before {
+        inset: -26px;
+    }
+
+    .the-coutrue-method__list-courses {
+        padding-right: 0;
+    }
+
+
+    .the-coutrue-method__item-number {
+        font-size: 56px;
+        width: 36px;
+    }
+
+    .the-coutrue-method__item-title {
+        font-size: 18px;
+    }
+
+    .the-coutrue-method__item-desc {
+        font-size: 13.5px;
+    }
+
+    .the-coutrue-method__circle {
+        width: 380px;
+        height: 380px;
+    }
+}
+
+/* 3. Small Desktops / Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .the-coutrue-method {
+        padding: 110px 32px 110px 72px;
+    }
+
+    .the-coutrue-method__content {
+        gap: 120px;
+    }
+
+    .the-coutrue-method__curved-svg {
+        --inset-out: 56px;
+    }
+
+
+
+    .the-coutrue-method__video-frame::before {
+        inset: -24px;
+    }
+
+    .the-coutrue-method__course-item-wrapper {
+        padding: 16px 0;
+    }
+
+    .the-coutrue-method__list-courses__item {
+        gap: 18px;
+    }
+
+    .the-coutrue-method__item-number {
+        font-size: 48px;
+        width: 32px;
+    }
+
+    .the-coutrue-method__item-title {
+        font-size: 17px;
+    }
+
+    .the-coutrue-method__item-desc {
+        font-size: 13px;
+    }
+
+    .the-coutrue-method__circle {
+        width: 320px;
+        height: 320px;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) — 2 Columns Nằm Ngang */
+@media (max-width: 996px) {
+    .the-coutrue-method {
+        padding: 100px 24px 100px 60px;
+    }
+
+    .the-coutrue-method__content {
+        display: flex;
+        flex-direction: row;
+        gap: 80px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .the-coutrue-method__visual-wrapper {
+        /* flex: 0.85; */
+        width: 100%;
+        /* max-width: 320px; */
+        margin: 0;
+    }
+
+    .the-coutrue-method__curved-svg {
+        --inset-out: 50px;
+    }
+
+
+    .the-coutrue-method__video-frame::before {
+        inset: -20px;
+    }
+
+    .the-coutrue-method__info-wrapper {
+        /* flex: 1.1; */
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .the-coutrue-method__title {
+        text-align: left;
+        margin-bottom: 16px;
+        font-size: 11.5px;
+    }
+
+    .the-coutrue-method__list-courses {
+        padding-right: 0;
+    }
+
+    .the-coutrue-method__course-item-wrapper {
+        padding: 20px 0;
+    }
+
+    .the-coutrue-method__list-courses__item {
+        gap: 16px;
+    }
+
+    .the-coutrue-method__item-number {
+        font-size: 46px;
+        width: 30px;
+    }
+
+    .the-coutrue-method__item-title {
+        font-size: 16.5px;
+    }
+
+    .the-coutrue-method__item-desc {
+        font-size: 12.5px;
+    }
+
+    .the-coutrue-method__circle {
+        width: 280px;
+        height: 280px;
+        top: 20%;
+        right: -60px;
+    }
+}
+
+/* 5. Large Mobile / Small Tablets (max-width: 768px) — Thả xuống 1 cột dọc */
+@media (max-width: 768px) {
+    .the-coutrue-method {
+        padding: 60px 20px;
+    }
+
+    .the-coutrue-method__content {
+        flex-direction: column;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .the-coutrue-method__visual-wrapper {
+        margin: 0 auto;
+        padding: 50px;
+    }
+
+    .the-coutrue-method__curved-svg {
+        --inset-out: 60px;
+    }
+
+
+
+    .the-coutrue-method__video-frame::before {
+        inset: -24px;
+    }
+
+    .the-coutrue-method__info-wrapper {
+        width: 100%;
+    }
+
+    .the-coutrue-method__title {
+        margin-bottom: 14px;
+    }
+
+
+
+    .the-coutrue-method__list-courses__item {
+        gap: 18px;
+    }
+
+    .the-coutrue-method__item-number {
+        font-size: 48px;
+        width: 32px;
+    }
+
+    .the-coutrue-method__item-title {
+        font-size: 17px;
+    }
+
+    .the-coutrue-method__item-desc {
+        font-size: 13px;
+    }
+}
+
+/* 6. Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .the-coutrue-method {
+        padding: 48px 16px;
+    }
+
+    .the-coutrue-method__content {
+        gap: 40px;
+    }
+
+
+
+    .the-coutrue-method__curved-svg {
+        --inset-out: 50px;
+    }
+
+
+
+    .the-coutrue-method__video-frame::before {
+        inset: -24px;
+    }
+
+    .the-coutrue-method__title {
+        margin-bottom: 10px;
+    }
+
+    .the-coutrue-method__course-item-wrapper {
+        padding: 16px 0;
+    }
+
+    .the-coutrue-method__list-courses__item {
+        gap: 12px;
+    }
+
+    .the-coutrue-method__item-number {
+        font-size: 38px;
+        width: 26px;
+    }
+
+    .the-coutrue-method__item-title {
+        font-size: 15.5px;
+    }
+
+    .the-coutrue-method__item-desc {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    .the-coutrue-method__circle {
+        width: 200px;
+        height: 200px;
+    }
 }
