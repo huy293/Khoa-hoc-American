@@ -75,36 +75,6 @@ const InstagramIcon = () => (
     </svg>
 );
 
-/* ── Decorative circle ── */
-const EllipseDecor = () => (
-    <svg
-        className={styles.ellipse}
-        viewBox="0 0 640 597"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-    >
-        <ellipse cx="320" cy="298.5" rx="319" ry="297.5" stroke="#E8C37A" strokeWidth="1.5" opacity="0.45" />
-    </svg>
-);
-
-/* ── Decorative star ── */
-const StarDecor = () => (
-    <svg
-        className={styles.star}
-        viewBox="0 0 39 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-    >
-        <path
-            d="M19.5 0L21.8 15.2L35.5 7.5L24.8 18.5L40 19.5L24.8 21.5L35.5 32.5L21.8 24.8L19.5 40L17.2 24.8L3.5 32.5L14.2 21.5L0 19.5L14.2 18.5L3.5 7.5L17.2 15.2L19.5 0Z"
-            fill="#E8C37A"
-            opacity="0.7"
-        />
-    </svg>
-);
-
 export const Footer = () => {
     const [email, setEmail] = useState('');
 
@@ -118,7 +88,13 @@ export const Footer = () => {
 
     return (
         <footer className={styles['element-footer']}>
-            <EllipseDecor />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+                src="/images/footer-decor.png"
+                alt=""
+                className={styles['footer-decor']}
+                aria-hidden="true"
+            />
 
             {/* ── TOP: Newsletter ── */}
             <div className={styles['footer-top']}>
