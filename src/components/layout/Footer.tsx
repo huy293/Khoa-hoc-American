@@ -167,8 +167,6 @@ export const Footer = () => {
                     </div>
                 </div>
             </div>
-
-            <StarDecor />
         </footer>
     );
 };
