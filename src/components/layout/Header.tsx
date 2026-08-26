@@ -108,7 +108,7 @@ export const Header = () => {
                 <Link href="/" className={styles['header__logo-link']} aria-label="Couture Beauty Academy Home">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                        src="/images/logo-header.png"
+                        src="https://c.animaapp.com/GGDq1PoC/img/image-4@2x.png"
                         alt="Couture Beauty Academy"
                         className={styles['header__logo']}
                     />
@@ -189,7 +189,7 @@ export const Header = () => {
                     <div className={styles['header__mobile-top']}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                            src="/images/logo-header.png"
+                            src="https://c.animaapp.com/GGDq1PoC/img/image-4@2x.png"
                             alt="Couture Beauty Academy"
                             className={styles['header__mobile-logo']}
                         />
