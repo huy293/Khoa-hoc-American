@@ -186,6 +186,23 @@ export const Header = () => {
                 aria-hidden={!isMobileMenuOpen}
             >
                 <div className={styles['header__mobile-content']}>
+                    <div className={styles['header__mobile-top']}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src="https://c.animaapp.com/GGDq1PoC/img/image-4@2x.png"
+                            alt="Couture Beauty Academy"
+                            className={styles['header__mobile-logo']}
+                        />
+                        <button
+                            type="button"
+                            className={styles['header__action-btn']}
+                            aria-label="Close menu"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            <CloseIcon />
+                        </button>
+                    </div>
+
                     <ul className={styles['header__mobile-nav-list']}>
                         {NAV_ITEMS.map((item) => {
                             const isActive = activeNav === item.label;
