@@ -1,0 +1,613 @@
+/* ==========================================================================
+   Course Detail Hero Section Styles
+   ========================================================================== */
+
+.detail-hero {
+    width: 100%;
+    align-self: stretch;
+    background: linear-gradient(293deg, rgba(255, 255, 255, 0.30) -0.98%, rgba(253, 233, 209, 0.50) 98.29%);
+    display: flex;
+    justify-content: center;
+    padding: 100px 183px 100px 157px;
+    box-sizing: border-box;
+}
+
+.detail-hero__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 56px;
+    box-sizing: border-box;
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* 1. TOP SECTION (BREADCRUMB, TITLE, DESCRIPTION, BUTTONS)   */
+/* ══════════════════════════════════════════════════════════ */
+
+.detail-hero__top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 48px;
+}
+
+/* ── Left Column ── */
+.detail-hero__left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+/* Breadcrumb */
+.detail-hero__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.detail-hero__crumb {
+    color: #9B8D77;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 14.4px */
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.detail-hero__crumb:hover {
+    color: #996100;
+}
+
+.detail-hero__crumb-separator {
+    color: #996100;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+}
+
+.detail-hero__crumb-active {
+    color: #996100;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%;
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+}
+
+/* Title */
+.detail-hero__title {
+    color: #9D6900;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 52px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 110%;
+    text-transform: uppercase;
+    margin: 4px 0 8px;
+    letter-spacing: -0.02em;
+}
+
+/* Meta Row (Lessons + Duration) */
+.detail-hero__meta {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.detail-hero__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #563A00;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.meta-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+}
+
+/* ── Right Column ── */
+.detail-hero__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 24px;
+    max-width: 580px;
+    padding-top: 12px;
+}
+
+.detail-hero__description {
+    color: #4A453D;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 170%;
+    text-align: right;
+}
+
+.detail-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Buttons */
+.detail-hero__btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    line-height: 1.2em;
+    padding: 16px 28px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Button 1: Outlined (PREVIEW CLASS) */
+.detail-hero__btn--primary {
+    border: 1px solid #664400;
+    color: #664400;
+    background-color: transparent;
+}
+
+.detail-hero__btn--primary:hover {
+    background-color: #664400;
+    color: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(102, 68, 0, 0.18);
+    transform: translateY(-1px);
+}
+
+/* Button 2: Dark (REGISTRATION NOW!) */
+.detail-hero__btn--secondary {
+    background-color: #191713;
+    color: #FFF0DA;
+    border: 1px solid #191713;
+}
+
+.detail-hero__btn--secondary:hover {
+    background-color: #38332B;
+    border-color: #38332B;
+    box-shadow: 0 4px 16px rgba(25, 23, 19, 0.25);
+    transform: translateY(-1px);
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* 2. BOTTOM 5-COLUMN OVERVIEW BANNER CARD                    */
+/* ══════════════════════════════════════════════════════════ */
+
+.overview-banner {
+    width: 100%;
+    background: #FFFCF7;
+    border: 1px solid rgba(225, 186, 127, 0.45);
+    box-shadow: 0 4px 24px rgba(153, 97, 0, 0.05);
+    border-radius: 12px;
+    padding: 36px 32px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1.35fr;
+    align-items: center;
+    gap: 12px;
+}
+
+.overview-banner__col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.overview-banner__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.overview-banner__title {
+    color: #B56F00;
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.overview-banner__divider {
+    width: 85%;
+    height: 1px;
+    background: rgba(181, 111, 0, 0.22);
+    margin: 14px auto 16px;
+}
+
+.overview-banner__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.overview-banner__text-gray {
+    color: #505050;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.overview-banner__text-gold {
+    color: #FF9C00;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.overview-banner__rating-score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #FF9C00;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.overview-banner__text-trainee {
+    color: #7F7566;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* ── Trainer Column Body ── */
+.overview-banner__trainer-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.overview-banner__trainer-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border: 1.5px solid rgba(181, 111, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.overview-banner__trainer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.overview-banner__trainer-name {
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 24px */
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.overview-banner__trainer-stars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #FF9C00;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* ── Vertical Separator Lines ── */
+.overview-banner__separator {
+    width: 1px;
+    height: 80px;
+    background: rgba(181, 111, 0, 0.22);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints (Matching Home Page Structure)
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+    .detail-hero {
+        padding: 90px 80px 70px;
+    }
+
+    .detail-hero__container {
+        gap: 48px;
+    }
+
+    .overview-banner {
+        padding: 28px 24px;
+    }
+
+    .overview-banner__title {
+        font-size: 20px;
+    }
+
+    .overview-banner__text-gray,
+    .overview-banner__text-gold,
+    .overview-banner__rating-score,
+    .overview-banner__trainer-name {
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .detail-hero {
+        padding: 80px 48px 60px;
+    }
+
+    .detail-hero__container {
+        gap: 40px;
+    }
+
+    .detail-hero__title {
+        font-size: 44px;
+    }
+
+    .detail-hero__description {
+        font-size: 15px;
+    }
+
+    .overview-banner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 28px 20px;
+    }
+
+    .overview-banner__separator {
+        display: none;
+    }
+
+    .overview-banner__col {
+        background: rgba(255, 255, 255, 0.45);
+        border: 0.5px solid rgba(225, 186, 127, 0.35);
+        border-radius: 8px;
+        padding: 16px 14px;
+    }
+
+    .overview-banner__col:last-child {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 900px) {
+    .detail-hero {
+        padding: 70px 28px 50px;
+    }
+
+    .detail-hero__container {
+        gap: 32px;
+    }
+
+    .detail-hero__top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .detail-hero__title {
+        font-size: 38px;
+        margin: 2px 0 4px;
+    }
+
+    .detail-hero__right {
+        align-items: flex-start;
+        max-width: 100%;
+        gap: 16px;
+        padding-top: 0;
+    }
+
+    .detail-hero__description {
+        text-align: left;
+        font-size: 15px;
+        line-height: 160%;
+    }
+
+    .detail-hero__actions {
+        width: 100%;
+    }
+
+    .detail-hero__btn {
+        flex: 1;
+        padding: 14px 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    .detail-hero {
+        padding: 60px 16px 40px;
+    }
+
+    .detail-hero__container {
+        gap: 24px;
+    }
+
+    .detail-hero__crumb,
+    .detail-hero__crumb-separator,
+    .detail-hero__crumb-active {
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+    .detail-hero__title {
+        font-size: 32px;
+        line-height: 115%;
+    }
+
+    .detail-hero__meta {
+        gap: 18px;
+    }
+
+    .detail-hero__meta-item {
+        font-size: 15px;
+        gap: 6px;
+    }
+
+    .meta-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .detail-hero__description {
+        font-size: 14px;
+        line-height: 155%;
+    }
+
+    .detail-hero__actions {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .detail-hero__btn {
+        flex: 1;
+        padding: 12px 14px;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        min-height: 46px;
+    }
+
+    /* ── Compact 2x2 + 1 Grid for Mobile Overview Banner ── */
+    .overview-banner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 14px 12px;
+        border-radius: 10px;
+    }
+
+    .overview-banner__col {
+        background: rgba(255, 255, 255, 0.6);
+        border: 0.5px solid rgba(225, 186, 127, 0.35);
+        border-radius: 8px;
+        padding: 12px 8px;
+    }
+
+    .overview-banner__col:last-child {
+        grid-column: span 2;
+        padding: 12px 14px;
+    }
+
+    .overview-banner__header {
+        gap: 6px;
+    }
+
+    .overview-banner__header svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .overview-banner__title {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .overview-banner__divider {
+        width: 60%;
+        margin: 6px auto 8px;
+    }
+
+    .overview-banner__body {
+        gap: 3px;
+    }
+
+    .overview-banner__text-gray,
+    .overview-banner__text-gold {
+        font-size: 13px;
+        line-height: 130%;
+    }
+
+    .overview-banner__rating-score {
+        font-size: 14px;
+        gap: 4px;
+    }
+
+    .overview-banner__rating-score svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .overview-banner__text-trainee {
+        font-size: 12px;
+    }
+
+    .overview-banner__trainer-body {
+        gap: 12px;
+    }
+
+    .overview-banner__trainer-img {
+        width: 46px;
+        height: 46px;
+    }
+
+    .overview-banner__trainer-name {
+        font-size: 15px;
+    }
+
+    .overview-banner__trainer-stars {
+        font-size: 14px;
+    }
+
+    .overview-banner__trainer-stars svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 420px) {
+    .detail-hero__title {
+        font-size: 28px;
+    }
+
+    .detail-hero__actions {
+        flex-direction: column;
+    }
+
+    .detail-hero__btn {
+        width: 100%;
+    }
+}

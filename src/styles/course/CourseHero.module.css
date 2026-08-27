@@ -1,0 +1,354 @@
+/* ==========================================================================
+   Course Hero Section Styles
+   ========================================================================== */
+
+.course-hero {
+    position: relative;
+    width: 100%;
+    min-height: 860px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background-color: #FFF7ED;
+}
+
+/* ── Background Image ── */
+.course-hero__bg-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.course-hero__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+    display: block;
+}
+
+/* ── Left 50% Linear Gradient Overlay ── */
+.course-hero__gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 60%;
+    background: linear-gradient(90deg, #FFF7ED 0%, #FFF4EA 40.38%, rgba(255, 255, 255, 0.00) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* ── Container & Grid ── */
+.course-hero__container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    padding: 160px 80px 100px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* ── Left Content Column ── */
+.course-hero__content {
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Eyebrow ── */
+.course-hero__eyebrow {
+    color: #8B8478;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.5px;
+    margin: 0 0 16px 0;
+}
+
+/* ── Title ── */
+.course-hero__title {
+    color: #825200;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 74px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 80px; /* 108.108% */
+    margin: 0 0 28px 0;
+    letter-spacing: -0.02em;
+}
+
+/* ── Badges List ── */
+.course-hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+/* ── Individual Badge ── */
+.course-hero__badge {
+    display: flex;
+    padding: 12px 18px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 24px;
+    background: #FFFCF7;
+    color: #9F6500;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.5px;
+    border: 1px solid rgba(159, 101, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(159, 101, 0, 0.04);
+}
+
+.course-hero__badge-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+}
+
+/* ── Description Paragraph ── */
+.course-hero__description {
+    color: rgba(76, 48, 4, 0.64);
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 155.556% */
+    letter-spacing: -0.5px;
+    margin: 0 0 36px 0;
+    max-width: 540px;
+}
+
+/* ── Buttons / Action Group ── */
+.course-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.course-hero__btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    line-height: 1.2em;
+    padding: 18px 30px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+/* Button 1: Primary Outlined (ABOUT THE COURSE) */
+.course-hero__btn--primary {
+    border: 1px solid #664400;
+    color: #664400;
+    background-color: transparent;
+}
+
+.course-hero__btn--primary:hover {
+    background-color: #664400;
+    color: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(102, 68, 0, 0.18);
+    transform: translateY(-1px);
+}
+
+/* Button 2: Secondary Dark (REGISTER FOR THE COURSE) */
+.course-hero__btn--secondary {
+    background-color: #191713;
+    color: #FFFFFF;
+    border: 1px solid #191713;
+}
+
+.course-hero__btn--secondary:hover {
+    background-color: #38332B;
+    border-color: #38332B;
+    box-shadow: 0 4px 16px rgba(25, 23, 19, 0.25);
+    transform: translateY(-1px);
+}
+
+.course-hero__btn-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.course-hero__btn--secondary:hover .course-hero__btn-icon {
+    transform: translateX(4px);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints (Matching Home Page Structure)
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+    .course-hero {
+        min-height: 800px;
+    }
+
+    .course-hero__container {
+        padding: 150px 40px 90px;
+    }
+
+    .course-hero__title {
+        font-size: 64px;
+        line-height: 72px;
+    }
+
+    .course-hero__gradient-overlay {
+        width: 65%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .course-hero {
+        min-height: 750px;
+    }
+
+    .course-hero__container {
+        padding: 140px 32px 80px;
+    }
+
+    .course-hero__title {
+        font-size: 56px;
+        line-height: 64px;
+        margin-bottom: 24px;
+    }
+
+    .course-hero__gradient-overlay {
+        width: 70%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .course-hero {
+        min-height: 700px;
+    }
+
+    .course-hero__container {
+        padding: 130px 28px 70px;
+    }
+
+    .course-hero__gradient-overlay {
+        width: 80%;
+        background: linear-gradient(90deg, #FFF7ED 0%, #FFF4EA 65%, rgba(255, 244, 234, 0.4) 100%);
+    }
+
+    .course-hero__title {
+        font-size: 48px;
+        line-height: 54px;
+        margin-bottom: 20px;
+    }
+
+    .course-hero__description {
+        font-size: 16px;
+        line-height: 26px;
+        margin-bottom: 28px;
+    }
+}
+
+@media (max-width: 900px) {
+    .course-hero {
+        min-height: 660px;
+    }
+
+    .course-hero__bg-img {
+        object-position: 70% center;
+    }
+
+    .course-hero__gradient-overlay {
+        width: 100%;
+        background: linear-gradient(180deg, rgba(255, 247, 237, 0.97) 0%, rgba(255, 244, 234, 0.92) 65%, rgba(255, 244, 234, 0.5) 100%);
+    }
+
+    .course-hero__content {
+        max-width: 100%;
+    }
+
+    .course-hero__title {
+        font-size: 42px;
+        line-height: 48px;
+    }
+}
+
+@media (max-width: 768px) {
+    .course-hero {
+        min-height: 620px;
+    }
+
+    .course-hero__container {
+        padding: 120px 20px 60px;
+    }
+
+    .course-hero__title {
+        font-size: 38px;
+        line-height: 44px;
+        margin-bottom: 18px;
+    }
+
+    .course-hero__badges {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .course-hero__badge {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .course-hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .course-hero__btn {
+        width: 100%;
+        padding: 16px 24px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-hero {
+        min-height: 580px;
+    }
+
+    .course-hero__container {
+        padding: 100px 16px 48px;
+    }
+
+    .course-hero__title {
+        font-size: 30px;
+        line-height: 36px;
+    }
+
+    .course-hero__eyebrow {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .course-hero__description {
+        font-size: 15px;
+        line-height: 24px;
+        margin-bottom: 24px;
+    }
+}

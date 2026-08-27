@@ -1,0 +1,238 @@
+/* ==========================================================================
+   Benefits of Course Section Styles
+   ========================================================================== */
+
+.benefits-section {
+    width: 100%;
+    align-self: stretch;
+    background: linear-gradient(113deg, rgba(255, 255, 255, 0.30) 1.71%, rgba(253, 233, 209, 0.50) 100.98%);
+    padding: 200px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 74px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* 1. HEADER (EYEBROW + LINE + TITLE)                         */
+/* ══════════════════════════════════════════════════════════ */
+
+.benefits-section__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 24px;
+}
+
+.benefits-section__eyebrow-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.benefits-section__eyebrow {
+    color: #996100;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 14.4px */
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+}
+
+.benefits-section__eyebrow-line {
+    width: 140px;
+    height: 2px;
+    background: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0.00) 100%);
+}
+
+.benefits-section__title {
+    color: #191713;
+    text-align: center;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 56px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 110%; /* 61.6px */
+    letter-spacing: -0.84px;
+    margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* 2. CONTENT ROW (3 BENEFITS ITEMS)                          */
+/* ══════════════════════════════════════════════════════════ */
+
+.benefits-section__content {
+    display: flex;
+    padding: 0 182px 0 160px;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 116px;
+    align-self: stretch;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* ── Individual Benefit Card ── */
+.benefit-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 32px;
+    flex: 1;
+    max-width: 440px;
+}
+
+.benefit-card__icon {
+    width: 124px;
+    height: 124px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.benefit-card:hover .benefit-card__icon {
+    transform: translateY(-4px) scale(1.04);
+}
+
+.benefit-card__text-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.benefit-card__title {
+    color: #8A7043;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 32px;
+    margin: 0;
+}
+
+.benefit-card__description {
+    color: #000000;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints (Matching Home Page Structure)
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+    .benefits-section {
+        padding: 150px 0;
+        gap: 60px;
+    }
+
+    .benefits-section__content {
+        padding: 0 80px;
+        gap: 64px;
+    }
+
+    .benefits-section__title {
+        font-size: 48px;
+    }
+
+    .benefit-card__title {
+        font-size: 22px;
+        line-height: 28px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .benefits-section {
+        padding: 120px 0;
+        gap: 50px;
+    }
+
+    .benefits-section__content {
+        padding: 0 48px;
+        gap: 40px;
+    }
+
+    .benefits-section__title {
+        font-size: 42px;
+    }
+
+    .benefit-card__icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .benefit-card__title {
+        font-size: 20px;
+        line-height: 26px;
+    }
+}
+
+@media (max-width: 900px) {
+    .benefits-section {
+        padding: 90px 0;
+        gap: 48px;
+    }
+
+    .benefits-section__content {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 32px;
+        gap: 48px;
+    }
+
+    .benefit-card {
+        max-width: 540px;
+        gap: 20px;
+    }
+
+    .benefits-section__title {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 640px) {
+    .benefits-section {
+        padding: 70px 0;
+        gap: 40px;
+    }
+
+    .benefits-section__content {
+        padding: 0 16px;
+        gap: 40px;
+    }
+
+    .benefits-section__title {
+        font-size: 30px;
+    }
+
+    .benefit-card__icon {
+        width: 86px;
+        height: 86px;
+    }
+
+    .benefit-card__title {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .benefit-card__description {
+        font-size: 14px;
+        line-height: 22px;
+    }
+}

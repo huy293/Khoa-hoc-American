@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/layout/Header.module.css';
 
 /* ── SVG Icons ── */
@@ -56,12 +57,11 @@ const CloseIcon = () => (
 interface NavItem {
     label: string;
     href: string;
-    active?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-    { label: 'HOME', href: '/', active: true },
-    { label: 'COURSES', href: '#courses' },
+    { label: 'HOME', href: '/' },
+    { label: 'COURSES', href: '/courses' },
     { label: 'SHOP', href: '#shop' },
     { label: 'ABOUT', href: '#about' },
     { label: 'RESOURCES', href: '#resources' },
@@ -69,9 +69,9 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const Header = () => {
+    const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [activeNav, setActiveNav] = useState('HOME');
 
     useEffect(() => {
         const handleScroll = () => {
@@ -118,7 +118,9 @@ export const Header = () => {
                 <nav className={styles['header__nav']} aria-label="Main Navigation">
                     <ul className={styles['header__nav-list']}>
                         {NAV_ITEMS.map((item) => {
-                            const isActive = activeNav === item.label;
+                            const isActive =
+                                (item.href === '/' && pathname === '/') ||
+                                (item.href === '/courses' && pathname?.startsWith('/course'));
                             return (
                                 <li key={item.label} className={styles['header__nav-item']}>
                                     <Link
@@ -126,7 +128,6 @@ export const Header = () => {
                                         className={`${styles['header__nav-link']} ${
                                             isActive ? styles['header__nav-link--active'] : ''
                                         }`}
-                                        onClick={() => setActiveNav(item.label)}
                                     >
                                         {item.label}
                                     </Link>
@@ -205,7 +206,9 @@ export const Header = () => {
 
                     <ul className={styles['header__mobile-nav-list']}>
                         {NAV_ITEMS.map((item) => {
-                            const isActive = activeNav === item.label;
+                            const isActive =
+                                (item.href === '/' && pathname === '/') ||
+                                (item.href === '/courses' && pathname?.startsWith('/course'));
                             return (
                                 <li key={item.label} className={styles['header__mobile-nav-item']}>
                                     <Link
@@ -214,7 +217,6 @@ export const Header = () => {
                                             isActive ? styles['header__mobile-nav-link--active'] : ''
                                         }`}
                                         onClick={() => {
-                                            setActiveNav(item.label);
                                             setIsMobileMenuOpen(false);
                                         }}
                                     >
