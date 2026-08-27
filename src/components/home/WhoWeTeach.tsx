@@ -1,4 +1,5 @@
 import styles from "@/styles/home/WhoWeTeach.module.css";
+import ButtonStyle1 from "@/components/common/ButtonStyle1";
 
 export default function WhoWeTeach() {
     return (
@@ -93,23 +94,7 @@ export default function WhoWeTeach() {
                             </div>
 
                             <div className={styles["who-we-teach__cta"]}>
-                                <a href="#explore" className={styles["who-we-teach__link"]}>
-                                    <span>Explore more</span>
-                                    <svg
-                                        width="1.5em"
-                                        viewBox="0 0 18 12"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M1 6H16.5M16.5 6L11.5 1M16.5 6L11.5 1M16.5 6L11.5 11"
-                                            stroke="currentColor"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </a>
+                                <ButtonStyle1 href="#explore" />
                             </div>
                         </div>
                     </div>

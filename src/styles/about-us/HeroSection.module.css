@@ -1,0 +1,620 @@
+/* ==========================================================================
+   AboutUs HeroSection — BEM Selectors & Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. BLOCK: Root Section */
+.about-hero {
+    background-color: rgba(255, 245, 235, 0);
+    position: relative;
+    overflow: hidden;
+    padding-top: 180px;
+    padding-bottom: 100px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+/* 2. ELEMENT: Content Wrapper */
+.about-hero__wrapper {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* 3. ELEMENT: Grid / Flex Container */
+.about-hero__container {
+    display: flex;
+    gap: 72px;
+}
+
+/* 4. ELEMENT: Left Column (Content & Info) */
+.about-hero__content {
+    flex: 718 1;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 5. ELEMENT: Eyebrow / Subtitle */
+.about-hero__eyebrow {
+    color: var(--stroke, rgba(188, 115, 0, 0.80));
+
+    /* Label/MD */
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 1.68px;
+    text-transform: uppercase;
+}
+
+/* 6. ELEMENT: Divider Line */
+.about-hero__divider {
+    background-color: #BC7300CC;
+    width: 160px;
+    height: 2px;
+    display: inline-block;
+}
+
+/* 7. ELEMENT: Main Heading Title */
+.about-hero__title {
+    color: #825200;
+    font-family: "Frank Ruhl Libre";
+    font-size: 72px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 110%;
+    /* 108.108% */
+}
+
+/* 8. ELEMENT: Description Paragraph */
+.about-hero__description {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: -0.5px;
+    color: #4C3004A4;
+}
+
+/* 9. ELEMENT: Actions / CTA Group */
+.about-hero__actions {
+    display: flex;
+    gap: 16px;
+}
+
+/* 10. ELEMENT: Base Button */
+.about-hero__btn {
+    font-size: 12px;
+    border-radius: 0.33333em;
+    border-width: 1px;
+    padding: 1.33333em 2em;
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: 1.2em;
+    letter-spacing: 0.16em;
+}
+
+.about-hero__btn--primary {
+    border: 1px solid #664400;
+}
+
+.about-hero__btn--secondary {
+    background: #191713;
+    border: 1px solid #191713;
+    color: #fff;
+}
+
+/* 11. ELEMENT: Right Column (Visual Area) */
+.about-hero__visual {
+    flex: 716 1;
+    padding-left: 120px;
+    padding-right: 0px;
+    box-sizing: border-box;
+}
+
+/* 12. ELEMENT: Visual Inner Wrapper */
+.about-hero__visual-wrapper {
+    background-color: rgba(255, 250, 240, 0);
+    position: relative;
+    padding: 110px 0;
+    z-index: 0;
+
+}
+
+/* 13. ELEMENT: Decorative Circles */
+.about-hero__circle {
+    background-color: rgba(255, 162, 0, 0);
+    position: absolute;
+    pointer-events: none;
+}
+
+.about-hero__circle--1 {
+    background: linear-gradient(280.94deg, rgba(253, 233, 208, 0) 21.05%, #F9D8A8 95.14%);
+    inset: 0 50px 0 -100px;
+    z-index: -1;
+    border-radius: 50%;
+}
+
+.about-hero__circle--2 {
+    background: linear-gradient(144.4deg, rgba(253, 233, 208, 0) -7.33%, #F9D8A8 91.85%);
+    opacity: 50%;
+    width: 295px;
+    height: 295px;
+    right: -50px;
+    border-radius: 50%;
+    z-index: -1;
+    top: 50%;
+    transform: rotate(-52deg) translateY(-50%);
+    transform-origin: top;
+}
+
+.about-hero__circle--3 {
+    width: 360px;
+    height: 360px;
+    top: 0;
+    right: 0;
+    border-radius: 50%;
+    z-index: -1;
+    background: linear-gradient(299.5deg, #FFA200 22.5%, #FFE8C0 78.74%);
+    padding: 1px;
+    box-sizing: border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.about-hero__circle--4 {
+    width: 360px;
+    height: 360px;
+    bottom: 0;
+    left: -120px;
+    border-radius: 50%;
+    z-index: -2;
+    background: linear-gradient(90deg, #FFA200 0%, #FFE8C0 100%);
+    padding: 1.25px;
+    box-sizing: border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+/* 14. ELEMENT: Images & Wrappers */
+.about-hero__image-wrapper--primary {
+    background-color: rgba(255, 228, 225, 0);
+    padding-right: 100px;
+}
+
+.about-hero__image-wrapper--secondary {
+    background-color: rgba(255, 240, 245, 0);
+    position: absolute;
+    width: 240px;
+    bottom: 130px;
+    right: 0px;
+}
+
+.about-hero__image {
+    background-color: rgba(147, 112, 219, 0);
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.about-hero__image--primary {
+    background-color: rgba(72, 209, 204, 0);
+    border: 5px solid #FEF4EA;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+    border-radius: 12px;
+}
+
+.about-hero__image--secondary {
+    background-color: rgba(218, 112, 214, 0);
+    border: 5px solid #FEF4EA;
+    box-shadow: 4px 4px 10px 1px #4A453D33;
+    border-radius: 12px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .about-hero {
+        padding-top: 150px;
+        padding-bottom: 90px;
+    }
+
+    .about-hero__container {
+        gap: 48px;
+    }
+
+    .about-hero__title {
+        font-size: 60px;
+    }
+
+    .about-hero__description {
+        font-size: 17px;
+        line-height: 27px;
+    }
+
+    .about-hero__visual {
+        padding-left: 80px;
+    }
+
+    .about-hero__visual-wrapper {
+        padding: 90px 0;
+    }
+
+    .about-hero__image-wrapper--primary {
+        padding-right: 80px;
+    }
+
+    .about-hero__image-wrapper--secondary {
+        width: 220px;
+        bottom: 110px;
+    }
+
+    .about-hero__circle--3,
+    .about-hero__circle--4 {
+        width: 320px;
+        height: 320px;
+    }
+
+    .about-hero__circle--2 {
+        width: 260px;
+        height: 260px;
+    }
+}
+
+/* 2. Medium Desktops / Laptop (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .about-hero {
+        padding-top: 130px;
+        padding-bottom: 80px;
+        padding-left: 36px;
+        padding-right: 36px;
+    }
+
+    .about-hero__container {
+        gap: 36px;
+    }
+
+    .about-hero__title {
+        font-size: 50px;
+    }
+
+    .about-hero__description {
+        font-size: 16px;
+        line-height: 26px;
+    }
+
+    .about-hero__visual {
+        padding-left: 50px;
+    }
+
+    .about-hero__visual-wrapper {
+        padding: 80px 0;
+    }
+
+    .about-hero__image-wrapper--primary {
+        padding-right: 70px;
+    }
+
+    .about-hero__image-wrapper--secondary {
+        width: 190px;
+        bottom: 90px;
+    }
+
+    .about-hero__circle--3,
+    .about-hero__circle--4 {
+        width: 280px;
+        height: 280px;
+    }
+
+    .about-hero__circle--2 {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+/* 3. Small Desktops / Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .about-hero {
+        padding-top: 110px;
+        padding-bottom: 70px;
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    .about-hero__container {
+        gap: 28px;
+    }
+
+    .about-hero__title {
+        font-size: 42px;
+    }
+
+    .about-hero__description {
+        font-size: 15px;
+        line-height: 24px;
+    }
+
+    .about-hero__btn {
+        font-size: 11px;
+        padding: 1.1em 1.6em;
+    }
+
+    .about-hero__visual {
+        padding-left: 20px;
+    }
+
+    .about-hero__visual-wrapper {
+        padding: 60px 0;
+    }
+
+    .about-hero__image-wrapper--primary {
+        padding-right: 50px;
+    }
+
+    .about-hero__image-wrapper--secondary {
+        width: 160px;
+        bottom: 70px;
+    }
+
+    .about-hero__circle--1 {
+        inset: 0 30px 0 -60px;
+    }
+
+    .about-hero__circle--3,
+    .about-hero__circle--4 {
+        width: 240px;
+        height: 240px;
+    }
+
+    .about-hero__circle--2 {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) */
+@media (max-width: 996px) {
+    .about-hero {
+        padding-top: 90px;
+        padding-bottom: 60px;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .about-hero__container {
+        gap: 24px;
+        align-items: center;
+    }
+
+    .about-hero__content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .about-hero__title {
+        font-size: 36px;
+    }
+
+    .about-hero__description {
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    .about-hero__actions {
+        gap: 10px;
+    }
+
+    .about-hero__btn {
+        font-size: 10.5px;
+        padding: 1em 1.3em;
+        letter-spacing: 0.12em;
+    }
+
+    .about-hero__visual {
+        flex: 1;
+        min-width: 0;
+        padding-left: 0;
+    }
+
+    .about-hero__visual-wrapper {
+        padding: 50px 0;
+    }
+
+    .about-hero__image-wrapper--primary {
+        padding-right: 50px;
+    }
+
+    .about-hero__image-wrapper--secondary {
+        width: 150px;
+        bottom: 60px;
+        right: 0;
+    }
+
+    .about-hero__circle--3,
+    .about-hero__circle--4 {
+        width: 220px;
+        height: 220px;
+    }
+
+    .about-hero__circle--2 {
+        width: 170px;
+        height: 170px;
+    }
+}
+
+/* 5. Large Mobile / Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .about-hero {
+        padding-top: 80px;
+        padding-bottom: 50px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .about-hero__container {
+        flex-direction: column;
+        gap: 40px;
+        text-align: center;
+    }
+
+    .about-hero__content {
+        align-items: center;
+        max-width: 480px;
+        margin: 0 auto;
+        gap: 14px;
+    }
+
+    .about-hero__divider {
+        margin: 0 auto;
+    }
+
+    .about-hero__title {
+        font-size: 40px;
+    }
+
+    .about-hero__description {
+        font-size: 14px;
+        line-height: 22px;
+        /* max-width: 480px; */
+    }
+
+    .about-hero__actions {
+        width: 100%;
+        /* max-width: 340px; */
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .about-hero__btn {
+        width: 100%;
+        font-size: 11px;
+        padding: 12px 18px;
+        text-align: center;
+    }
+
+    .about-hero__visual {
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        padding-left: 0;
+    }
+
+    .about-hero__visual-wrapper {
+        padding: 40px 10px;
+    }
+
+    .about-hero__image-wrapper--primary {
+        padding-right: 60px;
+    }
+
+    .about-hero__image-wrapper--secondary {
+        width: 150px;
+        bottom: 50px;
+        right: 0;
+    }
+
+    .about-hero__circle--1 {
+        inset: 0 20px 0 -40px;
+    }
+
+    .about-hero__circle--3,
+    .about-hero__circle--4 {
+        width: 220px;
+        height: 220px;
+    }
+
+    .about-hero__circle--2 {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* 6. Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .about-hero {
+        padding-top: 100px;
+        padding-bottom: 40px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .about-hero__container {
+        gap: 32px;
+    }
+
+    .about-hero__content {
+        gap: 12px;
+    }
+
+    .about-hero__eyebrow {
+        font-size: 11px;
+        letter-spacing: 1.2px;
+    }
+
+    .about-hero__divider {
+        width: 120px;
+    }
+
+    .about-hero__title {
+        font-size: 32px;
+    }
+
+    .about-hero__description {
+        font-size: 13px;
+        line-height: 20px;
+    }
+
+    .about-hero__actions {
+        /* flex-direction: column; */
+        width: 100%;
+        gap: 8px;
+        max-width: 100%;
+    }
+
+    .about-hero__btn {
+        font-size: 10px;
+        padding: 14px 0px;
+        text-align: center;
+    }
+
+
+
+    .about-hero__visual-wrapper {
+        padding: 20px 0;
+    }
+
+    .about-hero__image-wrapper--primary {
+        padding-right: 40px;
+    }
+
+    .about-hero__image-wrapper--secondary {
+        width: 120px;
+        bottom: 35px;
+        right: -5px;
+    }
+
+    .about-hero__image--secondary {
+        border-width: 3px;
+        border-color: #FEF4EA;
+    }
+
+    .about-hero__image--primary {
+        border-width: 3px;
+    }
+
+    .about-hero__circle--3,
+    .about-hero__circle--4 {
+        width: 170px;
+        height: 170px;
+    }
+
+    .about-hero__circle--2 {
+        width: 130px;
+        height: 130px;
+    }
+}
