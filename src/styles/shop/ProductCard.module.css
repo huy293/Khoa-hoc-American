@@ -1,0 +1,187 @@
+/* ==========================================================================
+   Product Card Component — BEM Selectors
+   ========================================================================== */
+
+/* 1. ELEMENT: Product Card */
+.product-card {
+    background-color: rgba(245, 222, 179, 0);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* 2. ELEMENT: Product Image Box */
+.product-card__image-box {
+    display: flex;
+    padding: 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border-radius: 4px;
+    border: 1px solid #DBDBDB;
+}
+
+/* 3. ELEMENT: Product Image */
+.product-card__image {
+    background-color: rgba(240, 230, 140, 0);
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.product-card__info {
+    padding: 0 8px;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+}
+
+/* 4. ELEMENT: Product Title */
+.product-card__title {
+    color: #727272;
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.5em;
+    min-height: 4.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0 0 12px 0;
+}
+
+/* 5. ELEMENT: Card Footer (Price & Action) */
+.product-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+/* 6. ELEMENT: Pricing Container */
+.product-card__pricing {
+    background-color: rgba(221, 160, 221, 0);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 7. ELEMENT: Old Price (del) */
+.product-card__old-price {
+    color: #8F8F8F;
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 24px;
+    -webkit-text-decoration-line: line-through;
+    text-decoration-line: line-through;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* 8. ELEMENT: Current Price (ins) */
+.product-card__price {
+    color: #B56F00;
+    font-family: Inter, sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    text-decoration: none;
+}
+
+/* 9. ELEMENT: Add to Cart Container */
+.product-card__add-to-cart-btn {
+    display: flex;
+}
+
+/* 10. ELEMENT: Add to Cart Button */
+.product-card__cart-btn {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 50px;
+    background: #FFF1DB;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.product-card__cart-btn:hover {
+    background: #FFE3BC;
+}
+
+/* 11. ELEMENT: Cart Icon */
+.product-card__cart-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* 12. Link Wrappers (Navigate to Detail) */
+.product-card__image-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-card__title-link {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.product-card__title-link:hover {
+    color: #8A7043;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints for Product Card
+   ========================================================================== */
+
+@media (max-width: 576px) {
+    .product-card__image-box {
+        padding: 10px;
+    }
+
+    .product-card__info {
+        padding: 0 2px;
+        margin-top: 8px;
+    }
+
+    .product-card__title {
+        font-size: 13.5px;
+        line-height: 1.4em;
+        min-height: 4.2em;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0 0 10px 0;
+    }
+
+    .product-card__old-price {
+        font-size: 12px;
+        line-height: 16px;
+        margin-bottom: 2px;
+    }
+
+    .product-card__price {
+        font-size: 17px;
+        line-height: 20px;
+    }
+
+    .product-card__cart-btn {
+        padding: 7px;
+    }
+
+    .product-card__cart-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
