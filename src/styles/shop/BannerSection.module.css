@@ -1,0 +1,204 @@
+/* ==========================================================================
+   Shop BannerSection — BEM Selectors
+   ========================================================================== */
+
+/* 1. BLOCK: Root Section */
+.shop-banner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 96px;
+}
+
+/* 2. ELEMENT: Wrapper (Outer boundary / Max-width) */
+.shop-banner__wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 38%;
+    padding-left: max((calc(100vw - 1610px) / 2), 40px);
+    padding-right: 360px;
+    background: linear-gradient(270deg, rgba(255, 240, 220, 0) 0%, #FDE9D0 100%);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* 3. ELEMENT: Content Box */
+.shop-banner__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    color: #674400;
+    gap: 8px;
+}
+
+/* 4. ELEMENT: Title Heading */
+.shop-banner__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 600;
+    font-size: 52px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    text-transform: uppercase;
+    color: #674400;
+    margin: 0;
+}
+
+/* 5. ELEMENT: Description Paragraph */
+.shop-banner__description {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 150%;
+    letter-spacing: 0%;
+    color: #352300;
+    margin: 0;
+}
+
+/* 6. ELEMENT: Image Wrapper */
+.shop-banner__image-wrapper {
+    width: 100%;
+    display: flex;
+}
+
+/* 7. ELEMENT: Image */
+.shop-banner__image {
+    height: 400px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Màn hình lớn dưới 1600px */
+@media (max-width: 1600px) {
+    .shop-banner__wrapper {
+        padding-left: 40px;
+        padding-right: 220px;
+        right: 36%;
+    }
+
+    .shop-banner__title {
+        font-size: 46px;
+    }
+}
+
+/* 2. Màn hình laptop vừa dưới 1366px */
+@media (max-width: 1366px) {
+    .shop-banner__wrapper {
+        padding-left: 40px;
+        padding-right: 140px;
+        right: 30%;
+    }
+
+    .shop-banner__title {
+        font-size: 40px;
+    }
+
+    .shop-banner__image {
+        height: 360px;
+    }
+}
+
+/* 3. Màn hình laptop nhỏ dưới 1200px */
+@media (max-width: 1200px) {
+    .shop-banner__wrapper {
+        padding-left: 32px;
+        padding-right: 60px;
+        right: 20%;
+        background: linear-gradient(270deg, rgba(253, 233, 208, 0.2) 0%, #FDE9D0 100%);
+    }
+
+    .shop-banner__title {
+        font-size: 34px;
+    }
+
+    .shop-banner__description {
+        font-size: 15px;
+    }
+
+    .shop-banner__image {
+        height: 320px;
+    }
+}
+
+/* 4. Tablet ngang dưới 996px */
+@media (max-width: 996px) {
+    .shop-banner__wrapper {
+        right: 0;
+        padding-left: 32px;
+        padding-right: 32px;
+        background: linear-gradient(270deg, rgba(253, 233, 208, 0.45) 0%, rgba(253, 233, 208, 0.95) 100%);
+    }
+
+    .shop-banner__title {
+        font-size: 30px;
+    }
+
+    .shop-banner__description {
+        font-size: 14.5px;
+        max-width: 80%;
+    }
+
+    .shop-banner__image {
+        height: 300px;
+    }
+}
+
+/* 5. Tablet đứng / Mobile lớn dưới 768px */
+@media (max-width: 768px) {
+    .shop-banner {
+        margin-top: 70px;
+    }
+
+    .shop-banner__wrapper {
+        right: 0;
+        padding: 24px 20px;
+        background: rgba(253, 233, 208, 0.88);
+    }
+
+    .shop-banner__title {
+        font-size: 26px;
+    }
+
+    .shop-banner__description {
+        font-size: 14px;
+        max-width: 100%;
+    }
+
+    .shop-banner__image {
+        height: 260px;
+    }
+}
+
+/* 6. Mobile nhỏ dưới 576px */
+@media (max-width: 576px) {
+    .shop-banner {
+        margin-top: 62px;
+    }
+
+    .shop-banner__wrapper {
+        padding: 20px 16px;
+        background: rgba(253, 233, 208, 0.92);
+    }
+
+    .shop-banner__title {
+        font-size: 22px;
+        line-height: 125%;
+    }
+
+    .shop-banner__description {
+        font-size: 13px;
+        line-height: 140%;
+    }
+
+    .shop-banner__image {
+        height: 220px;
+    }
+}
