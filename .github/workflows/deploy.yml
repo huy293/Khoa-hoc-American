@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - huy
   workflow_dispatch:
 
 jobs:
@@ -23,21 +22,21 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script_stop: true
           script: |
-            echo "🚀 Bắt đầu tự động cập nhật và deploy..."
+            echo "🚀 Bắt đầu tự động cập nhật và deploy từ nhánh main..."
             DEPLOY_PATH="/www/wwwroot/course.homenest.edu.vn"
 
             if [ ! -d "$DEPLOY_PATH" ]; then
               echo "⚠️ Thư mục $DEPLOY_PATH chưa tồn tại, đang tạo và clone..."
               mkdir -p "$DEPLOY_PATH"
-              git clone https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
+              git clone -b main https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
             fi
 
             cd "$DEPLOY_PATH"
 
-            echo "📥 Kéo mã nguồn mới nhất từ GitHub..."
+            echo "📥 Kéo mã nguồn mới nhất từ nhánh main..."
             git fetch origin
-            git checkout ${{ github.ref_name }}
-            git pull origin ${{ github.ref_name }}
+            git checkout main
+            git pull origin main
 
             echo "🔨 Build và khởi chạy lại container..."
             docker compose up -d --build --remove-orphans
