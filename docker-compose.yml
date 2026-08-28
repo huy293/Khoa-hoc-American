@@ -1,8 +1,9 @@
 version: '3.8'
 
 services:
-  app:
+  web:
     container_name: khoa-hoc-american-app
+    image: ghcr.io/huy293/khoa-hoc-american:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,3 +26,19 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    container_name: watchtower-khoa-hoc-american
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=60
+      - DOCKER_API_VERSION=1.44
+    command: --interval 60

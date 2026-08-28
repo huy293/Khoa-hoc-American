@@ -1,4 +1,4 @@
-name: Deploy to aaPanel via SSH
+name: CI/CD - Build & Push Docker Image (GHCR)
 
 on:
   push:
@@ -6,42 +6,52 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  deploy:
-    name: 🚀 Deploy to aaPanel Server
+  build-and-push:
+    name: 🚀 Build & Push Docker Image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: 🔐 Execute SSH Deployment commands on aaPanel
-        uses: appleboy/ssh-action@v1.2.0
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          script_stop: true
-          script: |
-            echo "🚀 Bắt đầu tự động cập nhật và deploy từ nhánh main..."
-            DEPLOY_PATH="/www/wwwroot/course.homenest.edu.vn"
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-            if [ ! -d "$DEPLOY_PATH" ]; then
-              echo "⚠️ Thư mục $DEPLOY_PATH chưa tồn tại, đang tạo và clone..."
-              mkdir -p "$DEPLOY_PATH"
-              git clone -b main https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
-            fi
+      - name: 🏷️ Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
 
-            cd "$DEPLOY_PATH"
+      - name: ⚙️ Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-            echo "📥 Kéo mã nguồn mới nhất từ nhánh main..."
-            git fetch origin
-            git checkout main
-            git pull origin main
-
-            echo "🔨 Build và khởi chạy lại container..."
-            docker compose up -d --build --remove-orphans
-
-            echo "🧹 Dọn dẹp Docker images không dùng..."
-            docker image prune -f
-
-            echo "✅ Deploy thành công cho commit ${{ github.sha }}!"
+      - name: 🔨 Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_WORDPRESS_URL=${{ secrets.NEXT_PUBLIC_WORDPRESS_URL }}
+            NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}
+            REVALIDATE_TIME=3600
+            HN_API_SECRET=${{ secrets.HN_API_SECRET }}
