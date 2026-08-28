@@ -1,0 +1,48 @@
+name: Deploy to aaPanel via SSH
+
+on:
+  push:
+    branches:
+      - main
+      - huy
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to aaPanel Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔐 Execute SSH Deployment commands on aaPanel
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            echo "🚀 Bắt đầu tự động cập nhật và deploy..."
+            DEPLOY_PATH="/www/wwwroot/course.homenest.edu.vn"
+
+            if [ ! -d "$DEPLOY_PATH" ]; then
+              echo "⚠️ Thư mục $DEPLOY_PATH chưa tồn tại, đang tạo và clone..."
+              mkdir -p "$DEPLOY_PATH"
+              git clone https://github.com/${{ github.repository }}.git "$DEPLOY_PATH"
+            fi
+
+            cd "$DEPLOY_PATH"
+
+            echo "📥 Kéo mã nguồn mới nhất từ GitHub..."
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            echo "🔨 Build và khởi chạy lại container..."
+            docker compose up -d --build --remove-orphans
+
+            echo "🧹 Dọn dẹp Docker images không dùng..."
+            docker image prune -f
+
+            echo "✅ Deploy thành công cho commit ${{ github.sha }}!"
