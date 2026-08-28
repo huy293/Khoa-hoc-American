@@ -1,0 +1,32 @@
+# Dependencies & Build artifacts
+node_modules
+.next
+out
+build
+dist
+
+# Environment files (Bảo mật: Không copy bất kỳ file env nào vào build context)
+.env
+.env*
+!.env.example
+
+# Git & Logs
+.git
+.gitignore
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# IDE & OS files
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+
+# Documentation & temporary files
+README.md
+Dockerfile*
+docker-compose*
+.dockerignore
