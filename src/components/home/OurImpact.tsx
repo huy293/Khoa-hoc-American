@@ -1,4 +1,5 @@
 import styles from "@/styles/home/OurImpact.module.css";
+import HeaderText from "@/components/common/HeaderText";
 
 export default function OurImpact() {
     return (
@@ -7,12 +8,11 @@ export default function OurImpact() {
                 {/* Top Header Row */}
                 <div className={styles["our-impact__wrapper"]}>
                     <div className={styles["our-impact__header"]}>
-                        <div className={styles["our-impact__header-left"]}>
-                            <p className={styles["our-impact__eyebrow"]}>OUR IMPACT</p>
-                            <h2 className={styles["our-impact__title"]}>
-                                We train the people behind the <br />treatment room
-                            </h2>
-                        </div>
+                        <HeaderText
+                            className={styles["our-impact__header-left"]}
+                            eyebrow="OUR IMPACT"
+                            title={<>We train the people behind the <br />treatment room</>}
+                        />
 
                         <div className={styles["our-impact__header-right"]}>
                             <p className={styles["our-impact__description"]}>
