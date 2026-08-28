@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   HeaderText — Reusable BEM Component
+   ========================================================================== */
+
+
+
+.header-text__eyebrow {
+    color: #996100;
+    font-family: sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.header-text__divider {
+    width: 160px;
+    height: 2px;
+    background: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
+    display: inline-block;
+}
+
+.header-text__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: #1E1E1E;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* Laptop / Medium Desktop (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .header-text__title {
+        font-size: 40px;
+    }
+}
+
+/* Tablet (max-width: 992px) */
+@media (max-width: 992px) {
+    .header-text {
+        max-width: 100%;
+    }
+
+    .header-text__divider {
+        width: 140px;
+        margin-bottom: 18px;
+    }
+
+    .header-text__title {
+        font-size: 36px;
+    }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+    .header-text__eyebrow {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .header-text__divider {
+        width: 120px;
+        margin-bottom: 16px;
+    }
+
+    .header-text__title {
+        font-size: 32px;
+    }
+}
+
+/* Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .header-text__eyebrow {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+
+    .header-text__divider {
+        width: 100px;
+        margin-bottom: 12px;
+    }
+
+    .header-text__title {
+        font-size: 30px;
+    }
+}
