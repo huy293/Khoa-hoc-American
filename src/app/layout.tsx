@@ -5,21 +5,9 @@ import { Footer } from '@/components/layout/Footer';
 import { CtaVisit } from '@/components/sections/CtaVisit';
 
 export const metadata: Metadata = {
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
   title: 'Khoa-hoc-American',
   description: 'Website khóa học giáo dục chuẩn American',
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
-      index: false,
-      follow: false,
-      noimageindex: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'none',
-      'max-snippet': -1,
-    },
-  },
 };
 
 export default function RootLayout({

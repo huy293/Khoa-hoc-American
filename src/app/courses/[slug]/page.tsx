@@ -4,20 +4,60 @@ import CourseDetailHero from '@/components/course-detail/CourseDetailHero';
 import AboutCourse from '@/components/course-detail/AboutCourse';
 import TrainingCurriculum from '@/components/course-detail/TrainingCurriculum';
 import CourseBenefits from '@/components/course-detail/CourseBenefits';
+import { getWpCourses, getWpCourseBySlug } from '@/lib/wordpress-queries';
+import { generateWpMetadata } from '@/lib/wordpress-seo';
 
-export const metadata: Metadata = {
-    title: 'HYDRA FACIAL - Couture Beauty Academy',
-    description:
-        'Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.',
-};
+interface PageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
 
-export default function CourseDetailPage() {
-    return (
-        <main>
-            <CourseDetailHero />
-            <AboutCourse />
-            <TrainingCurriculum />
-            <CourseBenefits />
-        </main>
-    );
+/**
+ * ⚡ generateStaticParams: Tạo trước (Pre-render / SSG) các trang khóa học tĩnh lúc build
+ */
+export async function generateStaticParams() {
+  try {
+    const courses = await getWpCourses(50);
+    return courses.map((course) => ({
+      slug: course.slug,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * 🔍 generateMetadata: Tự động sinh thẻ Meta SEO động theo từng khóa học từ WordPress
+ */
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const course = await getWpCourseBySlug(slug);
+
+  if (!course) {
+    return {
+      title: 'Khóa học làm đẹp - Couture Beauty Academy',
+      description: 'Chương trình đào tạo làm đẹp và chăm sóc da chuyên nghiệp chuẩn quốc tế.',
+    };
+  }
+
+  return generateWpMetadata(course.seo, {
+    title: `${course.title} - Couture Beauty Academy`,
+    description: course.excerpt || 'Chương trình đào tạo thẩm mỹ và chăm sóc da chuyên nghiệp.',
+    image: course.featuredImage?.node?.sourceUrl,
+    url: `/courses/${slug}`,
+  });
+}
+
+export default async function CourseDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  
+  return (
+    <main>
+      <CourseDetailHero />
+      <AboutCourse />
+      <TrainingCurriculum />
+      <CourseBenefits />
+    </main>
+  );
 }
