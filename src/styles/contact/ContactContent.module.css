@@ -1,0 +1,651 @@
+/* ==========================================================================
+   CONTACT SECTION (.contact)
+   ========================================================================== */
+
+.contact {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 200px 40px 100px 40px;
+    overflow: hidden;
+}
+
+.contact__background {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.contact__wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.contact__container {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 80px;
+}
+
+/* --------------------------------------------------------------------------
+   Left Column: Contact Info & Schedule
+   -------------------------------------------------------------------------- */
+
+.contact__info {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+}
+
+.contact__title {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact__header-text {}
+
+.contact__header-text h2 {
+    font-size: 56px;
+}
+
+.contact__description {
+    font-weight: 400;
+    font-size: 16px;
+    leading-trim: NONE;
+    line-height: 170%;
+    letter-spacing: 0%;
+    color: #7E4F00;
+}
+
+.contact__schedule {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.contact__schedule-title {
+    font-size: 16px;
+    font-weight: 400;
+    color: #191713;
+    text-transform: uppercase;
+}
+
+.contact__schedule-divider {
+    border: none;
+    height: 1px;
+    background-color: #2D200033;
+}
+
+.contact__schedule-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-size: 16px;
+}
+
+.contact__schedule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 5px 0;
+}
+
+.contact__schedule-label {
+
+    font-weight: 400;
+    color: #191713;
+    white-space: nowrap;
+}
+
+.contact__schedule-value {
+    font-weight: 400;
+    color: #191713;
+    text-align: right;
+}
+
+.contact__socials {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.contact__social-link {
+    color: #3D352B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.contact__social-icon {
+    width: 32px;
+    height: 32px;
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Right Column: Contact Form (Glassmorphic Card)
+   -------------------------------------------------------------------------- */
+
+.contact__form-col {
+    width: 100%;
+}
+
+.contact__form-wrapper {
+    background: #FFFCF780;
+    border: 1px solid #CCB07E;
+    border-radius: 12px;
+    padding: 42px;
+    /* -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px); */
+    box-shadow: 12px 12px 10px 0px #19171333;
+}
+
+.contact__form-card {
+    border: 1px solid #E0D5B9;
+    border-radius: 12px;
+    padding: 48px;
+    background: rgba(255, 253, 249, 0.4);
+    backdrop-filter: blur(8px);
+}
+
+.contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.contact__form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.contact__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.contact__form-label {
+    color: #905E00;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    text-transform: uppercase;
+}
+
+.contact__form-input,
+.contact__form-select,
+.contact__form-textarea {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    background: #FBF7E61F;
+    border: 1px solid #E0D5B9;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #2D2319;
+    font-family: inherit;
+    outline: none;
+    min-height: 60px;
+    height: 60px;
+}
+
+.contact__form-input::placeholder,
+.contact__form-textarea::placeholder {
+    color: #AA946CCC;
+}
+
+/* Select Dropdown */
+.contact__form-select-wrapper {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+.contact__form-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.contact__form-select-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #8F5B00;
+}
+
+/* Date and Time 4-column Grid */
+.contact__form-datetime-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 7px;
+    width: 100%;
+}
+
+.contact__form-datetime-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+}
+
+.contact__form-sublabel {
+    font-size: 14px;
+    color: #7C6B4A;
+    font-weight: 400;
+}
+
+/* Time Input type="time" styling */
+.contact__form-input[type="time"] {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.contact__form-input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(40%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(85%) contrast(90%);
+    cursor: pointer;
+}
+
+/* Textarea */
+.contact__form-textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+/* Submit Button */
+.contact__form-submit {
+    width: 100%;
+    background-color: #171513;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 16%;
+    text-transform: uppercase;
+    padding: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 1.5em;
+    margin-top: 6px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops & Laptops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .contact {
+        padding: 160px 40px 90px 40px;
+    }
+
+    .contact__wrapper {
+        max-width: 1380px;
+    }
+
+    .contact__container {
+        gap: 60px;
+    }
+
+    .contact__header-text h2 {
+        font-size: 50px;
+    }
+
+    .contact__form-wrapper {
+        padding: 36px;
+    }
+
+    .contact__form-card {
+        padding: 40px;
+    }
+}
+
+/* 2. Standard Laptops / Small Screens (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .contact {
+        padding: 140px 32px 80px 32px;
+    }
+
+    .contact__container {
+        gap: 48px;
+        grid-template-columns: 1fr 1.3fr;
+    }
+
+    .contact__info {
+        gap: 48px;
+    }
+
+    .contact__header-text h2 {
+        font-size: 44px;
+    }
+
+    .contact__form-wrapper {
+        padding: 28px;
+    }
+
+    .contact__form-card {
+        padding: 36px 28px;
+    }
+
+    .contact__form {
+        gap: 26px;
+    }
+
+    .contact__form-input,
+    .contact__form-select,
+    .contact__form-textarea {
+        min-height: 54px;
+        height: 54px;
+    }
+
+    .contact__form-textarea {
+        min-height: 90px;
+        height: auto;
+    }
+}
+
+/* 3. Medium Laptops / Tablets Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .contact {
+        padding: 120px 24px 70px 24px;
+    }
+
+    .contact__container {
+        grid-template-columns: 1fr 1.25fr;
+        gap: 36px;
+    }
+
+    .contact__header-text h2 {
+        font-size: 40px;
+    }
+
+    .contact__description {
+        font-size: 15px;
+    }
+
+    .contact__schedule {
+        gap: 20px;
+    }
+
+    .contact__schedule-list {
+        gap: 20px;
+        font-size: 15px;
+    }
+
+    .contact__form-wrapper {
+        padding: 24px;
+    }
+
+    .contact__form-card {
+        padding: 32px 24px;
+    }
+
+    .contact__form {
+        gap: 22px;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) */
+@media (max-width: 996px) {
+    .contact {
+        padding: 120px 24px 70px 24px;
+    }
+
+    .contact__wrapper {
+        max-width: 780px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .contact__container {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        width: 100%;
+    }
+
+    .contact__info {
+        gap: 36px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .contact__header-text h2 {
+        font-size: 42px;
+    }
+
+    .contact__description {
+        max-width: 100%;
+    }
+
+    .contact__schedule {
+        max-width: 100%;
+        margin-bottom: 0;
+    }
+
+    .contact__form-col {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .contact__form-wrapper {
+        padding: 28px;
+    }
+
+    .contact__form-card {
+        padding: 36px 28px;
+    }
+}
+
+/* 5. Large Mobiles / Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .contact {
+        padding: 100px 20px 60px 20px;
+    }
+
+    .contact__wrapper {
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .contact__header-text h2 {
+        font-size: 34px;
+    }
+
+    .contact__info {
+        gap: 28px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .contact__form-col {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .contact__schedule-list {
+        gap: 16px;
+        font-size: 14px;
+    }
+
+    .contact__schedule-item {
+        gap: 12px;
+    }
+
+    .contact__social-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .contact__form-wrapper {
+        padding: 20px;
+    }
+
+    .contact__form-card {
+        padding: 28px 20px;
+    }
+
+    .contact__form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .contact__form-datetime-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .contact__form-input,
+    .contact__form-select,
+    .contact__form-textarea {
+        min-height: 50px;
+        height: 50px;
+        font-size: 13px;
+    }
+
+    .contact__form-textarea {
+        min-height: 84px;
+        height: auto;
+    }
+
+    .contact__form-submit {
+        padding: 14px;
+        font-size: 14px;
+    }
+}
+
+/* 6. Small Mobile Phones (max-width: 576px) */
+@media (max-width: 576px) {
+    .contact {
+        padding: 100px 16px 50px 16px;
+    }
+
+    .contact__header-text h2 {
+        font-size: 28px;
+    }
+
+    .contact__description {
+        font-size: 14px;
+        line-height: 160%;
+    }
+
+    .contact__schedule {
+        gap: 16px;
+    }
+
+    .contact__schedule-title {
+        font-size: 14px;
+    }
+
+    .contact__schedule-list {
+        gap: 10px;
+        font-size: 13px;
+    }
+
+    .contact__schedule-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 2px 0;
+    }
+
+    .contact__schedule-label {
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .contact__schedule-value {
+        font-size: 12px;
+        text-align: right;
+    }
+
+    .contact__socials {
+        gap: 12px;
+    }
+
+    .contact__social-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .contact__form-wrapper {
+        padding: 14px;
+        border-radius: 10px;
+        box-shadow: 6px 6px 8px 0px #19171326;
+    }
+
+    .contact__form-card {
+        padding: 24px 20px;
+        border-radius: 8px;
+    }
+
+    .contact__form {
+        gap: 20px;
+    }
+
+    .contact__form-datetime-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .contact__form-label {
+        font-size: 12px;
+    }
+
+    .contact__form-sublabel {
+        font-size: 12px;
+    }
+
+    .contact__form-input,
+    .contact__form-select,
+    .contact__form-textarea {
+        min-height: 45px;
+        height: 45px;
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .contact__form-textarea {
+        min-height: 72px;
+        height: auto;
+    }
+
+    .contact__form-submit {
+        padding: 14px;
+        font-size: 13px;
+    }
+}
