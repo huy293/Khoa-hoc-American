@@ -1,17 +1,17 @@
-# 🎓 Khoa-hoc-American — Frontend Project
+# 🎓 Khoa-hoc-American — Frontend Project (HomeNest Headless)
 
-Dự án website giáo dục / đào tạo **Khoa-hoc-American** được xây dựng trên nền tảng **Next.js (App Router)** và **TypeScript**, áp dụng kiến trúc module hóa UI kết hợp **CSS Modules** & **Design Tokens** thuần túy, mang lại hiệu năng cao, chuẩn SEO và khả năng mở rộng lâu dài.
+Dự án website đào tạo & làm đẹp chuyên nghiệp **Khoa-hoc-American** được xây dựng trên nền tảng **Next.js 15 (App Router)**, **React 19** và **TypeScript 5**, tuân thủ 100% kiến trúc chuẩn **WordPress Headless** của HomeNest (tham khảo từ `homenest.com.vn` và `homenest-software`).
 
 ---
 
 ## 📑 Mục lục
 1. [Tech Stack](#-tech-stack)
 2. [Cấu trúc thư mục (Project Structure)](#-cấu-trúc-thư-mục-project-structure)
-3. [Quy chuẩn đặt tên (Naming Conventions)](#-quy-chuẩn-đặt-tên-naming-conventions)
-4. [Quy tắc tổ chức & Viết CSS](#-quy-tắc-tổ-chức--viết-css)
-5. [Quy chuẩn Code Component & Kiến trúc Clean](#-quy-chuẩn-code-component--kiến-trúc-clean)
-6. [Quy trình làm việc với Git](#-quy-trình-làm-việc-với-git)
-7. [Cài đặt và Chạy dự án](#-cài-đặt-và-chạy-dự-án)
+3. [Kiến trúc WordPress Headless](#-kiến-trúc-wordpress-headless)
+4. [Biến môi trường (.env)](#-biến-môi-trường-env)
+5. [Quy chuẩn Code & SEO](#-quy-chuẩn-code--seo)
+6. [Docker & Triển khai Production](#-docker--triển-khai-production)
+7. [Cài đặt và Chạy cục bộ](#-cài-đặt-và-chạy-cục-bộ)
 
 ---
 
@@ -19,12 +19,13 @@ Dự án website giáo dục / đào tạo **Khoa-hoc-American** được xây d
 
 | Thành phần | Công nghệ | Ghi chú |
 |---|---|---|
-| **Framework** | Next.js 15+ / 16 (App Router) | Server Components by default, SSR/ISR tối ưu |
-| **Thư viện UI** | React 19 | React Server & Client Components |
-| **Ngôn ngữ** | TypeScript 5+ | Type-safety toàn bộ props, data models, API |
-| **Styling** | CSS Modules + Global Tokens | Tách biệt scope, không xung đột class |
-| **Slider / Carousel** | Swiper React | Dành cho banner, danh sách khóa học, feedback |
-| **Icons** | Lucide React | Bộ icon vector tối ưu bundle size |
+| **Framework** | Next.js 15+ (App Router) | Server Components, Standalone build, SSR/ISR/SSG |
+| **Thư viện UI** | React 19 | Server & Client Components |
+| **Ngôn ngữ** | TypeScript 5+ | Type-safe 100% data models, props, query APIs |
+| **Styling** | CSS Modules (`.module.css`) + CSS Variables | Scoped styling, tối ưu hiệu năng render |
+| **CMS Backend** | WordPress Headless | Kết nối qua WPGraphQL & WP REST API |
+| **Icons** | Lucide React | Vector icons tối ưu |
+| **Container** | Docker Multi-stage Build | Output standalone siêu nhẹ (~120MB), Non-root user |
 
 ---
 
@@ -32,140 +33,78 @@ Dự án website giáo dục / đào tạo **Khoa-hoc-American** được xây d
 
 ```text
 Khoa-hoc-American/
-├── public/                       # Nơi chứa ảnh, fonts, icons tĩnh khi có
+├── public/                       # Assets tĩnh (images, fonts, banners)
 │   ├── images/
 │   └── fonts/
 │
 ├── src/
-│   ├── app/                      # Next.js App Router (Mỗi folder con = 1 Route URL)
-│   │   ├── layout.tsx            # Root Layout khung cơ bản
-│   │   ├── page.tsx              # Trang chủ khởi tạo
-│   │   └── globals.css           # File CSS dùng chung (Reset & biến màu sau này)
+│   ├── app/                      # Next.js App Router
+│   │   ├── api/                  # API Routes (contact proxy, ISR revalidate, draft mode)
+│   │   ├── courses/              # Danh sách và chi tiết khóa học ([slug])
+│   │   ├── course/               # Route alias đồng bộ với courses
+│   │   ├── shop/                 # Danh sách và chi tiết sản phẩm ([slug])
+│   │   ├── contact/              # Trang liên hệ
+│   │   ├── resources/            # Trang tài nguyên & thư viện ảnh
+│   │   ├── about-us/             # Trang giới thiệu
+│   │   ├── layout.tsx            # Root Layout
+│   │   ├── page.tsx              # Trang chủ
+│   │   ├── sitemap.ts            # Dynamic XML Sitemap
+│   │   └── robots.ts             # Dynamic robots.txt
 │   │
-│   ├── components/               # Chứa các component UI (Tạo khi có thiết kế)
-│   │   ├── layout/               # Header, Footer, Menu...
-│   │   └── common/               # Các nút bấm, thẻ, popup dùng chung...
+│   ├── components/               # UI Components
+│   │   ├── common/               # Component dùng chung (WpContent, HeaderText...)
+│   │   ├── home/                 # Component trang chủ
+│   │   ├── course/               # Component danh sách khóa học
+│   │   ├── course-detail/        # Component chi tiết khóa học
+│   │   └── layout/               # Header, Footer
 │   │
-│   ├── styles/                   # Chứa các file .module.css tương ứng theo component
-│   │   ├── layout/
-│   │   └── common/
+│   ├── lib/                      # Tầng kết nối WordPress & SEO
+│   │   ├── wordpress.ts          # Core Fetcher (GraphQL, REST, Auth headers, Retry, URL replacing)
+│   │   ├── wordpress-queries.ts  # Pre-built queries (courses, posts, pages, menu, settings)
+│   │   ├── wordpress-seo.ts      # Chuyển đổi Yoast/RankMath SEO sang Next.js Metadata
+│   │   └── wordpress-format.ts   # Format tiền VND, ngày tháng, sanitize HTML Gutenberg
 │   │
-│   ├── lib/                      # Hàm xử lý logic, fetch data, SEO (viết sau)
-│   ├── types/                    # Khai báo TypeScript types / interfaces khi cần
-│   └── utils/                    # Các hàm tiện ích dùng chung
+│   ├── types/                    # TypeScript interfaces (WPCourse, WPPost, WPPage, WPSeo...)
+│   └── styles/                   # CSS Modules tương ứng
 │
-├── .gitignore                    # Bỏ qua node_modules, .next, .env
-├── next.config.ts                # Cấu hình Next.js cơ bản
-├── package.json                  # Dependencies Next.js + React + TypeScript
-├── tsconfig.json                 # Path alias @/* trỏ về src/*
-└── README.md                     # Tài liệu quy chuẩn dự án
+├── AGENTS.md                     # 🏛️ Hướng dẫn quy chuẩn kiến trúc cho AI Agents
+├── Dockerfile                    # Multi-stage build standalone siêu nhẹ
+├── docker-compose.yml            # Khởi chạy Docker container
+├── next.config.ts                # Tối ưu hóa Next.js (cpus: 1, standalone, cache headers)
+└── package.json                  # Scripts & Dependencies
 ```
 
 ---
 
-## 🏷 Quy chuẩn đặt tên (Naming Conventions)
+## 🌐 Kiến trúc WordPress Headless
 
-### 1. File Component & thư mục
-* **Component UI (`.tsx`)**: Đặt theo quy tắc **PascalCase** (VD: `CourseCard.tsx`, `HeroSection.tsx`, `Header.tsx`).
-* **Next.js Special Files**: Giữ nguyên tên chuẩn chữ thường theo Next.js App Router (VD: `page.tsx`, `layout.tsx`, `not-found.tsx`, `error.tsx`, `loading.tsx`, `route.ts`).
-* **Thư mục Route URL**: Đặt theo dạng **kebab-case** không dấu (VD: `khoa-hoc/`, `giang-vien/`, `tin-tuc/`, `lien-he/`).
-
-### 2. File Style CSS
-* Mỗi component có file CSS riêng đặt tên theo dạng: **`[TênComponent].module.css`** (VD: `Header.module.css`, `CourseCard.module.css`).
-* Được lưu trữ tương ứng trong thư mục `src/styles/[feature]/`.
-
-### 3. File Utility, Hook, Types
-* **File tiện ích / API (`.ts`)**: Đặt theo quy tắc **camelCase** (VD: `formatters.ts`, `api.ts`, `seo.ts`).
-* **Custom Hooks (`.ts`)**: Bắt đầu bằng tiền tố `use` theo **camelCase** (VD: `useScroll.ts`, `useWindowSize.ts`).
-* **TypeScript Types / Interfaces (`.ts`)**: Tên file theo **camelCase**, tên interface/type theo **PascalCase** (VD: `course.ts` chứa `export interface ICourse { ... }`).
+1. **Bảo mật 4 lớp Header**:
+   - `Authorization: Bearer <SECRET>`
+   - `x-api-key: <SECRET>`
+   - `x-graphql-secret: <SECRET>`
+   - `x-secret-key: <SECRET>`
+2. **Chống sập build**: Trong `phase-production-build`, nếu WordPress phản hồi chậm hoặc lỗi, hệ thống tự động fallback an toàn mà không làm dừng quá trình build.
+3. **Giãn cách request**: 150ms delay giữa các lượt fetch lúc build để bảo vệ CPU/MySQL của máy chủ WordPress.
+4. **Thay thế URL động**: Tự động chuyển đổi toàn bộ đường dẫn WordPress Backend sang Frontend URL qua `replaceWordpressURLs()`.
 
 ---
 
-## 🎨 Quy tắc tổ chức & Viết CSS
+## 🔑 Biến môi trường (.env)
 
-### 1. Hệ thống Design Tokens (`src/app/globals.css`)
-Mọi màu sắc, khoảng cách, font chữ và bo góc tuân thủ biến CSS toàn cục:
-```css
-:root {
-  /* Colors */
-  --color-primary: #0F3A5D;
-  --color-secondary: #D32F2F;
-  --color-accent: #F7A823;
-  --color-dark: #1E293B;
-  --color-body: #475569;
-  --color-border: #E2E8F0;
-  --color-bg-light: #F8FAFC;
-  --color-white: #FFFFFF;
+Tạo file `.env.local` tại thư mục gốc:
 
-  /* Typography */
-  --font-sans: system-ui, -apple-system, sans-serif;
-  --container-width: 1240px;
-}
-```
+```env
+# Domain WordPress Backend (Bắt buộc có NEXT_PUBLIC_)
+NEXT_PUBLIC_WORDPRESS_URL=https://course-amc.homenest.edu.vn
 
-### 2. Sử dụng CSS Modules
-* **Không viết CSS inline bừa bãi** trong JSX (`style={{ ... }}`).
-* Gọi class qua object `styles` để đảm bảo encapsulation:
-```tsx
-import styles from '@/styles/common/Button.module.css';
+# Domain Frontend Next.js (Bắt buộc có NEXT_PUBLIC_)
+NEXT_PUBLIC_SITE_URL=https://course.homenest.edu.vn
 
-export default function Button({ label }: { label: string }) {
-  return <button className={styles.btn}>{label}</button>;
-}
-```
+# Thời gian revalidate cache mặc định (giây)
+REVALIDATE_TIME=3600
 
----
-
-## 🧱 Quy chuẩn Code Component & Kiến trúc Clean
-
-### 1. Nguyên tắc DRY & Tái sử dụng Component
-* **Kiểm tra trước khi tạo mới**: Luôn kiểm tra xem component/layout tương tự đã tồn tại trong `src/components/common/` chưa trước khi viết mới.
-* **Đưa component dùng chung ra ngoài**: Nếu một UI component xuất hiện ở $\ge 2$ trang, **phải** đặt tại `src/components/common/`, không lưu trong folder riêng của từng trang.
-
-### 2. Server Components vs Client Components
-* Mặc định mọi component là **Server Component** (chạy tại server để render HTML tĩnh và tối ưu SEO).
-* Chỉ thêm chỉ thị `'use client'` ở đầu file khi:
-  * Cần tương tác người dùng (`onClick`, `onChange`, `onSubmit`).
-  * Sử dụng React State hoặc Effects (`useState`, `useEffect`, `useContext`).
-  * Sử dụng thư viện bên thứ 3 phía trình duyệt (như Swiper, Modal trigger).
-
-### 3. An toàn Dữ liệu (Fallback Safe Check)
-Khi lặp dữ liệu mảng, **luôn luôn kiểm tra mảng an toàn** để tránh lỗi 500 sập trang do `undefined` hoặc `null`:
-```tsx
-// ✅ Đúng: Luôn bọc Array.isArray
-const list = Array.isArray(items) ? items : [];
-list.map((item) => <div key={item.id}>{item.name}</div>);
-```
-
----
-
-## 🔄 Quy trình làm việc với Git (Bắt buộc)
-
-### 1. Đầu giờ làm việc (Pull Code mới nhất)
-```bash
-# 1. Chuyển sang nhánh chính
-git checkout main
-
-# 2. Kéo code mới nhất từ remote
-git pull origin main
-
-# 3. Chuyển về nhánh làm việc cá nhân của bạn
-git checkout feature/ten-nhanh-cua-ban
-
-# 4. Gộp code mới từ main vào nhánh của bạn
-git merge main
-```
-
-### 2. Cuối giờ làm việc (Commit & Push)
-```bash
-# 1. Thêm file vào staging
-git add .
-
-# 2. Commit với thông điệp rõ ràng (tuân theo Conventional Commits)
-git commit -m "feat(layout): hoàn thiện khung layout Header và Footer"
-
-# 3. Push lên nhánh cá nhân trên remote
-git push origin feature/ten-nhanh-cua-ban
+# Secret Key xác thực giữa Next.js và WordPress (TUYỆT ĐỐI KHÔNG CÓ TIỀN TỐ NEXT_PUBLIC_)
+HN_API_SECRET=your_super_secret_key_here
 ```
 
 ---
@@ -173,14 +112,25 @@ git push origin feature/ten-nhanh-cua-ban
 ## 🚀 Cài đặt và Chạy dự án
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/huy293/Khoa-hoc-American.git
-cd Khoa-hoc-American
-
-# 2. Cài đặt các gói thư viện
+# 1. Cài đặt dependencies
 npm install
 
-# 3. Chạy môi trường Development
+# 2. Chạy môi trường phát triển (Development)
 npm run dev
-# Mở trình duyệt tại: http://localhost:3000
+
+# 3. Kiểm tra Types & Build bản Production
+npx tsc --noEmit
+npm run build
+
+# 4. Khởi chạy Production
+npm start
+```
+
+---
+
+## 🐳 Docker Deployment
+
+```bash
+# Khởi chạy bằng Docker Compose
+docker compose up -d --build
 ```
