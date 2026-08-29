@@ -1,0 +1,836 @@
+/* ==========================================================================
+   Progress & Certificate Component Styles (BEM Methodology)
+   ========================================================================== */
+
+.section {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 20px;
+    padding: 60px 80px;
+    width: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(82.46deg, #FFF8EF 5.82%, #FFFFFF 50.01%, #FFF8EF 94.2%);
+
+}
+
+/* ══════════════════════════════════════════
+   1. Left Card: Learning Progress
+   ══════════════════════════════════════════ */
+.progress-card {
+    background: linear-gradient(82.46deg, #FFF8EF 5.82%, #FFFFFF 50.01%, #FFF8EF 94.2%);
+
+    border: 1px solid #D1C7B5;
+    border-radius: 12px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 36px;
+    box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+}
+
+.progress-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.progress-card__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+    gap: 8px;
+}
+
+.progress-card__tag {
+    color: #8A7043;
+    display: inline-block;
+    width: fit-content;
+    margin-bottom: 12px;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: -0.5px;
+}
+
+.progress-card__divider {
+    height: 2px;
+    width: 160px;
+    background: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
+
+
+}
+
+.progress-card__title {
+    font-family: Frank Ruhl Libre;
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 120%;
+    letter-spacing: 0px;
+    color: #A96B00;
+}
+
+.progress-card__desc {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0%;
+    color: #8B8478;
+}
+
+/* ── Circular Gauge ── */
+.progress-card__gauge-wrap {
+    position: relative;
+    width: 210px;
+    height: 210px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.progress-card__gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-card__gauge-bg {
+    fill: none;
+    stroke: #E5E5E5;
+    stroke-width: 10;
+}
+
+.progress-card__gauge-bar {
+    fill: none;
+    stroke: #F5C476;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+}
+
+.progress-card__gauge-center {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.progress-card__gauge-percent {
+    color: #4A453D;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+}
+
+.progress-card__gauge-label {
+    color: #4A453D;
+    margin-top: 4px;
+    text-transform: uppercase;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.1em;
+    letter-spacing: 0%;
+}
+
+/* ── Current Lesson Card ── */
+.progress-card__lesson {
+    border-radius: 8px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 18px;
+    background: linear-gradient(180deg, rgba(255, 240, 220, 0.5) 0%, rgba(253, 233, 208, 0.5) 100%);
+    box-shadow: 4px 4px 8px 0px #0000000D;
+}
+
+.progress-card__lesson .progress-card__lesson-icon-wrap svg {
+    width: 2.667em;
+    height: 2.667em;
+}
+
+.progress-card__lesson-left {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.progress-card__lesson-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.progress-card__lesson-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.progress-card__lesson-module {
+    font-weight: 600;
+    font-size: 1em;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #C28200;
+
+}
+
+.progress-card__lesson-title {
+    font-weight: 400;
+    font-size: 1em;
+    line-height: 150%;
+    letter-spacing: 0%;
+    color: #736954;
+    margin-bottom: -0.3em;
+}
+
+.progress-card__play-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 50%;
+    background-color: #FFFDF9;
+    border: 1px solid #DFC9AC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #AF8861;
+    padding: 0;
+    flex-shrink: 0;
+    align-self: center;
+    box-shadow: 0 2px 6px rgba(194, 130, 0, 0.08);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.progress-card__play-btn:hover {
+    background-color: #FFEDD1;
+    border-color: #C28200;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(194, 130, 0, 0.15);
+}
+
+.progress-card__play-btn:active {
+    transform: scale(0.95);
+}
+
+.progress-card__play-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* ══════════════════════════════════════════
+   2. Right Card: My Certificate
+   ══════════════════════════════════════════ */
+.cert-card {
+    border: 1px solid #D1C7B5;
+    border-radius: 12px;
+    padding: 32px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    background: linear-gradient(293.48deg, rgba(255, 255, 255, 0.3) -0.98%, rgba(253, 233, 209, 0.5) 98.29%);
+}
+
+.cert-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cert-card__title {
+    color: #A96B00;
+    margin: 0;
+    font-family: Frank Ruhl Libre;
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 100%;
+    letter-spacing: 0px;
+}
+
+.cert-card__counter {
+    display: flex;
+    align-items: center;
+    gap: 0.33333em;
+    font-size: 20px;
+    font-weight: 500;
+    color: #7B7366;
+}
+
+.cert-card__counter-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    color: inherit;
+}
+
+.cert-card__counter-icon svg {
+    fill: currentColor;
+}
+
+.cert-card__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cert-card__item {
+    background-color: #FFFFFF;
+    border: 0.25px solid #8A7043;
+    border-radius: 8px;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cert-card__item-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.cert-card__item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #AF8861;
+    margin-top: 2px;
+}
+
+.cert-card__item-icon svg {
+    width: 48px;
+    height: 48px;
+    fill: #A78344;
+}
+
+.cert-card__item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cert-card__item-tag {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #595349;
+
+}
+
+.cert-card__item-name {
+    font-family: Frank Ruhl Libre;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: 0px;
+    color: #A96B00;
+}
+
+.cert-card__item-divider {
+    background-color: #E4DDD1;
+    border: 0;
+    height: 1px;
+}
+
+.cert-card__item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cert-card__item-date {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 100%;
+    letter-spacing: -0.0385em;
+    color: #626262;
+}
+
+.cert-card__item-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.cert-card__action-btn {
+    --size: 24px;
+    border: none;
+    cursor: pointer;
+    color: #8C7F72;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    transition: color 0.2s ease;
+}
+
+.cert-card__action-btn svg {
+    width: 100%;
+    height: 100%;
+}
+
+.cert-card__action-btn:hover {
+    color: #382C21;
+}
+
+/* ══════════════════════════════════════════
+   3. Responsive Layout (6 Breakpoints)
+   ══════════════════════════════════════════ */
+
+/* ── Screen <= 1600px ── */
+@media (max-width: 1600px) {
+    .section {
+        padding: 60px 60px;
+        gap: 20px;
+    }
+
+    .progress-card {
+        padding: 30px;
+        gap: 30px;
+    }
+
+    .progress-card__tag {
+        font-size: 18px;
+    }
+
+    .progress-card__title {
+        font-size: 32px;
+    }
+
+    .progress-card__gauge-wrap {
+        width: 170px;
+        height: 170px;
+    }
+
+    .progress-card__gauge-percent {
+        font-size: 24px;
+    }
+
+    .progress-card__lesson {
+        font-size: 16px;
+        padding: 14px 20px;
+    }
+
+    .cert-card {
+        padding: 28px 30px;
+        gap: 28px;
+    }
+
+    .cert-card__title {
+        font-size: 32px;
+    }
+
+    .cert-card__counter {
+        font-size: 18px;
+    }
+}
+
+/* ── Screen <= 1366px ── */
+@media (max-width: 1366px) {
+    .section {
+        padding: 60px 40px;
+        gap: 16px;
+    }
+
+    .progress-card {
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .progress-card__tag {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .progress-card__divider {
+        width: 130px;
+    }
+
+    .progress-card__title {
+        font-size: 26px;
+    }
+
+    .progress-card__desc {
+        font-size: 13px;
+        line-height: 19px;
+    }
+
+    .progress-card__gauge-wrap {
+        width: 140px;
+        height: 140px;
+    }
+
+    .progress-card__gauge-percent {
+        font-size: 20px;
+    }
+
+    .progress-card__gauge-label {
+        font-size: 13px;
+    }
+
+    .progress-card__lesson {
+        font-size: 15px;
+        padding: 12px 18px;
+        gap: 12px;
+    }
+
+    .cert-card {
+        padding: 24px;
+        gap: 22px;
+    }
+
+    .cert-card__title {
+        font-size: 26px;
+    }
+
+    .cert-card__item {
+        padding: 14px 18px;
+        gap: 10px;
+    }
+
+    .cert-card__item-name {
+        font-size: 18px;
+    }
+}
+
+/* ── Screen <= 1200px ── */
+@media (max-width: 1200px) {
+    .section {
+        grid-template-columns: 1fr;
+        padding: 60px 32px;
+        gap: 20px;
+    }
+
+    .progress-card {
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .progress-card__title {
+        font-size: 26px;
+    }
+
+    .progress-card__gauge-wrap {
+        width: 140px;
+        height: 140px;
+    }
+
+    .cert-card {
+        padding: 24px;
+        gap: 20px;
+    }
+
+    .cert-card__title {
+        font-size: 26px;
+    }
+}
+
+/* ── Screen <= 996px ── */
+@media (max-width: 996px) {
+    .section {
+        padding: 60px 24px;
+        gap: 18px;
+    }
+
+    .progress-card {
+        padding: 22px;
+        gap: 20px;
+    }
+
+    .progress-card__top {
+        gap: 16px;
+    }
+
+    .progress-card__title {
+        font-size: 24px;
+    }
+
+    .progress-card__gauge-wrap {
+        width: 130px;
+        height: 130px;
+    }
+
+    .progress-card__gauge-percent {
+        font-size: 19px;
+    }
+
+    .progress-card__gauge-label {
+        font-size: 12px;
+    }
+
+    .progress-card__lesson {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+
+    .cert-card {
+        padding: 22px;
+        gap: 18px;
+    }
+
+    .cert-card__title {
+        font-size: 24px;
+    }
+
+    .cert-card__item {
+        padding: 12px 16px;
+    }
+
+    .cert-card__item-name {
+        font-size: 17px;
+    }
+}
+
+/* ── Screen <= 768px ── */
+@media (max-width: 768px) {
+    .section {
+        padding: 50px 20px;
+        gap: 16px;
+    }
+
+    .progress-card {
+        padding: 18px 16px;
+        gap: 18px;
+    }
+
+    .progress-card__top {
+        flex-direction: column-reverse;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+    }
+
+    .progress-card__tag {
+        margin: 0 auto 8px;
+        font-size: 15px;
+    }
+
+    .progress-card__divider {
+        margin: 0 auto;
+    }
+
+    .progress-card__title {
+        font-size: 22px;
+    }
+
+    .progress-card__desc {
+        font-size: 13px;
+        max-width: 100%;
+    }
+
+    .progress-card__gauge-wrap {
+        width: 120px;
+        height: 120px;
+    }
+
+    .progress-card__gauge-percent {
+        font-size: 18px;
+    }
+
+    .progress-card__gauge-label {
+        font-size: 12px;
+    }
+
+    .progress-card__lesson {
+        padding: 12px 14px;
+        font-size: 14px;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .progress-card__lesson-left {
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .progress-card__lesson-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .progress-card__lesson-module {
+        font-size: 13px;
+    }
+
+    .progress-card__lesson-title {
+        font-size: 13px;
+    }
+
+    .progress-card__play-btn {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+    }
+
+    .progress-card__play-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .cert-card {
+        padding: 18px 16px;
+        gap: 16px;
+    }
+
+    .cert-card__title {
+        font-size: 22px;
+    }
+
+    .cert-card__item {
+        padding: 12px 14px;
+    }
+
+    .cert-card__item-main {
+        gap: 12px;
+    }
+
+    .cert-card__item-icon svg {
+        width: 38px;
+        height: 38px;
+    }
+
+    .cert-card__item-name {
+        font-size: 16px;
+    }
+
+    .cert-card__item-actions {
+        gap: 18px;
+    }
+}
+
+/* ── Screen <= 576px ── */
+@media (max-width: 576px) {
+    .section {
+        padding: 40px 16px;
+        gap: 14px;
+    }
+
+    .progress-card {
+        padding: 20px 20px;
+        gap: 16px;
+        border-radius: 8px;
+    }
+
+    .progress-card__tag {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .progress-card__title {
+        font-size: 24px;
+    }
+
+    .progress-card__desc {
+        font-size: 12px;
+        line-height: 17px;
+    }
+
+    .progress-card__gauge-wrap {
+        --size: 150px;
+        width: var(--size);
+        height: var(--size);
+    }
+
+    .progress-card__gauge-percent {
+        font-size: 16px;
+    }
+
+    .progress-card__gauge-label {
+        font-size: 11px;
+    }
+
+    .progress-card__lesson {
+        padding: 12px 14px;
+        font-size: 13px;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .progress-card__lesson-left {
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .progress-card__lesson-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .progress-card__play-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    .progress-card__play-btn svg {
+        width: 17px;
+        height: 17px;
+    }
+
+    .cert-card {
+        padding: 20px 20px;
+        gap: 14px;
+        border-radius: 8px;
+    }
+
+    .cert-card__title {
+        font-size: 24px;
+    }
+
+    .cert-card__counter {
+        font-size: 16px;
+    }
+
+    .cert-card__item {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .cert-card__item-icon svg {
+        width: 30px;
+        height: 30px;
+    }
+
+    .cert-card__item-tag {
+        font-size: 12px;
+    }
+
+    .cert-card__item-name {
+        font-size: 15px;
+    }
+
+    .cert-card__item-date {
+        font-size: 11px;
+    }
+
+    .cert-card__item-actions {
+        gap: 12px;
+    }
+}

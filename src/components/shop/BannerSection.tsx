@@ -1,8 +1,15 @@
 import styles from '@/styles/shop/BannerSection.module.css';
 
-export default function BannerSection() {
+interface BannerSectionProps {
+    noMarginTop?: boolean;
+    isDashboard?: boolean;
+}
+
+export default function BannerSection({ noMarginTop, isDashboard }: BannerSectionProps = {}) {
+    const isNoMargin = noMarginTop || isDashboard;
+
     return (
-        <section className={styles["shop-banner"]}>
+        <section className={`${styles["shop-banner"]} ${isNoMargin ? styles["shop-banner--no-margin"] : ""}`}>
             <div className={styles["shop-banner__wrapper"]}>
                 <div className={styles["shop-banner__content"]}>
                     <h1 className={styles["shop-banner__title"]}>

@@ -10,6 +10,10 @@
     margin-top: 96px;
 }
 
+.shop-banner--no-margin {
+    margin-top: 0 !important;
+}
+
 /* 2. ELEMENT: Wrapper (Outer boundary / Max-width) */
 .shop-banner__wrapper {
     position: absolute;
@@ -157,6 +161,10 @@
         margin-top: 70px;
     }
 
+    .shop-banner.shop-banner--no-margin {
+        margin-top: 0 !important;
+    }
+
     .shop-banner__wrapper {
         right: 0;
         padding: 24px 20px;
@@ -181,6 +189,10 @@
 @media (max-width: 576px) {
     .shop-banner {
         margin-top: 62px;
+    }
+
+    .shop-banner.shop-banner--no-margin {
+        margin-top: 0 !important;
     }
 
     .shop-banner__wrapper {

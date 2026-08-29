@@ -24,93 +24,96 @@
 /* 3. ELEMENT: Container (Grid / Flex alignment) */
 .shop-products__container {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
     row-gap: 42px;
 }
 
+/* Top Header Row: Product Name on Left + In Stock Badge on Right */
+.shop-products__top-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+}
+
 /* 4. ELEMENT: Header Section */
-.shop-products__header {}
+.shop-products__header {
+    flex: 1;
+    min-width: 0;
+}
 
 /* 5. ELEMENT: Section Title */
 .shop-products__title {
     font-family: 'Frank Ruhl Libre', serif;
     font-weight: 400;
-    font-size: 44px;
-    line-height: 110%;
+    font-size: 40px;
+    line-height: 115%;
     letter-spacing: -1.5%;
     color: #191713;
+    margin: 0;
 }
 
-/* 6. ELEMENT: Toolbar (Search & Filter Bar) */
-.shop-products__toolbar {
-    display: flex;
-    gap: 8px;
-}
-
-/* 7. ELEMENT: Search Box */
-.shop-products__search-box {
-    display: flex;
-    width: 240px;
-    padding: 3px 16px;
+/* 6. ELEMENT: In Stock Badge Button */
+.product-detail__stock-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    border-radius: 4px;
-    border: 0.5px solid #8A7043;
-    height: 100%;
-}
-
-/* 8. ELEMENT: Search Icon */
-.shop-products__search-icon {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-    stroke-width: 1.5px;
-    stroke: #8A7043;
-}
-
-/* 9. ELEMENT: Search Input */
-.shop-products__search-input {
-    height: 40px;
-    border: 0;
-    outline: 0;
-
-    font-family: Inter, sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 110%;
-    letter-spacing: -0.21px;
-    width: 100%;
-}
-
-.shop-products__search-input::placeholder {
-    color: #8A7043;
-}
-
-/* 10. ELEMENT: Filter Button */
-.shop-products__filter-btn {
-    display: flex;
-    padding: 10px 12px;
-    align-items: center;
-    gap: 4px;
-    border-radius: 4px;
-    border: 0.5px solid #82735B;
-    color: #82735B;
-    font-size: 20px;
+    gap: 16px;
     background: transparent;
+    border: none;
     cursor: pointer;
+    text-align: left;
+    padding: 0;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-/* 11. ELEMENT: Filter Icon */
-.shop-products__filter-icon {
-    width: 1.4em;
-    height: 1.4em;
+.product-detail__stock-badge:hover {
+    transform: translateY(-2px);
+    opacity: 0.92;
 }
 
-/* 12. ELEMENT: Filter Text */
-.shop-products__filter-text {
-    background-color: rgba(154, 205, 50, 0);
+.product-detail__stock-badge:active {
+    transform: scale(0.97);
+}
+
+.product-detail__stock-icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FEF3E2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.product-detail__stock-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.product-detail__stock-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: #1F2937;
+    line-height: 1.2;
+}
+
+.product-detail__stock-value {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #16803C;
+    line-height: 1.2;
+}
+
+/* 7. ELEMENT: Search Box (deprecated) */
+.shop-products__search-box {
+    display: none;
 }
 
 /* ==========================================================================
@@ -390,6 +393,14 @@
         padding-right: 24px;
     }
 
+    .shop-products__top-row {
+        gap: 20px;
+    }
+
+    .shop-products__title {
+        font-size: 30px;
+    }
+
     .suggested-products {
         padding-left: 24px;
         padding-right: 24px;
@@ -446,7 +457,13 @@
     }
 
     .shop-products__container {
-        row-gap: 0;
+        row-gap: 20px;
+    }
+
+    .shop-products__top-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
     }
 
     .suggested-products {
@@ -463,7 +480,7 @@
     }
 
     .shop-products__title {
-        font-size: 32px;
+        font-size: 26px;
     }
 
     .suggested-products__title {
@@ -476,9 +493,21 @@
         flex-shrink: 0;
     }
 
-    .shop-products__toolbar {
-        margin-top: 12px;
-        margin-bottom: 28px;
+    .product-detail__stock-badge {
+        gap: 12px;
+    }
+
+    .product-detail__stock-icon-wrap {
+        width: 50px;
+        height: 50px;
+    }
+
+    .product-detail__stock-label {
+        font-size: 15px;
+    }
+
+    .product-detail__stock-value {
+        font-size: 20px;
     }
 
     .product-detail-section__main {
@@ -534,11 +563,30 @@
     }
 
     .shop-products__container {
-        row-gap: 0;
+        row-gap: 16px;
     }
 
     .shop-products__title {
         font-size: 28px;
+    }
+
+    .product-detail__stock-badge {
+        gap: 10px;
+        margin-top: 4px;
+        margin-bottom: 8px;
+    }
+
+    .product-detail__stock-icon-wrap {
+        width: 44px;
+        height: 44px;
+    }
+
+    .product-detail__stock-label {
+        font-size: 14px;
+    }
+
+    .product-detail__stock-value {
+        font-size: 18px;
     }
 
     .suggested-products__header {
@@ -558,16 +606,6 @@
         white-space: nowrap;
         font-size: 13.5px;
         flex-shrink: 0;
-    }
-
-    .shop-products__toolbar {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-        margin-bottom: 24px;
     }
 
     .product-detail-section__main {

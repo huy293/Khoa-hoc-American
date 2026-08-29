@@ -98,12 +98,18 @@ export const Header = () => {
         };
     }, [isMobileMenuOpen]);
 
-    // Ẩn Header trên các trang /login và /signup
-    const isAuthPage = Boolean(
-        pathname && (pathname === '/login' || pathname === '/signup' || pathname.startsWith('/login/') || pathname.startsWith('/signup/'))
+    // Ẩn Header trên các trang /login, /signup và /dashboard
+    const isHiddenPage = Boolean(
+        pathname &&
+        (pathname === '/login' ||
+            pathname === '/signup' ||
+            pathname === '/dashboard' ||
+            pathname.startsWith('/login/') ||
+            pathname.startsWith('/signup/') ||
+            pathname.startsWith('/dashboard/'))
     );
 
-    if (isAuthPage) {
+    if (isHiddenPage) {
         return null;
     }
 
@@ -168,14 +174,13 @@ export const Header = () => {
                         <CartIcon />
                     </button>
 
-                    <button
-                        type="button"
+                    <Link
+                        href="/dashboard"
                         className={styles['header__action-btn']}
                         aria-label="User Account"
-                        onClick={() => console.log('User profile clicked')}
                     >
                         <UserIcon />
-                    </button>
+                    </Link>
 
                     {/* Mobile Hamburger Button */}
                     <button
@@ -229,7 +234,7 @@ export const Header = () => {
                                         className={`${styles['header__mobile-nav-link']} ${isActive ? styles['header__mobile-nav-link--active'] : ''
                                             }`}
                                         onClick={() => {
-                                             setIsMobileMenuOpen(false);
+                                            setIsMobileMenuOpen(false);
                                         }}
                                     >
                                         {item.label}
