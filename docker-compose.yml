@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     container_name: khoa-hoc-american-app
@@ -17,12 +15,11 @@ services:
     environment:
       - NODE_ENV=production
       - NODE_OPTIONS=--dns-result-order=ipv4first
-      - PORT=3000
     ports:
-      - "${PORT:-2903}:3000"
+      - "${PORT:-2903}:${PORT:-2903}"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000", "||", "exit", "1"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:${PORT:-2903}", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
