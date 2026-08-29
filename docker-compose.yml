@@ -16,10 +16,10 @@ services:
       - NODE_ENV=production
       - NODE_OPTIONS=--dns-result-order=ipv4first
     ports:
-      - "${PORT:-2903}:${PORT:-2903}"
+      - "${PORT:-2903}:3000"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:${PORT:-2903}", "||", "exit", "1"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
