@@ -62,10 +62,10 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
     { label: 'HOME', href: '/' },
     { label: 'COURSES', href: '/courses' },
-    { label: 'SHOP', href: '#shop' },
-    { label: 'ABOUT', href: '#about' },
-    { label: 'RESOURCES', href: '#resources' },
-    { label: 'CONTACT', href: '#contact' },
+    { label: 'SHOP', href: '/shop' },
+    { label: 'ABOUT', href: '/about-us' },
+    { label: 'RESOURCES', href: '/resources' },
+    { label: 'CONTACT', href: '/contact' },
 ];
 
 export const Header = () => {
@@ -98,6 +98,15 @@ export const Header = () => {
         };
     }, [isMobileMenuOpen]);
 
+    // Ẩn Header trên các trang /login và /signup
+    const isAuthPage = Boolean(
+        pathname && (pathname === '/login' || pathname === '/signup' || pathname.startsWith('/login/') || pathname.startsWith('/signup/'))
+    );
+
+    if (isAuthPage) {
+        return null;
+    }
+
     return (
         <header
             className={`${styles['header']} ${isScrolled ? styles['header--scrolled'] : ''}`}
@@ -119,15 +128,17 @@ export const Header = () => {
                     <ul className={styles['header__nav-list']}>
                         {NAV_ITEMS.map((item) => {
                             const isActive =
-                                (item.href === '/' && pathname === '/') ||
-                                (item.href === '/courses' && pathname?.startsWith('/course'));
+                                item.href === '/'
+                                    ? pathname === '/'
+                                    : item.href === '/courses'
+                                        ? pathname === '/courses' || pathname?.startsWith('/course')
+                                        : pathname === item.href || pathname?.startsWith(`${item.href}/`);
                             return (
                                 <li key={item.label} className={styles['header__nav-item']}>
                                     <Link
                                         href={item.href}
-                                        className={`${styles['header__nav-link']} ${
-                                            isActive ? styles['header__nav-link--active'] : ''
-                                        }`}
+                                        className={`${styles['header__nav-link']} ${isActive ? styles['header__nav-link--active'] : ''
+                                            }`}
                                     >
                                         {item.label}
                                     </Link>
@@ -181,9 +192,8 @@ export const Header = () => {
 
             {/* Mobile Drawer Menu */}
             <div
-                className={`${styles['header__mobile-drawer']} ${
-                    isMobileMenuOpen ? styles['header__mobile-drawer--open'] : ''
-                }`}
+                className={`${styles['header__mobile-drawer']} ${isMobileMenuOpen ? styles['header__mobile-drawer--open'] : ''
+                    }`}
                 aria-hidden={!isMobileMenuOpen}
             >
                 <div className={styles['header__mobile-content']}>
@@ -207,17 +217,19 @@ export const Header = () => {
                     <ul className={styles['header__mobile-nav-list']}>
                         {NAV_ITEMS.map((item) => {
                             const isActive =
-                                (item.href === '/' && pathname === '/') ||
-                                (item.href === '/courses' && pathname?.startsWith('/course'));
+                                item.href === '/'
+                                    ? pathname === '/'
+                                    : item.href === '/courses'
+                                        ? pathname === '/courses' || pathname?.startsWith('/course')
+                                        : pathname === item.href || pathname?.startsWith(`${item.href}/`);
                             return (
                                 <li key={item.label} className={styles['header__mobile-nav-item']}>
                                     <Link
                                         href={item.href}
-                                        className={`${styles['header__mobile-nav-link']} ${
-                                            isActive ? styles['header__mobile-nav-link--active'] : ''
-                                        }`}
+                                        className={`${styles['header__mobile-nav-link']} ${isActive ? styles['header__mobile-nav-link--active'] : ''
+                                            }`}
                                         onClick={() => {
-                                            setIsMobileMenuOpen(false);
+                                             setIsMobileMenuOpen(false);
                                         }}
                                     >
                                         {item.label}
