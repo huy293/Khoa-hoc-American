@@ -298,6 +298,36 @@ export default function MyCourses({
     const [searchTerm, setSearchTerm] = useState('');
     const [visibleCount, setVisibleCount] = useState<number>(limit ?? (loadmore ? 4 : COURSES.length));
 
+    const tabsRef = React.useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleTabsWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+        if (e.deltaY !== 0 && tabsRef.current) {
+            tabsRef.current.scrollLeft += e.deltaY;
+        }
+    };
+
+    const handleTabsMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!tabsRef.current) return;
+        setIsDragging(true);
+        setStartX(e.pageX - tabsRef.current.offsetLeft);
+        setScrollLeft(tabsRef.current.scrollLeft);
+    };
+
+    const handleTabsMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isDragging || !tabsRef.current) return;
+        e.preventDefault();
+        const x = e.pageX - tabsRef.current.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        tabsRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleTabsMouseUpOrLeave = () => {
+        setIsDragging(false);
+    };
+
     const handleLoadMore = () => {
         setVisibleCount((prev) => prev + (limit ?? 4));
     };
@@ -323,7 +353,16 @@ export default function MyCourses({
 
             {/* 2. Filter Tabs & See more / Search */}
             <div className={styles['my-courses__nav-row']}>
-                <div className={styles['my-courses__tabs']} role="tablist">
+                <div
+                    ref={tabsRef}
+                    className={styles['my-courses__tabs']}
+                    role="tablist"
+                    onWheel={handleTabsWheel}
+                    onMouseDown={handleTabsMouseDown}
+                    onMouseMove={handleTabsMouseMove}
+                    onMouseUp={handleTabsMouseUpOrLeave}
+                    onMouseLeave={handleTabsMouseUpOrLeave}
+                >
                     {TABS.map((tab) => (
                         <button
                             key={tab.id}
