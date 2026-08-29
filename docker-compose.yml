@@ -17,6 +17,7 @@ services:
     environment:
       - NODE_ENV=production
       - NODE_OPTIONS=--dns-result-order=ipv4first
+      - PORT=3000
     ports:
       - "${PORT:-2903}:3000"
     restart: unless-stopped
