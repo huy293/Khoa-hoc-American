@@ -1,0 +1,414 @@
+/* ==========================================================================
+   Login Component Styles — BEM
+   ========================================================================== */
+
+.login {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 60px 24px;
+    background:
+        linear-gradient(0deg, rgba(20, 18, 15, 0.6) 0%, rgba(20, 18, 15, 0.6) 100%),
+        url('/images/login-signup.jpg') right center / cover no-repeat;
+    overflow: hidden;
+}
+
+/* ── Concentric Circles Decor at Bottom Left ── */
+.login__decor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.login__circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(222, 143, 0, 0.2);
+}
+
+.login__circle:nth-child(1) {
+    width: 320px;
+    height: 320px;
+    bottom: -160px;
+    left: -160px;
+}
+
+.login__circle:nth-child(2) {
+    width: 540px;
+    height: 540px;
+    bottom: -270px;
+    left: -270px;
+}
+
+.login__circle:nth-child(3) {
+    width: 760px;
+    height: 760px;
+    bottom: -380px;
+    left: -380px;
+}
+
+/* ── Glassmorphism Login Card ── */
+.login__card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 688px;
+    background: #FBF7E629;
+    border: 1px solid #E8DFC8;
+    border-radius: 8px;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(5px);
+}
+
+/* ── Card Header ── */
+.login__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.login__title {
+    font-family: 'Fraunces';
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 110.00000000000001%;
+    letter-spacing: -1.5%;
+    background: linear-gradient(161.41deg, #DE8F00 -0.45%, #E2AD49 8.85%, #FFF4DD 27.12%, #FBF8F1 29%, #FFECC6 32.71%, #EEB552 47.6%, #FFDA90 60%, #E2AD49 69.3%, #DE8F00 77.05%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.login__switch {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #E2DBD0;
+    white-space: nowrap;
+}
+
+.login__switch-link {
+    color: #E2AD49;
+    text-decoration: underline;
+    font-weight: 500;
+    margin-left: 4px;
+    transition: color 0.2s ease;
+}
+
+.login__switch-link:hover {
+    color: #FFDA90;
+}
+
+.login__divider_1 {
+    width: 100%;
+    background: #E8DFC8;
+    margin: 32px 0;
+}
+
+/* ── Checkbox Wrapper (Signup) ── */
+.login__checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 32px;
+    margin-bottom: 0;
+}
+
+.login__checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.login__checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.login__checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.login__checkbox:checked+.login__checkbox-custom {
+    background: #E2AD49;
+    border-color: #E2AD49;
+}
+
+.login__checkbox:checked+.login__checkbox-custom::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: solid #191713;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+.login__checkbox-text {
+    font-size: 16px;
+    font-weight: 400;
+    color: #C0C0C0;
+    line-height: 1.4;
+}
+
+.login__read-more {
+    color: #FFFFFF;
+    text-decoration: underline;
+    font-weight: 500;
+    margin-left: 2px;
+    transition: color 0.2s ease;
+}
+
+.login__read-more:hover {
+    color: #FFDA90;
+}
+
+/* ── Actions / Buttons ── */
+.login__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.login__btn {
+    width: 100%;
+    height: 74px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    text-decoration: none;
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+
+
+
+.login__btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+}
+
+.login__btn-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Button Variants */
+.login__btn--google {
+    background: #FAF6E6;
+    color: #191713;
+}
+
+.login__btn--google:hover {
+    background: #FFFFFF;
+}
+
+.login__btn--facebook {
+    background: #1977F3;
+    color: #FFFFFF;
+}
+
+.login__btn--facebook:hover {
+    background: #1565C0;
+}
+
+.login__btn--email {
+    background: #FAF6E6;
+    color: #191713;
+    height: 66px;
+}
+
+.login__btn--email:hover {
+    background: #FFFFFF;
+}
+
+/* ── Divider ── */
+.login__divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 6px 0;
+    width: 100%;
+}
+
+.login__divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.login__divider-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #D5CEBF;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* 1. Large Desktops & Laptops (max-width: 1600px) */
+@media (max-width: 1600px) {
+    .login__card {
+        max-width: 640px;
+        padding: 48px 52px;
+    }
+}
+
+/* 2. Standard Laptops / Small Screens (max-width: 1366px) */
+@media (max-width: 1366px) {
+    .login__card {
+        max-width: 600px;
+        padding: 44px 48px;
+    }
+
+    .login__title {
+        font-size: 30px;
+    }
+}
+
+/* 3. Medium Laptops / Tablets Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .login__card {
+        max-width: 560px;
+        padding: 40px 42px;
+    }
+}
+
+/* 4. Tablets Portrait (max-width: 996px) */
+@media (max-width: 996px) {
+    .login {
+        padding: 100px 20px 50px 20px;
+    }
+
+    .login__card {
+        max-width: 520px;
+        padding: 38px 36px;
+    }
+
+    .login__title {
+        font-size: 28px;
+    }
+}
+
+/* 5. Large Mobiles / Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .login {
+        padding: 90px 16px 40px 16px;
+    }
+
+    .login__card {
+        max-width: 100%;
+        padding: 32px 24px;
+        border-radius: 8px;
+    }
+
+    .login__header {
+        margin-bottom: 28px;
+    }
+
+    .login__title {
+        font-size: 26px;
+    }
+
+    .login__btn {
+        height: 48px;
+        font-size: 13px;
+        gap: 10px;
+    }
+}
+
+/* 6. Small Mobile Phones (max-width: 576px) */
+@media (max-width: 576px) {
+    .login {
+        padding: 80px 14px 30px 14px;
+    }
+
+    .login__card {
+        padding: 28px 18px;
+    }
+
+    .login__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .login__title {
+        font-size: 24px;
+    }
+
+    .login__switch {
+        font-size: 12px;
+    }
+
+    .login__btn {
+        height: 46px;
+        font-size: 12px;
+        letter-spacing: 0.05em;
+    }
+
+    .login__circle:nth-child(1) {
+        width: 220px;
+        height: 220px;
+        bottom: -110px;
+        left: -110px;
+    }
+
+    .login__circle:nth-child(2) {
+        width: 360px;
+        height: 360px;
+        bottom: -180px;
+        left: -180px;
+    }
+
+    .login__circle:nth-child(3) {
+        width: 500px;
+        height: 500px;
+        bottom: -250px;
+        left: -250px;
+    }
+}

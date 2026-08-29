@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/layout/Footer.module.css';
 
 const FOOTER_SECTIONS = [
@@ -76,7 +77,17 @@ const InstagramIcon = () => (
 );
 
 export const Footer = () => {
+    const pathname = usePathname();
     const [email, setEmail] = useState('');
+
+    // Ẩn Footer trên các trang /login và /signup
+    const isAuthPage = Boolean(
+        pathname && (pathname === '/login' || pathname === '/signup' || pathname.startsWith('/login/') || pathname.startsWith('/signup/'))
+    );
+
+    if (isAuthPage) {
+        return null;
+    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

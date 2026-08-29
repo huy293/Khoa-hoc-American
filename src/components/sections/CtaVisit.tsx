@@ -1,9 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/sections/CtaVisit.module.css';
 
+/**
+ * Danh sách các đường dẫn (routes) được phép hiển thị CTA Visit.
+ * Bạn có thể dễ dàng thêm hoặc bớt các trang tại đây.
+ */
+const SHOW_CTA_ROUTES = [
+    '/',          // Trang chủ
+    '/courses',   // Trang danh sách khóa học
+    '/course',    // Chi tiết khóa học
+    '/about-us',  // Trang giới thiệu
+];
+
 export const CtaVisit = () => {
+    const pathname = usePathname();
     const [form, setForm] = useState({
         fullName: '',
         email: '',
@@ -11,6 +24,19 @@ export const CtaVisit = () => {
         visitDate: '',
         message: '',
     });
+
+    // Kiểm tra xem trang hiện tại có nằm trong danh sách hiển thị hay không
+    const isAllowed = Boolean(
+        pathname &&
+        (pathname === '/' ||
+            SHOW_CTA_ROUTES.some(
+                (route) => route !== '/' && (pathname === route || pathname.startsWith(`${route}/`))
+            ))
+    );
+
+    if (!isAllowed) {
+        return null;
+    }
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
