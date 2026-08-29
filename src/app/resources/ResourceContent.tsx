@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ButtonStyle1 from '@/components/common/ButtonStyle1';
 import HeaderText from '@/components/common/HeaderText';
 import styles from '@/styles/resources/ResourceContent.module.css';
+import ResourceBlogCard from '@/components/cards/ResourceBlogCard';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
@@ -12,6 +13,57 @@ import { EffectFade, FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/free-mode';
+
+const BLOG_POSTS = [
+    {
+        id: '1',
+        image: '/images/courses/card-hydra.jpg',
+        title: '5 HydraFacial Techniques Every Esthetician Should Know',
+        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
+        author: {
+            name: 'Thy Anh Pham Nguyen',
+            avatar: '/images/home/coutrue-beauty-academy_member.png',
+            date: 'Dec 28,2026',
+        },
+        readTime: '1 min read',
+    },
+    {
+        id: '2',
+        image: '/images/courses/card-derma.jpg',
+        title: '5 HydraFacial Techniques Every Esthetician Should Know',
+        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
+        author: {
+            name: 'Thy Anh Pham Nguyen',
+            avatar: '/images/home/coutrue-beauty-academy_member.png',
+            date: 'Dec 28,2026',
+        },
+        readTime: '1 min read',
+    },
+    {
+        id: '3',
+        image: '/images/courses/card-towel.jpg',
+        title: '5 HydraFacial Techniques Every Esthetician Should Know',
+        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
+        author: {
+            name: 'Thy Anh Pham Nguyen',
+            avatar: '/images/home/coutrue-beauty-academy_member.png',
+            date: 'Dec 28,2026',
+        },
+        readTime: '1 min read',
+    },
+    {
+        id: '4',
+        image: '/images/courses/card-advance.jpg',
+        title: '5 HydraFacial Techniques Every Esthetician Should Know',
+        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
+        author: {
+            name: 'Thy Anh Pham Nguyen',
+            avatar: '/images/home/coutrue-beauty-academy_member.png',
+            date: 'Dec 28,2026',
+        },
+        readTime: '1 min read',
+    },
+];
 
 const galleryImages = [
     '/images/gallery/image-1.jpg',
@@ -116,153 +168,16 @@ export default function ResourceContent() {
                         </div>
 
                         <div className={styles['resources-blog__grid']}>
-                            <article className={styles['resources-blog__card']}>
-                                <div className={styles['resources-blog__card-media']}>
-                                    <img className={styles['resources-blog__card-image']} src="/images/courses/card-hydra.jpg" alt="5 HydraFacial Techniques" />
-                                    <div className={styles['resources-blog__card-actions']}>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Share">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M4 18c1.5-5 5.5-8.5 10.5-8.5V4l8 8-8 8v-5.5C10 14.5 6.5 16 4 18z" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Wishlist">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={styles['resources-blog__card-body']}>
-                                    <h3 className={styles['resources-blog__card-title']}>5 HydraFacial Techniques Every Esthetician Should Know</h3>
-                                    <p className={styles['resources-blog__card-desc']}>
-                                        Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.
-                                    </p>
-                                    <hr className={styles['resources-blog__card-divider']} />
-                                    <div className={styles['resources-blog__card-footer']}>
-                                        <div className={styles['resources-blog__author']}>
-                                            <div className={styles['resources-blog__author-avatar']}>
-                                                <img className={styles['resources-blog__author-avatar-img']} src="/images/home/coutrue-beauty-academy_member.png" alt="Thy Anh Pham Nguyen" />
-                                            </div>
-                                            <div className={styles['resources-blog__author-info']}>
-                                                <p className={styles['resources-blog__author-name']}>Thy Anh Pham Nguyen</p>
-                                                <p className={styles['resources-blog__author-date']}>Dec 28,2026</p>
-                                            </div>
-                                        </div>
-                                        <p className={styles['resources-blog__read-time']}>1 min read</p>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <article className={styles['resources-blog__card']}>
-                                <div className={styles['resources-blog__card-media']}>
-                                    <img className={styles['resources-blog__card-image']} src="/images/courses/card-derma.jpg" alt="5 HydraFacial Techniques" />
-                                    <div className={styles['resources-blog__card-actions']}>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Share">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M4 18c1.5-5 5.5-8.5 10.5-8.5V4l8 8-8 8v-5.5C10 14.5 6.5 16 4 18z" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Wishlist">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={styles['resources-blog__card-body']}>
-                                    <h3 className={styles['resources-blog__card-title']}>5 HydraFacial Techniques Every Esthetician Should Know</h3>
-                                    <p className={styles['resources-blog__card-desc']}>
-                                        Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.
-                                    </p>
-                                    <hr className={styles['resources-blog__card-divider']} />
-                                    <div className={styles['resources-blog__card-footer']}>
-                                        <div className={styles['resources-blog__author']}>
-                                            <div className={styles['resources-blog__author-avatar']}>
-                                                <img className={styles['resources-blog__author-avatar-img']} src="/images/home/coutrue-beauty-academy_member.png" alt="Thy Anh Pham Nguyen" />
-                                            </div>
-                                            <div className={styles['resources-blog__author-info']}>
-                                                <p className={styles['resources-blog__author-name']}>Thy Anh Pham Nguyen</p>
-                                                <p className={styles['resources-blog__author-date']}>Dec 28,2026</p>
-                                            </div>
-                                        </div>
-                                        <p className={styles['resources-blog__read-time']}>1 min read</p>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <article className={styles['resources-blog__card']}>
-                                <div className={styles['resources-blog__card-media']}>
-                                    <img className={styles['resources-blog__card-image']} src="/images/courses/card-towel.jpg" alt="5 HydraFacial Techniques" />
-                                    <div className={styles['resources-blog__card-actions']}>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Share">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M4 18c1.5-5 5.5-8.5 10.5-8.5V4l8 8-8 8v-5.5C10 14.5 6.5 16 4 18z" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Wishlist">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={styles['resources-blog__card-body']}>
-                                    <h3 className={styles['resources-blog__card-title']}>5 HydraFacial Techniques Every Esthetician Should Know</h3>
-                                    <p className={styles['resources-blog__card-desc']}>
-                                        Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.
-                                    </p>
-                                    <hr className={styles['resources-blog__card-divider']} />
-                                    <div className={styles['resources-blog__card-footer']}>
-                                        <div className={styles['resources-blog__author']}>
-                                            <div className={styles['resources-blog__author-avatar']}>
-                                                <img className={styles['resources-blog__author-avatar-img']} src="/images/home/coutrue-beauty-academy_member.png" alt="Thy Anh Pham Nguyen" />
-                                            </div>
-                                            <div className={styles['resources-blog__author-info']}>
-                                                <p className={styles['resources-blog__author-name']}>Thy Anh Pham Nguyen</p>
-                                                <p className={styles['resources-blog__author-date']}>Dec 28,2026</p>
-                                            </div>
-                                        </div>
-                                        <p className={styles['resources-blog__read-time']}>1 min read</p>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <article className={styles['resources-blog__card']}>
-                                <div className={styles['resources-blog__card-media']}>
-                                    <img className={styles['resources-blog__card-image']} src="/images/courses/card-advance.jpg" alt="5 HydraFacial Techniques" />
-                                    <div className={styles['resources-blog__card-actions']}>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Share">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M4 18c1.5-5 5.5-8.5 10.5-8.5V4l8 8-8 8v-5.5C10 14.5 6.5 16 4 18z" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" className={styles['resources-blog__action-btn']} aria-label="Wishlist">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={styles['resources-blog__card-body']}>
-                                    <h3 className={styles['resources-blog__card-title']}>5 HydraFacial Techniques Every Esthetician Should Know</h3>
-                                    <p className={styles['resources-blog__card-desc']}>
-                                        Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.
-                                    </p>
-                                    <hr className={styles['resources-blog__card-divider']} />
-                                    <div className={styles['resources-blog__card-footer']}>
-                                        <div className={styles['resources-blog__author']}>
-                                            <div className={styles['resources-blog__author-avatar']}>
-                                                <img className={styles['resources-blog__author-avatar-img']} src="/images/home/coutrue-beauty-academy_member.png" alt="Thy Anh Pham Nguyen" />
-                                            </div>
-                                            <div className={styles['resources-blog__author-info']}>
-                                                <p className={styles['resources-blog__author-name']}>Thy Anh Pham Nguyen</p>
-                                                <p className={styles['resources-blog__author-date']}>Dec 28,2026</p>
-                                            </div>
-                                        </div>
-                                        <p className={styles['resources-blog__read-time']}>1 min read</p>
-                                    </div>
-                                </div>
-                            </article>
+                            {BLOG_POSTS.map((post) => (
+                                <ResourceBlogCard
+                                    key={post.id}
+                                    image={post.image}
+                                    title={post.title}
+                                    description={post.description}
+                                    author={post.author}
+                                    readTime={post.readTime}
+                                />
+                            ))}
                         </div>
 
                         {/* Load More Button */}

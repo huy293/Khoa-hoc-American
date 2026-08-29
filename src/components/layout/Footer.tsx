@@ -76,16 +76,23 @@ const InstagramIcon = () => (
     </svg>
 );
 
-export const Footer = () => {
+export const Footer = ({ forceShow = false }: { forceShow?: boolean }) => {
     const pathname = usePathname();
     const [email, setEmail] = useState('');
 
-    // Ẩn Footer trên các trang /login và /signup
-    const isAuthPage = Boolean(
-        pathname && (pathname === '/login' || pathname === '/signup' || pathname.startsWith('/login/') || pathname.startsWith('/signup/'))
+    // Ẩn Footer ở root layout trên các trang /login, /signup và /dashboard (trừ khi có prop forceShow)
+    const isHiddenPage = Boolean(
+        !forceShow &&
+        pathname &&
+        (pathname === '/login' ||
+            pathname === '/signup' ||
+            pathname === '/dashboard' ||
+            pathname.startsWith('/login/') ||
+            pathname.startsWith('/signup/') ||
+            pathname.startsWith('/dashboard/'))
     );
 
-    if (isAuthPage) {
+    if (isHiddenPage) {
         return null;
     }
 

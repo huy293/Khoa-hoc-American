@@ -1,0 +1,111 @@
+/* ==========================================================================
+   Dashboard Layout Component Styles (BEM Methodology)
+   ========================================================================== */
+
+.layout {
+    min-height: 100vh;
+    background-color: #FFFDFA;
+    color: #3D2C1D;
+    display: flex;
+    position: relative;
+}
+
+.layout__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-left: 280px;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0;
+}
+
+.layout__main--collapsed {
+    margin-left: 72px;
+}
+
+.layout__content {
+    flex: 1;
+}
+
+.layout__backdrop {
+    display: none;
+}
+
+/* ══════════════════════════════════════════
+   Responsive Breakpoints (6 Breakpoints)
+   ══════════════════════════════════════════ */
+
+/* ── Screen <= 1600px ── */
+@media (max-width: 1600px) {
+    .layout__main {
+        margin-left: 280px;
+    }
+
+    .layout__main.layout__main--collapsed {
+        margin-left: 72px;
+    }
+}
+
+/* ── Screen <= 1366px ── */
+@media (max-width: 1366px) {
+    .layout__main {
+        margin-left: 280px;
+    }
+
+    .layout__main.layout__main--collapsed {
+        margin-left: 72px;
+    }
+}
+
+/* ── Screen <= 1200px ── */
+@media (max-width: 1200px) {
+    .layout__main {
+        margin-left: 280px;
+    }
+
+    .layout__main.layout__main--collapsed {
+        margin-left: 72px;
+    }
+}
+
+/* ── Screen <= 996px (Tablet & Mobile) ── */
+@media (max-width: 996px) {
+    .layout__main,
+    .layout__main.layout__main--collapsed {
+        margin-left: 0;
+    }
+
+    .layout__backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(2px);
+        z-index: 45;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .layout__backdrop--visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+/* ── Screen <= 768px ── */
+@media (max-width: 768px) {
+    .layout__main,
+    .layout__main.layout__main--collapsed {
+        margin-left: 0;
+    }
+}
+
+/* ── Screen <= 576px ── */
+@media (max-width: 576px) {
+    .layout__main,
+    .layout__main.layout__main--collapsed {
+        margin-left: 0;
+    }
+}
