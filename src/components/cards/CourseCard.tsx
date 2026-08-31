@@ -258,15 +258,15 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                     </div>
                 </div>
 
-                {actionType === 'play' || onPlay ? (
-                    <button
-                        type="button"
+                {actionType === 'play' ? (
+                    <Link
+                        href={courseUrl}
                         className={styles['course-card__play-btn']}
                         aria-label={`Play ${title}`}
                         onClick={onPlay}
                     >
                         <PlayIcon />
-                    </button>
+                    </Link>
                 ) : (
                     <Link
                         href={courseUrl}

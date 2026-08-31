@@ -1,0 +1,1071 @@
+/* ==========================================================================
+   Payment Information Modal Component (Popup Checkout)
+   ========================================================================== */
+
+/* 1. Backdrop Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: #BABABA33;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: modalOverlayFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalOverlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* 2. Dialog Card */
+.modal-card {
+    background-color: #FFFCF7;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalCardSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    overflow: hidden;
+    box-shadow: 12px 12px 10px 0px #19171333;
+    border: 0.5px solid #CCB07E;
+}
+
+@keyframes modalCardSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 3. Top Header Bar */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 42px 60px 32px 60px;
+    border-bottom: 1px solid #F0E8DC;
+    background-color: #FFFDF9;
+}
+
+.modal-header__title {
+    color: #8A7043;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 100%;
+    letter-spacing: 0%;
+}
+
+.modal-header__close-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #9C8E7D;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.modal-header__close-btn:hover {
+    color: #191713;
+    background-color: #F4ECE1;
+}
+
+.modal-header__close-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* 4. Body Content */
+.modal-body {
+    padding: 32px 60px 42px 60px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #E2D5C3 transparent;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: #E2D5C3;
+    border-radius: 4px;
+}
+
+/* 5. Inner Card: Recipient information */
+.recipient-card {
+    border: 1px solid #E0D5B9;
+    border-radius: 12px;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #FBF7E640;
+}
+
+.recipient-card__title {
+    font-family: Frank Ruhl Libre;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 110.00000000000001%;
+    letter-spacing: -1.5%;
+    color: #BC7300CC;
+}
+
+.recipient-card hr {
+    border: none;
+    border-top: 1px solid #E0D5B9;
+    margin: 4px 0 8px 0;
+}
+
+/* 6. Form Elements */
+.form-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #905E00;
+    text-transform: uppercase;
+    line-height: 120%;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+}
+
+.form-label__required {
+    color: #B56F00;
+    margin-left: 3px;
+    font-weight: 700;
+}
+
+.form-input {
+    width: 100%;
+    background-color: #FBF7E61F;
+    border: 1px solid #E0D5B9;
+    border-radius: 4px;
+    padding: 0 20px;
+    line-height: 60px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #191713;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+    color: #A89F91;
+    font-weight: 400;
+}
+
+.form-input:focus {
+    border-color: #B56F00;
+    box-shadow: 0 0 0 3px rgba(181, 111, 0, 0.12);
+}
+
+/* Phone Field */
+.phone-field {
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+    width: 100%;
+}
+
+.phone-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.phone-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 60px;
+    line-height: 60px;
+    background-color: #FBF7E61F;
+    border: 1px solid #E0D5B9;
+    border-radius: 4px;
+    padding: 0 38px 0 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #191713;
+    outline: none;
+    cursor: pointer;
+    min-width: 100px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.phone-select:focus {
+    border-color: #B56F00;
+    box-shadow: 0 0 0 3px rgba(181, 111, 0, 0.12);
+}
+
+/* Country Select */
+.select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.select-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    background-color: #FBF7E61F;
+    border: 1px solid #E0D5B9;
+    border-radius: 4px;
+    padding: 0 44px 0 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #191713;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.select-input:focus {
+    border-color: #B56F00;
+    box-shadow: 0 0 0 3px rgba(181, 111, 0, 0.12);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 18px;
+    pointer-events: none;
+    color: #8C7B6B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Options Styling */
+.phone-select option,
+.select-input option {
+    background-color: #FFFCF7;
+    color: #191713;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+}
+
+/* 7. Action Buttons */
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.btn-next {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FFFDF8;
+    width: 100%;
+    padding: 16px;
+    background-color: #191713;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-next:hover {
+    background-color: #33302A;
+}
+
+.btn-edit {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #B56F00;
+    width: 100%;
+    padding: 14px;
+    background-color: #FFFDF8;
+    border: 1px solid #D4A86A;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-edit:hover {
+    background-color: #FFF4E3;
+    border-color: #B56F00;
+}
+
+/* 8. STEP 2: Payment Summary & Method */
+.payment-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-summary__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: #5C5245;
+    gap: 8px;
+}
+
+.payment-summary__label {
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.payment-summary__value {
+    font-weight: 600;
+    color: #191713;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.payment-summary__offer-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.payment-summary__offer-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #3F8800;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.payment-summary__offer-tag svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.payment-summary__offer-val {
+    color: #E02020;
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.payment-summary__total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.payment-summary__total-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #B56F00;
+}
+
+.payment-summary__total-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #B56F00;
+}
+
+/* Payment Method Selection */
+.payment-method-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.payment-method__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #905E00;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.payment-method__selector {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.payment-method__radio {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #52C41A;
+    background-color: #52C41A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.payment-method__radio-inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+}
+
+.payment-method__icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-save {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FFFDF8;
+    width: 100%;
+    padding: 16px;
+    background-color: #191713;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-save:hover {
+    background-color: #33302A;
+}
+
+/* 9. STEP 3: Payment Success Screen */
+.success-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 36px 20px 48px 20px;
+    gap: 20px;
+    animation: successFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes successFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.success-icon-wrapper {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.success-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.success-title {
+    font-family: Frank Ruhl Libre, serif;
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 110%;
+    letter-spacing: -1%;
+    color: #BC7300;
+    margin: 0;
+}
+
+.success-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #6B5E4F;
+    max-width: 440px;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints (6 Breakpoints)
+   ========================================================================== */
+
+/* ── 1. Max-Width 1600px ── */
+@media (max-width: 1600px) {
+    .modal-card {
+        max-width: 750px;
+    }
+
+    .modal-header {
+        padding: 36px 48px 28px 48px;
+    }
+
+    .modal-header__title {
+        font-size: 17px;
+    }
+
+    .modal-body {
+        padding: 28px 48px 36px 48px;
+    }
+
+    .recipient-card {
+        padding: 40px;
+        gap: 16px;
+    }
+
+    .recipient-card__title {
+        font-size: 40px;
+    }
+
+    .form-form {
+        gap: 22px;
+    }
+
+    .form-row {
+        gap: 20px;
+    }
+
+    .form-label {
+        font-size: 13.5px;
+    }
+
+    .form-input,
+    .phone-select,
+    .select-input {
+        height: 56px;
+        line-height: 56px;
+        font-size: 14px;
+    }
+}
+
+/* ── 2. Max-Width 1366px ── */
+@media (max-width: 1366px) {
+    .modal-card {
+        max-width: 680px;
+    }
+
+    .modal-header {
+        padding: 30px 40px 24px 40px;
+    }
+
+    .modal-header__title {
+        font-size: 16px;
+    }
+
+    .modal-body {
+        padding: 24px 40px 30px 40px;
+    }
+
+    .recipient-card {
+        padding: 34px 32px;
+        gap: 14px;
+    }
+
+    .recipient-card__title {
+        font-size: 36px;
+    }
+
+    .form-form {
+        gap: 20px;
+    }
+
+    .form-row {
+        gap: 18px;
+    }
+
+    .form-label {
+        font-size: 13px;
+    }
+
+    .form-input,
+    .phone-select,
+    .select-input {
+        height: 52px;
+        line-height: 52px;
+        font-size: 13.5px;
+        padding: 0 16px;
+    }
+
+    .phone-select {
+        padding: 0 34px 0 16px;
+    }
+
+    .select-input {
+        padding: 0 38px 0 16px;
+    }
+
+    .btn-next {
+        padding: 15px;
+    }
+
+    .btn-edit {
+        padding: 13px;
+    }
+}
+
+/* ── 3. Max-Width 1200px ── */
+@media (max-width: 1200px) {
+    .modal-card {
+        max-width: 620px;
+    }
+
+    .modal-header {
+        padding: 26px 32px 20px 32px;
+    }
+
+    .modal-header__title {
+        font-size: 15.5px;
+    }
+
+    .modal-body {
+        padding: 20px 32px 26px 32px;
+    }
+
+    .recipient-card {
+        padding: 28px 26px;
+        gap: 14px;
+    }
+
+    .recipient-card__title {
+        font-size: 32px;
+    }
+
+    .form-form {
+        gap: 18px;
+    }
+
+    .form-row {
+        gap: 16px;
+    }
+
+    .form-label {
+        font-size: 12.5px;
+    }
+
+    .form-input,
+    .phone-select,
+    .select-input {
+        height: 50px;
+        line-height: 50px;
+        font-size: 13px;
+        padding: 0 16px;
+    }
+
+    .phone-select {
+        padding: 0 32px 0 14px;
+        min-width: 90px;
+    }
+
+    .select-input {
+        padding: 0 36px 0 14px;
+    }
+
+    .phone-field {
+        gap: 10px;
+    }
+
+    .btn-next {
+        padding: 14px;
+        font-size: 11.5px;
+    }
+
+    .btn-edit {
+        padding: 12px;
+        font-size: 11.5px;
+    }
+}
+
+/* ── 4. Max-Width 996px ── */
+@media (max-width: 996px) {
+    .modal-card {
+        max-width: 560px;
+        max-height: 86vh;
+    }
+
+    .modal-header {
+        padding: 22px 26px 18px 26px;
+    }
+
+    .modal-header__title {
+        font-size: 15px;
+    }
+
+    .modal-body {
+        padding: 18px 26px 24px 26px;
+    }
+
+    .recipient-card {
+        padding: 24px 22px;
+        gap: 14px;
+    }
+
+    .recipient-card__title {
+        font-size: 28px;
+    }
+
+    .form-form {
+        gap: 16px;
+    }
+
+    .form-row {
+        gap: 14px;
+    }
+
+    .form-label {
+        font-size: 12px;
+    }
+
+    .form-input,
+    .phone-select,
+    .select-input {
+        height: 48px;
+        line-height: 48px;
+        font-size: 13px;
+        padding: 0 14px;
+    }
+
+    .phone-select {
+        padding: 0 30px 0 12px;
+        min-width: 85px;
+    }
+
+    .select-input {
+        padding: 0 34px 0 14px;
+    }
+
+    .select-arrow {
+        right: 14px;
+    }
+
+    .phone-field {
+        gap: 10px;
+    }
+
+    .btn-next {
+        padding: 14px;
+        font-size: 11.5px;
+    }
+
+    .btn-edit {
+        padding: 12px;
+        font-size: 11.5px;
+    }
+}
+
+/* ── 5. Max-Width 768px ── */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 16px 12px;
+    }
+
+    .modal-card {
+        max-width: 500px;
+        max-height: 84vh;
+        border-radius: 14px;
+    }
+
+    .modal-header {
+        padding: 18px 20px 14px 20px;
+    }
+
+    .modal-header__title {
+        font-size: 14px;
+    }
+
+    .modal-body {
+        padding: 16px 20px 20px 20px;
+    }
+
+    .recipient-card {
+        padding: 22px 18px;
+        gap: 12px;
+        border-radius: 10px;
+    }
+
+    .recipient-card__title {
+        font-size: 26px;
+    }
+
+    .form-form {
+        gap: 16px;
+    }
+
+    .form-row {
+        gap: 12px;
+    }
+
+    .form-group {
+        gap: 5px;
+    }
+
+    .form-label {
+        font-size: 11px;
+    }
+
+    .form-input,
+    .phone-select,
+    .select-input {
+        height: 46px;
+        line-height: 46px;
+        font-size: 12.5px;
+        padding: 0 12px;
+    }
+
+    .phone-select {
+        padding: 0 28px 0 10px;
+        min-width: 80px;
+    }
+
+    .select-input {
+        padding: 0 32px 0 12px;
+    }
+
+    .select-arrow {
+        right: 12px;
+    }
+
+    .phone-field {
+        gap: 8px;
+    }
+
+    .btn-next {
+        padding: 13px;
+        font-size: 11px;
+    }
+
+    .btn-edit {
+        padding: 11px;
+        font-size: 11px;
+    }
+}
+
+/* ── 6. Max-Width 576px ── */
+@media (max-width: 576px) {
+    .modal-overlay {
+        padding: 0px;
+    }
+
+    .modal-card {
+        max-height: 80vh;
+        border-radius: 12px;
+        width: 94%;
+        max-width: 480px;
+        margin: auto;
+    }
+
+    .modal-header {
+        padding: 16px 20px 12px 20px;
+    }
+
+    .modal-header__title {
+        font-size: 13.5px;
+    }
+
+    .modal-body {
+        padding: 16px 16px 20px 16px;
+    }
+
+    .payment-summary {
+        gap: 6px;
+    }
+
+    .recipient-card {
+        padding: 20px 20px;
+        gap: 12px;
+        border-radius: 8px;
+    }
+
+    .recipient-card__title {
+        font-size: 23px;
+    }
+
+    .form-row {
+        gap: 8px;
+    }
+
+    .form-form {
+        gap: 16px;
+    }
+
+    .form-group {
+        gap: 4px;
+    }
+
+    .form-label {
+        font-size: 9px;
+    }
+
+
+
+    .payment-summary__offer-tag {
+        font-size: 12px;
+    }
+
+    .form-input,
+    .select-input,
+    .phone-select {
+        height: 48px;
+        line-height: 48px;
+        padding: 0 14px;
+        font-size: 13px;
+    }
+
+    .phone-select {
+        padding: 0 28px 0 12px;
+        min-width: 80px;
+    }
+
+    .select-input {
+        padding: 0 34px 0 14px;
+    }
+
+    .select-arrow {
+        right: 12px;
+    }
+
+    .phone-field {
+        gap: 8px;
+    }
+
+    .btn-next,
+    .btn-save {
+        padding: 14px;
+        font-size: 11px;
+    }
+
+    .btn-edit {
+        padding: 12px;
+        font-size: 11px;
+    }
+
+    .payment-summary__row {
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    .payment-summary__label {
+        font-size: 12px;
+    }
+
+    .payment-summary__value {
+        font-size: 12px;
+    }
+
+    .payment-summary__offer-wrap {
+        gap: 6px;
+    }
+
+    .payment-summary__offer-tag {
+        font-size: 11px;
+        gap: 3px;
+    }
+
+    .payment-summary__offer-tag svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .payment-summary__offer-val {
+        font-size: 13px;
+    }
+
+    .payment-summary__total-label {
+        font-size: 18px;
+    }
+
+    .payment-summary__total-value {
+        font-size: 20px;
+    }
+
+    .payment-method__title {
+        font-size: 12px;
+    }
+
+    .success-view {
+        padding: 24px 14px 32px 14px;
+        gap: 12px;
+    }
+
+    .success-icon-wrapper {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 2px;
+    }
+
+    .success-title {
+        font-size: 24px;
+    }
+
+    .success-desc {
+        font-size: 13px;
+        max-width: 320px;
+    }
+}

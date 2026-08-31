@@ -21,6 +21,7 @@ const ChevronRightIcon = () => (
 /* ── Types & Mock Data ── */
 interface CourseItem {
     id: string;
+    slug?: string;
     image: string;
     category: string;
     rating: string;
@@ -405,25 +406,39 @@ export default function MyCourses({
 
             {/* 3. 4-Column Course Cards Grid */}
             <div className={styles['my-courses__grid']}>
-                {displayedCourses.map((course) => (
-                    <CourseCard
-                        key={course.id}
-                        image={course.image}
-                        tag={course.category}
-                        rating={course.rating}
-                        traineeCount={course.traineeCount}
-                        title={course.title}
-                        subtitle={course.subtitle}
-                        progress={course.progress}
-                        module={`${course.modulesCount} module`}
-                        lessons={`${course.lessonsCount} lessons`}
-                        quizzes={`${course.quizzesCount} quizzes`}
-                        curriculum={course.steps}
-                        trainer={course.trainer}
-                        actionType="play"
-                        onPlay={() => console.log('Continue course:', course.id)}
-                    />
-                ))}
+                {displayedCourses.map((course) => {
+                    const slug =
+                        course.slug ||
+                        course.title
+                            .toLowerCase()
+                            .trim()
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/(^-|-$)/g, '') ||
+                        'hydra-facial';
+                    const courseUrl = `/dashboard/courses/${slug}`;
+
+                    return (
+                        <CourseCard
+                            key={course.id}
+                            image={course.image}
+                            tag={course.category}
+                            rating={course.rating}
+                            traineeCount={course.traineeCount}
+                            title={course.title}
+                            subtitle={course.subtitle}
+                            progress={course.progress}
+                            module={`${course.modulesCount} module`}
+                            lessons={`${course.lessonsCount} lessons`}
+                            quizzes={`${course.quizzesCount} quizzes`}
+                            curriculum={course.steps}
+                            trainer={course.trainer}
+                            actionType="play"
+                            courseUrl={courseUrl}
+                            previewUrl={courseUrl}
+                            onPlay={() => console.log('Continue course:', course.id)}
+                        />
+                    );
+                })}
             </div>
 
             {/* 4. Load More Button */}

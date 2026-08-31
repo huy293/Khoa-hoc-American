@@ -1,0 +1,1023 @@
+/* ==========================================================================
+   Course Details Intro Component Stylesheet
+   ========================================================================== */
+
+/* 1. Main Section Container */
+.course-intro {
+    width: 100%;
+    padding: 50px 40px 60px 40px;
+    background-color: #FFFFFF;
+}
+
+.course-intro__container {
+    max-width: 1670px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+/* 2. Breadcrumb Navigation */
+.course-intro__breadcrumb-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: fit-content;
+}
+
+.course-intro__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9C8E7D;
+}
+
+.breadcrumb__item {
+    color: #9C8E7D;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.breadcrumb__item:hover {
+    color: #8B5E14;
+}
+
+.breadcrumb__separator {
+    color: #C4B9A9;
+    font-size: 11px;
+}
+
+.breadcrumb__item--active {
+    color: #8B5E14;
+    font-weight: 700;
+}
+
+/* Gradient Divider Line 1 (Under Breadcrumb, matches breadcrumb width) */
+.course-intro__divider-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #996100 0%, rgba(250, 233, 211, 0) 100%);
+    margin: 0;
+}
+
+/* 3. Header: Title, Description & Instructor */
+.course-intro__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    padding-bottom: 8px;
+}
+
+.course-intro__title-col {
+    flex: 1;
+    max-width: 970px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.course-intro__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #7B5200;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.course-intro__desc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.5px;
+    color: #5A5A5A;
+    margin: 0;
+}
+
+/* Instructor Info */
+.course-intro__instructor {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    padding-top: 6px;
+}
+
+.instructor__avatar-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #EFE8DC;
+    border: 1.5px solid #D8C8B4;
+    flex-shrink: 0;
+}
+
+.instructor__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.instructor__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.instructor__name {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #000000;
+    line-height: 120%;
+    letter-spacing: 0.5px;
+}
+
+.instructor__rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.instructor__star {
+    color: #FF9C00;
+    font-size: 16px;
+}
+
+.instructor__score {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 160%;
+    letter-spacing: 0%;
+    color: #FF9C00;
+}
+
+/* 4. Main Two-Column Grid */
+.course-intro__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    align-items: stretch;
+}
+
+/* 5. Left Card: Continue Your Learning Journey */
+.continue-card {
+    background-color: #FFFCF7;
+    border: 1px solid #EFE4D3;
+    border-radius: 16px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 28px;
+    box-shadow: 0 4px 20px rgba(181, 111, 0, 0.03);
+}
+
+.continue-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.continue-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 560px;
+}
+
+.continue-card__badge-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: fit-content;
+}
+
+.continue-card__badge {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 100%;
+    letter-spacing: -0.5px;
+    color: #8A7043;
+    display: inline-block;
+}
+
+/* Gradient Divider Line 2 (Under Continue Your Learning Journey) */
+.continue-card__divider-line {
+    width: 160px;
+    height: 2px;
+    background: linear-gradient(to right, #996100 0%, rgba(250, 233, 211, 0) 100%);
+}
+
+.continue-card__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 120%;
+    letter-spacing: 0px;
+    color: #A96B00;
+}
+
+.continue-card__desc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0%;
+    color: #8B8478;
+    margin: 0;
+}
+
+/* Circular Progress Gauge (210px x 210px) */
+.progress-gauge {
+    position: relative;
+    width: 210px;
+    height: 210px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-gauge__svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-gauge__track {
+    fill: none;
+    stroke: #E5E5E5;
+    stroke-width: 12;
+}
+
+.progress-gauge__fill {
+    fill: none;
+    stroke: #F5C476;
+    stroke-width: 12;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s ease;
+}
+
+.progress-gauge__content {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.progress-gauge__percent {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #4A453D;
+}
+
+.progress-gauge__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: 0%;
+    color: #4A453D;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+/* Bottom Resume Lesson Banner */
+.resume-banner {
+    background-color: #FBF3E4;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.resume-banner:hover {
+    background-color: #F7ECD7;
+}
+
+.resume-banner__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.module-icon-box {
+    width: 48px;
+    height: 48px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.module-icon-box svg {
+    width: 100%;
+    height: 100%;
+}
+
+.resume-banner__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.resume-banner__module-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #A2711B;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resume-banner__lesson-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: #736954;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resume-banner__play-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #FFFCF8;
+    border: 1.5px solid #C49A5E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.resume-banner__play-btn:hover {
+    transform: scale(1.08);
+    border-color: #A96B00;
+    box-shadow: 0 4px 12px rgba(181, 111, 0, 0.12);
+}
+
+.resume-banner__play-btn svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* 6. Right Column: Modules List */
+.modules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.module-card {
+    flex: 1;
+    min-height: 76px;
+    background-color: #FFFCF7;
+    border: 1px solid #EFE4D3;
+    border-radius: 12px;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.module-card:hover {
+    background-color: #FFF9EE;
+    border-color: #DEC8A9;
+    box-shadow: 0 4px 14px rgba(181, 111, 0, 0.05);
+}
+
+.module-card__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.module-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.module-card__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #A2711B;
+    margin: 0;
+}
+
+.module-card__meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #595349;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-bullet {
+    color: #AFA292;
+    font-size: 11px;
+}
+
+/* Circular Progress Badge (56px x 56px) */
+.module-badge {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.module-badge__svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.module-badge__track {
+    fill: none;
+    stroke: #EAE3D5;
+    stroke-width: 5;
+}
+
+.module-badge__fill {
+    fill: none;
+    stroke: #F5C476;
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+}
+
+.module-badge__text {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #595959;
+}
+
+/* ==========================================================================
+   Container Queries & Responsive Breakpoints (Desktop Ratio Preserved)
+   ========================================================================== */
+
+/* ── Large Desktop / Ultrawide <= 1440px container ── */
+@container dashboard-main (max-width: 1440px) {
+    .course-intro {
+        padding: 40px 36px 50px 36px;
+    }
+
+    .course-intro__container {
+        gap: 40px;
+    }
+
+    .course-intro__title {
+        font-size: 48px;
+    }
+
+    .course-intro__grid {
+        grid-template-columns: 1.2fr 1fr;
+        gap: 28px;
+    }
+
+    .continue-card {
+        padding: 32px;
+        gap: 24px;
+    }
+
+    .continue-card__title {
+        font-size: 32px;
+    }
+
+    .continue-card__badge {
+        font-size: 18px;
+    }
+
+    .progress-gauge {
+        width: 190px;
+        height: 190px;
+    }
+
+    .progress-gauge__percent {
+        font-size: 26px;
+    }
+
+    .progress-gauge__label {
+        font-size: 15px;
+    }
+
+    .module-card {
+        padding: 15px 20px;
+    }
+
+    .module-card__title {
+        font-size: 18.5px;
+    }
+
+    .module-card__meta {
+        font-size: 14px;
+    }
+}
+
+/* ── Standard Desktop / Laptop <= 1200px container (~1440px screen) ── */
+@container dashboard-main (max-width: 1200px) {
+    .course-intro {
+        padding: 36px 28px 44px 28px;
+    }
+
+    .course-intro__container {
+        gap: 36px;
+    }
+
+    .course-intro__title {
+        font-size: 42px;
+    }
+
+    .course-intro__desc {
+        font-size: 15px;
+        line-height: 22px;
+    }
+
+    .instructor__name {
+        font-size: 18px;
+    }
+
+    .instructor__score {
+        font-size: 18px;
+    }
+
+    .course-intro__grid {
+        grid-template-columns: 1.18fr 1fr;
+        gap: 24px;
+    }
+
+    .continue-card {
+        padding: 26px;
+        gap: 20px;
+    }
+
+    .continue-card__badge {
+        font-size: 17px;
+    }
+
+    .continue-card__title {
+        font-size: 28px;
+    }
+
+    .continue-card__desc {
+        font-size: 13.5px;
+        line-height: 19px;
+    }
+
+    .progress-gauge {
+        width: 170px;
+        height: 170px;
+    }
+
+    .progress-gauge__percent {
+        font-size: 24px;
+    }
+
+    .progress-gauge__label {
+        font-size: 13.5px;
+    }
+
+    .resume-banner {
+        padding: 14px 16px;
+    }
+
+    .resume-banner__module-title {
+        font-size: 18px;
+    }
+
+    .resume-banner__lesson-title {
+        font-size: 16px;
+    }
+
+    .module-card {
+        padding: 14px 18px;
+        gap: 14px;
+    }
+
+    .module-card__title {
+        font-size: 17px;
+    }
+
+    .module-card__meta {
+        font-size: 13.5px;
+    }
+
+    .module-badge {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* ── Compact Laptop / Tablet Landscape <= 1000px container (~1280px screen) ── */
+@container dashboard-main (max-width: 1000px) {
+    .course-intro {
+        padding: 30px 24px 40px 24px;
+    }
+
+    .course-intro__container {
+        gap: 30px;
+    }
+
+    .course-intro__title {
+        font-size: 36px;
+    }
+
+    .course-intro__grid {
+        grid-template-columns: 1.15fr 1fr;
+        gap: 20px;
+    }
+
+    .continue-card {
+        padding: 22px 20px;
+        gap: 18px;
+    }
+
+    .continue-card__badge {
+        font-size: 16px;
+    }
+
+    .continue-card__title {
+        font-size: 25px;
+    }
+
+    .continue-card__desc {
+        font-size: 13px;
+        line-height: 18px;
+    }
+
+    .progress-gauge {
+        width: 155px;
+        height: 155px;
+    }
+
+    .progress-gauge__percent {
+        font-size: 22px;
+    }
+
+    .progress-gauge__label {
+        font-size: 12px;
+    }
+
+    .resume-banner {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .resume-banner__icon-box {
+        width: 40px;
+        height: 40px;
+    }
+
+    .resume-banner__module-title {
+        font-size: 16px;
+    }
+
+    .resume-banner__lesson-title {
+        font-size: 14px;
+    }
+
+    .resume-banner__play-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .resume-banner__play-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .module-card {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .module-icon-box {
+        width: 42px;
+        height: 42px;
+    }
+
+    .module-card__title {
+        font-size: 16px;
+    }
+
+    .module-card__meta {
+        font-size: 13px;
+    }
+
+    .module-badge {
+        width: 46px;
+        height: 46px;
+    }
+
+    .module-badge__text {
+        font-size: 11px;
+    }
+}
+
+/* ── Tablet / Collapsed Grid <= 860px container ── */
+@container dashboard-main (max-width: 860px) {
+    .course-intro {
+        padding: 24px 20px 36px 20px;
+    }
+
+    .course-intro__container {
+        gap: 28px;
+    }
+
+    .course-intro__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .course-intro__title {
+        font-size: 32px;
+    }
+
+    .course-intro__desc {
+        font-size: 14.5px;
+        line-height: 21px;
+    }
+
+    .course-intro__grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .continue-card {
+        padding: 26px 24px;
+    }
+
+    .modules-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .module-card {
+        padding: 16px 18px;
+    }
+}
+
+/* ── Mobile Landscape / Tablet <= 680px container ── */
+@container dashboard-main (max-width: 680px) {
+    .course-intro {
+        padding: 20px 16px 30px 16px;
+    }
+
+    .course-intro__container {
+        gap: 24px;
+    }
+
+    .course-intro__title {
+        font-size: 28px;
+    }
+
+    .instructor__avatar-wrap {
+        width: 44px;
+        height: 44px;
+    }
+
+    .instructor__name {
+        font-size: 17px;
+    }
+
+    .instructor__score {
+        font-size: 17px;
+    }
+
+    .continue-card {
+        padding: 20px 16px;
+        border-radius: 12px;
+        gap: 18px;
+    }
+
+    .continue-card__top {
+        flex-direction: column-reverse;
+        align-items: center;
+        text-align: center;
+        gap: 18px;
+    }
+
+    .continue-card__info {
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .continue-card__badge {
+        font-size: 16px;
+    }
+
+    .continue-card__title {
+        font-size: 24px;
+    }
+
+    .continue-card__desc {
+        font-size: 13.5px;
+        text-align: center;
+    }
+
+    .progress-gauge {
+        width: 150px;
+        height: 150px;
+    }
+
+    .progress-gauge__percent {
+        font-size: 22px;
+    }
+
+    .progress-gauge__label {
+        font-size: 12px;
+    }
+
+    .modules-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .module-card {
+        padding: 14px 16px;
+    }
+
+    .module-card__title {
+        font-size: 16px;
+    }
+
+    .module-card__meta {
+        font-size: 13px;
+    }
+
+    .module-badge {
+        width: 46px;
+        height: 46px;
+    }
+
+    .module-badge__text {
+        font-size: 11px;
+    }
+}
+
+/* ── Small Mobile <= 480px container ── */
+@container dashboard-main (max-width: 480px) {
+    .course-intro {
+        padding: 16px 12px 24px 12px;
+    }
+
+    .course-intro__container {
+        gap: 20px;
+    }
+
+    .course-intro__breadcrumb {
+        font-size: 11px;
+        gap: 6px;
+    }
+
+    .course-intro__title {
+        font-size: 23px;
+    }
+
+    .course-intro__desc {
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    .instructor__avatar-wrap {
+        width: 40px;
+        height: 40px;
+    }
+
+    .instructor__name {
+        font-size: 15px;
+    }
+
+    .instructor__score {
+        font-size: 15px;
+    }
+
+    .continue-card {
+        padding: 16px 12px;
+        gap: 14px;
+    }
+
+    .continue-card__badge {
+        font-size: 14px;
+    }
+
+    .continue-card__title {
+        font-size: 20px;
+    }
+
+    .progress-gauge {
+        width: 130px;
+        height: 130px;
+    }
+
+    .progress-gauge__percent {
+        font-size: 20px;
+    }
+
+    .progress-gauge__label {
+        font-size: 11px;
+    }
+
+    .resume-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .resume-banner__left {
+        width: 100%;
+    }
+
+    .resume-banner__play-btn {
+        align-self: flex-end;
+    }
+
+    .module-card {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .module-icon-box {
+        width: 40px;
+        height: 40px;
+    }
+
+    .module-card__title {
+        font-size: 15px;
+    }
+
+    .module-card__meta {
+        font-size: 12px;
+    }
+
+    .module-badge {
+        width: 42px;
+        height: 42px;
+    }
+
+    .module-badge__text {
+        font-size: 10px;
+    }
+}
