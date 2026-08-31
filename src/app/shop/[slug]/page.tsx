@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import ProductDetailContent from "./ProductDetailContent";
-import { getRestCustomPostType } from "@/lib/wordpress-queries";
-import { WPProduct } from "@/types/wordpress";
+import { getWpProducts, getWpProductBySlug } from "@/lib/wordpress-queries";
 
 interface PageProps {
     params: Promise<{
@@ -14,7 +13,7 @@ interface PageProps {
  */
 export async function generateStaticParams() {
     try {
-        const products = await getRestCustomPostType<WPProduct>("product", { per_page: 50 });
+        const products = await getWpProducts(50);
         return (products || []).map((product) => ({
             slug: product.slug,
         }));
@@ -28,14 +27,24 @@ export async function generateStaticParams() {
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
+    const product = await getWpProductBySlug(slug);
     return {
-        title: `Chi tiết sản phẩm - ${slug} | Couture Beauty Academy`,
-        description: `Thông tin và thông số chi tiết sản phẩm ${slug}`,
+        title: `${product?.name || slug} | Couture Beauty Academy`,
+        description: product?.shortDescription || product?.description || `Chi tiết sản phẩm ${product?.name || slug}`,
     };
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
     const { slug } = await params;
+    const product = await getWpProductBySlug(slug);
+    const suggestedProducts = await getWpProducts(10);
 
-    return <ProductDetailContent slug={slug} />;
+    return (
+        <ProductDetailContent
+            slug={slug}
+            initialProduct={product || undefined}
+            suggestedProducts={suggestedProducts}
+        />
+    );
 }
+

@@ -106,6 +106,29 @@
     gap: 48px;
 }
 
+.our-impact__grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.our-impact__grid--4 .our-impact__card {
+    padding: 28px 20px 28px;
+}
+
+@media (max-width: 1200px) {
+    .our-impact__grid--4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .our-impact__grid--4 {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
 .our-impact__card {
     position: relative;
     background: linear-gradient(82.46deg, #FFF8EF 5.82%, #FFFFFF 50.01%, #FFF8EF 94.2%);

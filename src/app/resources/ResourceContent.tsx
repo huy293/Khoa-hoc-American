@@ -14,55 +14,13 @@ import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/free-mode';
 
-const BLOG_POSTS = [
-    {
-        id: '1',
-        image: '/images/courses/card-hydra.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/home/coutrue-beauty-academy_member.png',
-            date: 'Dec 28,2026',
-        },
-        readTime: '1 min read',
-    },
-    {
-        id: '2',
-        image: '/images/courses/card-derma.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/home/coutrue-beauty-academy_member.png',
-            date: 'Dec 28,2026',
-        },
-        readTime: '1 min read',
-    },
-    {
-        id: '3',
-        image: '/images/courses/card-towel.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/home/coutrue-beauty-academy_member.png',
-            date: 'Dec 28,2026',
-        },
-        readTime: '1 min read',
-    },
-    {
-        id: '4',
-        image: '/images/courses/card-advance.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/home/coutrue-beauty-academy_member.png',
-            date: 'Dec 28,2026',
-        },
-        readTime: '1 min read',
-    },
+import { WPPost } from '@/types/wordpress';
+
+const DEFAULT_POST_IMAGES = [
+    '/images/courses/card-hydra.jpg',
+    '/images/courses/card-derma.jpg',
+    '/images/courses/card-towel.jpg',
+    '/images/courses/card-advance.jpg',
 ];
 
 const galleryImages = [
@@ -88,9 +46,100 @@ const galleryImages = [
     '/images/gallery/image-10.jpg',
 ];
 
-export default function ResourceContent() {
+interface ResourceContentProps {
+    initialPosts?: WPPost[];
+}
+
+export default function ResourceContent({ initialPosts }: ResourceContentProps = {}) {
     const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
     const [activeIndex, setActiveIndex] = useState<number>(0);
+    const [visibleCount, setVisibleCount] = useState<number>(4);
+
+    // Map WordPress Posts or Fallback Posts
+    const postsList = (initialPosts && initialPosts.length > 0)
+        ? initialPosts.map((post, index) => {
+            const rawExcerpt = post.excerpt ? post.excerpt.replace(/<[^>]*>/g, '').trim() : '';
+            const dateStr = post.date
+                ? new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : 'Dec 28, 2026';
+            const wordCount = (post.content || post.excerpt || '').split(/\s+/).length;
+            const readMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+            return {
+                id: post.id || String(post.databaseId || index),
+                slug: post.slug,
+                image: post.featuredImage?.node?.sourceUrl || DEFAULT_POST_IMAGES[index % DEFAULT_POST_IMAGES.length],
+                title: post.title,
+                description: rawExcerpt || 'Practical advice from experienced beauty educators to help you assess client needs.',
+                author: {
+                    name: post.author?.node?.name || 'Thy Anh Pham Nguyen',
+                    avatar: post.author?.node?.avatar?.url || '/images/home/coutrue-beauty-academy_member.png',
+                    date: dateStr,
+                },
+                readTime: `${readMinutes} min read`,
+            };
+        })
+        : [
+            {
+                id: '1',
+                slug: '5-hydrafacial-techniques-every-esthetician-should-know',
+                image: '/images/courses/card-hydra.jpg',
+                title: '5 HydraFacial Techniques Every Esthetician Should Know',
+                description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
+                author: {
+                    name: 'Thy Anh Pham Nguyen',
+                    avatar: '/images/home/coutrue-beauty-academy_member.png',
+                    date: 'Dec 28, 2026',
+                },
+                readTime: '1 min read',
+            },
+            {
+                id: '2',
+                slug: 'microneedling-vs-microdermabrasion',
+                image: '/images/courses/card-derma.jpg',
+                title: 'Microneedling vs Microdermabrasion: Which is Right for Your Clients?',
+                description: 'Explore the key clinical differences and treatment selection protocols for optimal client skin rejuvenation.',
+                author: {
+                    name: 'Thy Anh Pham Nguyen',
+                    avatar: '/images/home/coutrue-beauty-academy_member.png',
+                    date: 'Dec 28, 2026',
+                },
+                readTime: '2 min read',
+            },
+            {
+                id: '3',
+                slug: 'towel-sanitization-protocols',
+                image: '/images/courses/card-towel.jpg',
+                title: 'Essential Hygiene and Towel Sanitization Protocols in Spa Settings',
+                description: 'Master strict medical-grade sterilization and hygiene workflows to elevate clinic safety standards.',
+                author: {
+                    name: 'Thy Anh Pham Nguyen',
+                    avatar: '/images/home/coutrue-beauty-academy_member.png',
+                    date: 'Dec 28, 2026',
+                },
+                readTime: '1 min read',
+            },
+            {
+                id: '4',
+                slug: 'advanced-skin-peeling-science',
+                image: '/images/courses/card-advance.jpg',
+                title: 'Advanced Chemical Peeling: pH, Concentrations, and Layering Rules',
+                description: 'A comprehensive scientific guide for managing acids, depth of penetration, and client post-care.',
+                author: {
+                    name: 'Thy Anh Pham Nguyen',
+                    avatar: '/images/home/coutrue-beauty-academy_member.png',
+                    date: 'Dec 28, 2026',
+                },
+                readTime: '3 min read',
+            },
+        ];
+
+    const visiblePosts = postsList.slice(0, visibleCount);
+
+    const handleLoadMore = () => {
+        setVisibleCount((prev) => Math.min(prev + 4, postsList.length));
+    };
+
     return (
         <>
             {/* ==========================================
@@ -168,7 +217,7 @@ export default function ResourceContent() {
                         </div>
 
                         <div className={styles['resources-blog__grid']}>
-                            {BLOG_POSTS.map((post) => (
+                            {visiblePosts.map((post) => (
                                 <ResourceBlogCard
                                     key={post.id}
                                     image={post.image}
@@ -181,14 +230,20 @@ export default function ResourceContent() {
                         </div>
 
                         {/* Load More Button */}
-                        <div className={styles['resources-blog__footer']}>
-                            <button type="button" className={styles['resources-blog__load-more']}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="6 9 12 15 18 9" />
-                                </svg>
-                                <span>Load more</span>
-                            </button>
-                        </div>
+                        {visibleCount < postsList.length && (
+                            <div className={styles['resources-blog__footer']}>
+                                <button
+                                    type="button"
+                                    className={styles['resources-blog__load-more']}
+                                    onClick={handleLoadMore}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                    <span>Load more ({postsList.length - visibleCount} remaining)</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>

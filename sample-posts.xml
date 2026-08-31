@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:wp="http://wordpress.org/export/1.2/"
+>
+<channel>
+	<title>Couture Beauty Academy</title>
+	<link>https://course-amc.homenest.edu.vn</link>
+	<description>Beauty Training &amp; Esthetics Insights</description>
+	<pubDate>Sat, 29 Aug 2026 13:25:00 +0000</pubDate>
+	<language>en-US</language>
+	<wp:wxr_version>1.2</wp:wxr_version>
+	<wp:base_site_url>https://course-amc.homenest.edu.vn</wp:base_site_url>
+	<wp:base_blog_url>https://course-amc.homenest.edu.vn</wp:base_blog_url>
+
+	<wp:category>
+		<wp:term_id>101</wp:term_id>
+		<wp:category_nicename>beauty-insights</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Beauty Insights]]></wp:cat_name>
+	</wp:category>
+	<wp:category>
+		<wp:term_id>102</wp:term_id>
+		<wp:category_nicename>expert-advice</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Expert Advice]]></wp:cat_name>
+	</wp:category>
+	<wp:category>
+		<wp:term_id>103</wp:term_id>
+		<wp:category_nicename>skin-care</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Skin Care]]></wp:cat_name>
+	</wp:category>
+	<wp:category>
+		<wp:term_id>104</wp:term_id>
+		<wp:category_nicename>pmu-techniques</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[PMU Techniques]]></wp:cat_name>
+	</wp:category>
+
+	<!-- Post 1 -->
+	<item>
+		<title>5 HydraFacial Techniques Every Esthetician Should Know</title>
+		<link>https://course-amc.homenest.edu.vn/5-hydrafacial-techniques-every-esthetician-should-know</link>
+		<pubDate>Thu, 28 Aug 2026 08:30:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2001</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Mastering the Modern HydraFacial Treatment</h2>
+<p>HydraFacial has revolutionized non-invasive skincare by combining cleansing, exfoliation, extraction, hydration, and antioxidant protection simultaneously. For professional estheticians, understanding precise handpiece pressure and vortex infusion speed is essential to maximizing client results.</p>
+<h3>1. Dynamic Vortex Suction Calibration</h3>
+<p>Adjust the vortex suction level according to skin sensitivity and zone. The T-zone can handle higher suction for deep sebum extraction, while the periorbital area requires minimal vacuum pressure to avoid micro-bruising.</p>
+<h3>2. Dual-Pass Exfoliation Protocol</h3>
+<p>Utilize the blue tip for an initial mechanical sweeping pass with salicylic and glycolic acid complexes, followed by a concentrated spot pass over areas with dense comedones.</p>
+<h3>3. Temperature-Optimized Peptide Infusion</h3>
+<p>Ensure antioxidant and hyaluronic serums are delivered at room temperature to encourage maximum transdermal absorption before applying LED light therapy.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.]]></excerpt:encoded>
+		<wp:post_id>2001</wp:post_id>
+		<wp:post_date>2026-08-28 15:30:00</wp:post_date>
+		<wp:post_name>5-hydrafacial-techniques-every-esthetician-should-know</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+	</item>
+
+	<!-- Post 2 -->
+	<item>
+		<title>Mastering the Art of Nano Eyebrow Shading &amp; Microblading</title>
+		<link>https://course-amc.homenest.edu.vn/mastering-the-art-of-nano-eyebrow-shading-microblading</link>
+		<pubDate>Wed, 27 Aug 2026 10:15:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2002</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>The Evolution of Modern PMU Eyebrow Artistry</h2>
+<p>Nano brow techniques have transformed permanent makeup by delivering hyper-realistic hair strokes with significantly less trauma than traditional blade-based microblading.</p>
+<h3>Needle Angle and Depth Control</h3>
+<p>Maintain a strict 90-degree insertion angle with a 0.18mm single needle cartridge. Implant pigment into the upper papillary dermis at a depth of 0.3mm to 0.5mm to prevent color blurring or grayish hue shifts overtime.</p>
+<h3>Color Theory &amp; Skin Undertone Matching</h3>
+<p>Always analyze Fitzpatrick skin types before selecting pigments. Add warm modifier drops for clients with cool undertones to ensure healed results heal into crisp, natural hazel hues.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Discover essential needle configurations, angle control, and pigment blending formulas for flawless powder ombre brows.]]></excerpt:encoded>
+		<wp:post_id>2002</wp:post_id>
+		<wp:post_date>2026-08-27 17:15:00</wp:post_date>
+		<wp:post_name>mastering-the-art-of-nano-eyebrow-shading-microblading</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="pmu-techniques"><![CDATA[PMU Techniques]]></category>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 3 -->
+	<item>
+		<title>Advanced Chemical Peels: Safety Protocols and Skin Assessment</title>
+		<link>https://course-amc.homenest.edu.vn/advanced-chemical-peels-safety-protocols-skin-assessment</link>
+		<pubDate>Tue, 26 Aug 2026 09:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2003</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Clinical Acid Formulations for Professional Estheticians</h2>
+<p>Chemical peeling remains one of the most effective non-surgical tools for cellular regeneration, treating hyperpigmentation, acne scars, and photoaging.</p>
+<h3>Pre-Peel Skin Priming</h3>
+<p>Prepare the patient's skin 2 weeks in advance with low-concentration AHA/BHA cleansers and tyrosinase inhibitors to prevent post-inflammatory hyperpigmentation (PIH).</p>
+<h3>Neutralization and Frosting Identification</h3>
+<p>Distinguish between true protein coagulation frosting and pseudo-frosting (salicylic crystallization). Always have cold saline neutralizer ready during medium-depth TCA procedures.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Step-by-step clinical guidance on selecting AHA, BHA, and TCA peel strengths while minimizing recovery downtime.]]></excerpt:encoded>
+		<wp:post_id>2003</wp:post_id>
+		<wp:post_date>2026-08-26 16:00:00</wp:post_date>
+		<wp:post_name>advanced-chemical-peels-safety-protocols-skin-assessment</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+	</item>
+
+	<!-- Post 4 -->
+	<item>
+		<title>How to Build a Successful PMU &amp; Beauty Clinic in 2026</title>
+		<link>https://course-amc.homenest.edu.vn/how-to-build-a-successful-pmu-beauty-clinic-in-2026</link>
+		<pubDate>Mon, 25 Aug 2026 14:20:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2004</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Strategic Business Foundations for Esthetic Entrepreneurs</h2>
+<p>Technical skill is only half the battle; establishing a scalable, profitable beauty clinic requires strategic pricing, compliance certification, and exceptional client retention workflows.</p>
+<h3>1. High-Converting Consultation Protocols</h3>
+<p>Use digital facial mapping during consultations to help clients visualize realistic treatment timelines and post-healed results.</p>
+<h3>2. Premium Aftercare Packaging</h3>
+<p>Provide branded aftercare kits with step-by-step healing calendars to enhance client satisfaction and encourage organic social word-of-mouth.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Business strategies, client retention systems, and licensing roadmaps for aspiring beauty studio founders.]]></excerpt:encoded>
+		<wp:post_id>2004</wp:post_id>
+		<wp:post_date>2026-08-25 21:20:00</wp:post_date>
+		<wp:post_name>how-to-build-a-successful-pmu-beauty-clinic-in-2026</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 5 -->
+	<item>
+		<title>Dermalogica Pro Skin Treatment: Step-by-Step Protocol</title>
+		<link>https://course-amc.homenest.edu.vn/dermalogica-pro-skin-treatment-step-by-step-protocol</link>
+		<pubDate>Sun, 24 Aug 2026 11:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2005</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Standard Operating Procedures for Intensive Facial Therapy</h2>
+<p>Dermalogica ProSkin treatments are designed around modular 30 and 60-minute workflows targeting specific skin concerns through Face Mapping analysis.</p>
+<h3>Double Cleansing and PreCleanse Oil</h3>
+<p>Start with hydrophilic lipid-based cleansing to dissolve stubborn sunscreen and sebum before deep pore cleansing with active botanical formulas.</p>
+<h3>Targeted Modality Layering</h3>
+<p>Combine high-frequency ozone therapy for acne-prone skin with ultrasound galvanic iontophoresis to drive hyaluronic serums into deeper epidermal layers.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Comprehensive treatment guide for certified estheticians implementing custom Dermalogica skin health protocols.]]></excerpt:encoded>
+		<wp:post_id>2005</wp:post_id>
+		<wp:post_date>2026-08-24 18:00:00</wp:post_date>
+		<wp:post_name>dermalogica-pro-skin-treatment-step-by-step-protocol</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+	</item>
+
+	<!-- Post 6 -->
+	<item>
+		<title>Lip Blushing Color Correction: Neutralizing Dark Tones</title>
+		<link>https://course-amc.homenest.edu.vn/lip-blushing-color-correction-neutralizing-dark-tones</link>
+		<pubDate>Sat, 23 Aug 2026 09:45:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2006</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Advanced PMU Pigment Neutralization Techniques</h2>
+<p>Correcting cool or hyperpigmented lips requires an understanding of complementary color wheels and proper needle deposit technique to avoid patchy healing.</p>
+<h3>Targeting Blue and Purple Undertones with Warm Orange</h3>
+<p>Never apply pink or red directly onto cool, hyperpigmented lips. The first session must focus entirely on warm orange/ochre neutralization before introducing target shades in session two.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Master the color science of neutralizing cool melanin tones for radiant, long-lasting lip blush transformations.]]></excerpt:encoded>
+		<wp:post_id>2006</wp:post_id>
+		<wp:post_date>2026-08-23 16:45:00</wp:post_date>
+		<wp:post_name>lip-blushing-color-correction-neutralizing-dark-tones</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="pmu-techniques"><![CDATA[PMU Techniques]]></category>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 7 -->
+	<item>
+		<title>The Science of LED Light Therapy in Post-Acne Recovery</title>
+		<link>https://course-amc.homenest.edu.vn/science-of-led-light-therapy-post-acne-recovery</link>
+		<pubDate>Fri, 22 Aug 2026 13:10:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2007</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Photobiomodulation in Modern Esthetics</h2>
+<p>Low-level light therapy (LLLT) uses specific wavelengths (415nm Blue and 633nm Red) to stimulate cellular ATP production while eradicating P. acnes bacteria.</p>
+<p>Clinical studies show combining blue light with red light accelerates wound healing by 45% compared to conventional topical therapies alone.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[How targeted blue and red phototherapy accelerates cellular regeneration and eliminates stubborn acne bacteria.]]></excerpt:encoded>
+		<wp:post_id>2007</wp:post_id>
+		<wp:post_date>2026-08-22 20:10:00</wp:post_date>
+		<wp:post_name>science-of-led-light-therapy-post-acne-recovery</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+	</item>
+
+	<!-- Post 8 -->
+	<item>
+		<title>Microchanneling vs Microneedling: Which Delivers Superior Results?</title>
+		<link>https://course-amc.homenest.edu.vn/microchanneling-vs-microneedling-superior-results</link>
+		<pubDate>Thu, 21 Aug 2026 10:30:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2008</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Comparative Analysis of Transdermal Delivery Technologies</h2>
+<p>While traditional microneedling creates micro-injuries through rolling or oscillating pens, microchanneling uses precision stamping filaments that prevent epidermal tearing.</p>
+<p>Paired with growth factors, microchanneling offers faster re-epithelialization with minimal erythema and less than 24 hours of client downtime.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[A technical breakdown of mechanical trauma, collagen stimulation, and client healing timelines.]]></excerpt:encoded>
+		<wp:post_id>2008</wp:post_id>
+		<wp:post_date>2026-08-21 17:30:00</wp:post_date>
+		<wp:post_name>microchanneling-vs-microneedling-superior-results</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 9 -->
+	<item>
+		<title>Hyaluronic Acid Molecular Weights and Deep Dermal Hydration</title>
+		<link>https://course-amc.homenest.edu.vn/hyaluronic-acid-molecular-weights-deep-dermal-hydration</link>
+		<pubDate>Wed, 20 Aug 2026 15:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2009</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Understanding Multi-Weight Hyaluronic Acid Formulations</h2>
+<p>High-molecular weight HA forms an invisible moisture-retentive film on the stratum corneum, while ultra-low molecular weight HA penetrates the dermal-epidermal junction to stimulate endogenous collagen synthesis.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Why multi-molecular hyaluronic acid cocktails are crucial for plumping fine lines and reinforcing skin elasticity.]]></excerpt:encoded>
+		<wp:post_id>2009</wp:post_id>
+		<wp:post_date>2026-08-20 22:00:00</wp:post_date>
+		<wp:post_name>hyaluronic-acid-molecular-weights-deep-dermal-hydration</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+	</item>
+
+	<!-- Post 10 -->
+	<item>
+		<title>Eyeliner Tattoo Artistry: Classic Wing vs Stardust Shading</title>
+		<link>https://course-amc.homenest.edu.vn/eyeliner-tattoo-artistry-classic-wing-vs-stardust-shading</link>
+		<pubDate>Tue, 19 Aug 2026 09:15:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2010</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Precision Techniques for Delicate Eyelid Anatomy</h2>
+<p>Stardust eyeliner uses a soft pixelated shading technique along the lash line to give a smoky eyeshadow gradient effect, making it suitable for aging or hooded lids where sharp liquid wings may distort.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Master subtle lash enhancements and gradient stardust shading for diverse client eye shapes.]]></excerpt:encoded>
+		<wp:post_id>2010</wp:post_id>
+		<wp:post_date>2026-08-19 16:15:00</wp:post_date>
+		<wp:post_name>eyeliner-tattoo-artistry-classic-wing-vs-stardust-shading</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="pmu-techniques"><![CDATA[PMU Techniques]]></category>
+	</item>
+
+	<!-- Post 11 -->
+	<item>
+		<title>Sterilization &amp; Infection Control Standards in Modern Medical Spas</title>
+		<link>https://course-amc.homenest.edu.vn/sterilization-infection-control-standards-medical-spas</link>
+		<pubDate>Mon, 18 Aug 2026 11:45:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2011</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>OSHA &amp; CDC Compliance for Aesthetic Practitioners</h2>
+<p>Maintaining autoclaving logs, single-use barrier films, and hospital-grade EPA disinfectants protects both your clients and clinic reputation against cross-contamination.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Crucial sanitation and autoclave protocols to ensure a 100% sterile clinical environment.]]></excerpt:encoded>
+		<wp:post_id>2011</wp:post_id>
+		<wp:post_date>2026-08-18 18:45:00</wp:post_date>
+		<wp:post_name>sterilization-infection-control-standards-medical-spas</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 12 -->
+	<item>
+		<title>Retinoids and Peptides: Synergistic Anti-Aging Formulation Protocols</title>
+		<link>https://course-amc.homenest.edu.vn/retinoids-and-peptides-synergistic-anti-aging-protocols</link>
+		<pubDate>Sun, 17 Aug 2026 08:30:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2012</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Combining Signal Peptides with Encapsulated Retinol</h2>
+<p>Learn how to formulate treatment plans pairing Palmitoyl Tripeptide-38 with encapsulated retinoic esters to maximize collagen remodeling without compromising barrier lipids.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[How to prescribe active anti-aging regimens that remodel collagen without causing irritation.]]></excerpt:encoded>
+		<wp:post_id>2012</wp:post_id>
+		<wp:post_date>2026-08-17 15:30:00</wp:post_date>
+		<wp:post_name>retinoids-and-peptides-synergistic-anti-aging-protocols</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+	</item>
+
+	<!-- Post 13 -->
+	<item>
+		<title>Client Skin Mapping: The 14-Zone Diagnostic Method</title>
+		<link>https://course-amc.homenest.edu.vn/client-skin-mapping-14-zone-diagnostic-method</link>
+		<pubDate>Sat, 16 Aug 2026 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2013</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Systematic Facial Skin Analysis</h2>
+<p>The 14-zone diagnostic method breaks down the forehead, cheeks, jawline, and décolleté into distinct analysis sectors to customize professional treatment cocktails.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[A methodical diagnostic framework to diagnose underlying dehydration, congestion, and sensitivity.]]></excerpt:encoded>
+		<wp:post_id>2013</wp:post_id>
+		<wp:post_date>2026-08-16 21:00:00</wp:post_date>
+		<wp:post_name>client-skin-mapping-14-zone-diagnostic-method</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+	</item>
+
+	<!-- Post 14 -->
+	<item>
+		<title>Permanent Makeup Aftercare: Complete Healing Timeline &amp; Guidelines</title>
+		<link>https://course-amc.homenest.edu.vn/permanent-makeup-aftercare-complete-healing-timeline</link>
+		<pubDate>Fri, 15 Aug 2026 10:20:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2014</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Guiding Clients from Day 1 to Day 30 Post-Procedure</h2>
+<p>Day 1 to 4 involves lymph blotting and dry healing, followed by natural light flaking on Days 5 to 10. True pigment bloom occurs around Week 4 before the mandatory touchup session.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Educate your clients with a day-by-day healing roadmap to ensure 90%+ pigment retention.]]></excerpt:encoded>
+		<wp:post_id>2014</wp:post_id>
+		<wp:post_date>2026-08-15 17:20:00</wp:post_date>
+		<wp:post_name>permanent-makeup-aftercare-complete-healing-timeline</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="pmu-techniques"><![CDATA[PMU Techniques]]></category>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 15 -->
+	<item>
+		<title>Overcoming Melasma: Combined Laser &amp; Tyrosinase Inhibitor Strategies</title>
+		<link>https://course-amc.homenest.edu.vn/overcoming-melasma-combined-laser-tyrosinase-strategies</link>
+		<pubDate>Thu, 14 Aug 2026 16:30:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2015</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Managing Recalcitrant Pigmentation Safely</h2>
+<p>Treating hormonal melasma requires gentle toning lasers combined with topical tranexamic acid, kojic acid, and strict zinc oxide sun shields to suppress melanocyte hyperactivity.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Clinical treatment protocols for managing deep dermal melasma without triggering rebound hyperpigmentation.]]></excerpt:encoded>
+		<wp:post_id>2015</wp:post_id>
+		<wp:post_date>2026-08-14 23:30:00</wp:post_date>
+		<wp:post_name>overcoming-melasma-combined-laser-tyrosinase-strategies</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+	</item>
+
+	<!-- Post 16 -->
+	<item>
+		<title>Mastering Lymphatic Drainage Facial Massage for Puffiness &amp; Contour</title>
+		<link>https://course-amc.homenest.edu.vn/mastering-lymphatic-drainage-facial-massage</link>
+		<pubDate>Wed, 13 Aug 2026 09:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2016</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>The Vodder Method in Esthetic Practice</h2>
+<p>Light rhythmic pumping motions towards the preauricular and cervical lymph nodes instantly drain stagnant interstitial fluid, sculpt cheekbones, and soothe inflammatory swelling.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Step-by-step manual drainage techniques to reduce facial puffiness and enhance jawline definition.]]></excerpt:encoded>
+		<wp:post_id>2016</wp:post_id>
+		<wp:post_date>2026-08-13 16:00:00</wp:post_date>
+		<wp:post_name>mastering-lymphatic-drainage-facial-massage</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+	</item>
+
+	<!-- Post 17 -->
+	<item>
+		<title>The Role of Ceramides in Restoring Compromised Lipid Barriers</title>
+		<link>https://course-amc.homenest.edu.vn/role-of-ceramides-restoring-compromised-lipid-barriers</link>
+		<pubDate>Tue, 12 Aug 2026 11:15:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2017</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>The 3:1:1 Ratio of Ceramides, Cholesterol, and Fatty Acids</h2>
+<p>Repairing over-exfoliated skin requires applying physiological lipid ratios to restore the intercellular cement and stop transepidermal water loss (TEWL).</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Why physiological lipid ratios are essential for repairing over-exfoliated, sensitized skin.]]></excerpt:encoded>
+		<wp:post_id>2017</wp:post_id>
+		<wp:post_date>2026-08-12 18:15:00</wp:post_date>
+		<wp:post_name>role-of-ceramides-restoring-compromised-lipid-barriers</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+	</item>
+
+	<!-- Post 18 -->
+	<item>
+		<title>Digital PMU Speed Calibration: Balancing RPM and Hand Movement</title>
+		<link>https://course-amc.homenest.edu.vn/digital-pmu-speed-calibration-rpm-hand-movement</link>
+		<pubDate>Mon, 11 Aug 2026 13:40:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2018</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Harmonizing Machine Frequency with Pendulum Motion</h2>
+<p>If your machine is set to 120Hz, your hand movement speed must synchronize perfectly with needle retraction to prevent snagging the skin and creating uneven dot spacing.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Avoid patchy shading by syncing device voltage with pendulum hand stroke speed.]]></excerpt:encoded>
+		<wp:post_id>2018</wp:post_id>
+		<wp:post_date>2026-08-11 20:40:00</wp:post_date>
+		<wp:post_name>digital-pmu-speed-calibration-rpm-hand-movement</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="pmu-techniques"><![CDATA[PMU Techniques]]></category>
+	</item>
+
+	<!-- Post 19 -->
+	<item>
+		<title>Creating Scalable Spa Treatment Menus for Maximum Profit Margins</title>
+		<link>https://course-amc.homenest.edu.vn/creating-scalable-spa-treatment-menus-profit-margins</link>
+		<pubDate>Sun, 10 Aug 2026 09:20:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2019</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Pricing Architecture and High-Margin Add-On Services</h2>
+<p>Structure your clinic menu with Good-Better-Best tiering and lucrative 15-minute add-ons (LED therapy, hydrogel masks, oxygen infusion) to boost average ticket sizes by 35%.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[How to design aesthetic treatment packages that maximize chair revenue and client rebooking rates.]]></excerpt:encoded>
+		<wp:post_id>2019</wp:post_id>
+		<wp:post_date>2026-08-10 16:20:00</wp:post_date>
+		<wp:post_name>creating-scalable-spa-treatment-menus-profit-margins</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="expert-advice"><![CDATA[Expert Advice]]></category>
+	</item>
+
+	<!-- Post 20 -->
+	<item>
+		<title>Exosome Therapy in Clinical Aesthetics: The Future of Skin Regeneration</title>
+		<link>https://course-amc.homenest.edu.vn/exosome-therapy-clinical-aesthetics-future-skin-regeneration</link>
+		<pubDate>Sat, 09 Aug 2026 15:50:00 +0000</pubDate>
+		<dc:creator><![CDATA[admin]]></dc:creator>
+		<guid isPermaLink="false">https://course-amc.homenest.edu.vn/?p=2020</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<h2>Next-Generation Cellular Messenger Technology</h2>
+<p>Exosomes contain potent growth factors, peptides, and microRNAs that signal aged fibroblasts to increase collagen synthesis up to 600% and elastin production by 300%.</p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Everything estheticians need to know about exosome microneedling infusions for deep cellular anti-aging.]]></excerpt:encoded>
+		<wp:post_id>2020</wp:post_id>
+		<wp:post_date>2026-08-09 22:50:00</wp:post_date>
+		<wp:post_name>exosome-therapy-clinical-aesthetics-future-skin-regeneration</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="category" nicename="beauty-insights"><![CDATA[Beauty Insights]]></category>
+		<category domain="category" nicename="skin-care"><![CDATA[Skin Care]]></category>
+	</item>
+</channel>
+</rss>

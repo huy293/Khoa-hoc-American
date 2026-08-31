@@ -60,6 +60,14 @@ export interface WPPost {
   featuredImage?: {
     node?: WPImage;
   };
+  author?: {
+    node?: {
+      name?: string;
+      avatar?: {
+        url?: string;
+      };
+    };
+  };
   categories?: {
     nodes: Array<{
       id: string;
@@ -123,7 +131,7 @@ export interface WPCourse {
 }
 
 export interface WPProduct {
-  id: string;
+  id: string | number;
   databaseId?: number;
   name: string;
   slug: string;
@@ -133,12 +141,18 @@ export interface WPProduct {
   regularPrice?: string;
   salePrice?: string;
   onSale?: boolean;
+  stock?: number;
   date?: string;
   modified?: string;
   image?: WPImage;
   galleryImages?: {
     nodes: WPImage[];
   };
+  categories?: Array<{
+    id: number;
+    name: string;
+    slug: string;
+  }>;
   [key: string]: unknown;
 }
 
