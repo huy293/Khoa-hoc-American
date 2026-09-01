@@ -117,9 +117,9 @@ export async function getWpCourseBySlug(slug: string): Promise<WPCourse | null> 
 }
 
 /**
- * Lấy danh sách bài viết Blog
+ * Lấy danh sách bài viết Blog qua GraphQL
  */
-export async function getWpPosts(first = 10): Promise<WPPost[]> {
+export async function getWpPosts(first = 20): Promise<WPPost[]> {
   const query = `
     query GetPosts($first: Int!) {
       posts(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
@@ -129,11 +129,22 @@ export async function getWpPosts(first = 10): Promise<WPPost[]> {
           title
           slug
           excerpt
+          content
           date
+          modified
           featuredImage {
             node {
               sourceUrl
               altText
+              title
+            }
+          }
+          author {
+            node {
+              name
+              avatar {
+                url
+              }
             }
           }
           categories {
@@ -143,10 +154,12 @@ export async function getWpPosts(first = 10): Promise<WPPost[]> {
               slug
             }
           }
-          seo {
-            title
-            metaDesc
-            canonical
+          tags {
+            nodes {
+              id
+              name
+              slug
+            }
           }
         }
       }
@@ -157,13 +170,13 @@ export async function getWpPosts(first = 10): Promise<WPPost[]> {
     const data = await fetchGraphQL<{ posts?: { nodes: WPPost[] } }>(query, { first });
     return data?.posts?.nodes || [];
   } catch (error) {
-    console.warn('Không thể lấy bài viết qua GraphQL:', error);
-    return [];
+    console.warn('Không thể lấy bài viết qua GraphQL, thử fallback REST:', error);
+    return await getRestPosts({ per_page: first });
   }
 }
 
 /**
- * Lấy chi tiết bài viết theo Slug
+ * Lấy chi tiết bài viết theo Slug qua GraphQL
  */
 export async function getWpPostBySlug(slug: string): Promise<WPPost | null> {
   const query = `
@@ -181,6 +194,15 @@ export async function getWpPostBySlug(slug: string): Promise<WPPost | null> {
           node {
             sourceUrl
             altText
+            title
+          }
+        }
+        author {
+          node {
+            name
+            avatar {
+              url
+            }
           }
         }
         categories {
@@ -190,14 +212,11 @@ export async function getWpPostBySlug(slug: string): Promise<WPPost | null> {
             slug
           }
         }
-        seo {
-          title
-          metaDesc
-          canonical
-          opengraphTitle
-          opengraphDescription
-          opengraphImage {
-            sourceUrl
+        tags {
+          nodes {
+            id
+            name
+            slug
           }
         }
       }
@@ -206,9 +225,16 @@ export async function getWpPostBySlug(slug: string): Promise<WPPost | null> {
 
   try {
     const data = await fetchGraphQL<{ post?: WPPost }>(query, { slug });
-    return data?.post || null;
+    if (data?.post) return data.post;
   } catch (error) {
-    console.warn(`Lỗi lấy bài viết [${slug}]:`, error);
+    console.warn(`Lỗi lấy bài viết [${slug}] qua GraphQL:`, error);
+  }
+
+  // Fallback REST nếu GraphQL không tìm thấy
+  try {
+    const restPosts = await getRestPosts({ slug });
+    return restPosts && restPosts.length > 0 ? restPosts[0] : null;
+  } catch {
     return null;
   }
 }
@@ -330,4 +356,82 @@ export async function getRestCustomPostType<T = any>(
   const queryString = new URLSearchParams(params).toString();
   const endpoint = `/${postType}?${queryString}`;
   return (await fetchWpRest<T[]>(endpoint)) || [];
+}
+
+/**
+ * Lấy danh mục bài viết Blog qua GraphQL
+ */
+export async function getWpBlogCategories(): Promise<Array<{ id: string; name: string; slug: string; count?: number }>> {
+  const query = `
+    query GetBlogCategories {
+      categories(where: { hideEmpty: true }) {
+        nodes {
+          id
+          name
+          slug
+          count
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await fetchGraphQL<{ categories?: { nodes: Array<{ id: string; name: string; slug: string; count?: number }> } }>(query);
+    return data?.categories?.nodes || [];
+  } catch (error) {
+    console.warn('Lỗi lấy danh mục blog qua GraphQL:', error);
+    return [];
+  }
+}
+
+/**
+ * Lấy danh sách sản phẩm (WooCommerce REST & Store API)
+ */
+export async function getWpProducts(perPage = 50): Promise<WPProduct[]> {
+  try {
+    const storeProducts = await fetchWpRest<any[]>(`/wp-json/wc/store/v1/products?per_page=${perPage}`);
+    if (Array.isArray(storeProducts) && storeProducts.length > 0) {
+      return storeProducts.map((item) => ({
+        id: String(item.id),
+        databaseId: item.id,
+        name: item.name ? item.name.replace(/&#038;/g, '&').replace(/&amp;/g, '&') : '',
+        slug: item.slug,
+        description: item.description,
+        shortDescription: item.short_description,
+        price: item.prices?.price ? `$ ${(Number(item.prices.price) / 1).toFixed(2)}` : '$ 0.00',
+        regularPrice: item.prices?.regular_price ? `$ ${(Number(item.prices.regular_price) / 1).toFixed(2)}` : '',
+        salePrice: item.prices?.sale_price ? `$ ${(Number(item.prices.sale_price) / 1).toFixed(2)}` : '',
+        onSale: item.prices?.regular_price !== item.prices?.sale_price,
+        stock: item.is_in_stock ? (item.low_stock_amount || 26) : 0,
+        image: {
+          sourceUrl: item.images?.[0]?.src || '/images/anh-san-pham.png',
+          altText: item.images?.[0]?.alt || item.name,
+        },
+        galleryImages: {
+          nodes: (item.images || []).map((img: any) => ({
+            sourceUrl: img.src,
+            altText: img.alt || item.name,
+          })),
+        },
+        categories: (item.categories || []).map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+        })),
+      }));
+    }
+  } catch (error) {
+    console.warn('Lỗi lấy products qua WC Store API:', error);
+  }
+
+  return [];
+}
+
+/**
+ * Lấy chi tiết sản phẩm theo Slug
+ */
+export async function getWpProductBySlug(slug: string): Promise<WPProduct | null> {
+  const products = await getWpProducts(100);
+  const found = products.find((p) => p.slug === slug);
+  return found || null;
 }

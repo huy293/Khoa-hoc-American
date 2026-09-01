@@ -7,62 +7,18 @@ import ProductCard, { Product } from "@/components/shop/ProductCard";
 import QuickViewProduct from "@/components/shop/QuickViewProduct";
 import styles from "@/styles/shop/ProductDetail.module.css";
 
+import { WPProduct } from "@/types/wordpress";
+
 interface ProductDetailContentProps {
     slug: string;
+    initialProduct?: WPProduct;
+    suggestedProducts?: WPProduct[];
 }
 
 type TabType = "describe" | "benefit" | "instructions" | "ingredient";
 
-const PRODUCT_IMAGES = [
+const DEFAULT_PRODUCT_IMAGES = [
     "/images/anh-san-pham.png",
-];
-
-const SUGGESTED_PRODUCTS: Product[] = [
-    {
-        id: 1,
-        slug: "light-energy-masque-professional",
-        name: "(Dermalogica) Light Energy Masque Professional",
-        image: "/images/anh-san-pham.png",
-        imageAlt: "(Dermalogica) Light Energy Masque Professional",
-        oldPrice: "$ 85.00",
-        price: "$ 65.00",
-    },
-    {
-        id: 2,
-        slug: "barrier-repair-salon-size-118ml",
-        name: "(Dermalogica) Barrier Repair/ Salon size: 4 oz (118ml) Professional",
-        image: "/images/anh-san-pham.png",
-        imageAlt: "(Dermalogica) Barrier Repair/ Salon size: 4 oz (118ml) Professional",
-        oldPrice: "$ 185.00",
-        price: "$ 165.00",
-    },
-    {
-        id: 3,
-        slug: "stabilizing-repair-cream-pro-177ml",
-        name: "(Dermalogica) Stabilizing Repair Cream Pro / Size: 6 oz (177ml) Professional",
-        image: "/images/anh-san-pham.png",
-        imageAlt: "(Dermalogica) Stabilizing Repair Cream Pro / Size: 6 oz (177ml) Professional",
-        oldPrice: "$ 285.00",
-        price: "$ 225.00",
-    },
-    {
-        id: 4,
-        slug: "pro-restore-12-vials",
-        name: "(Dermalogica) Pro Restore 12 × 0.1oz (3 ml tubes) vials Professional",
-        image: "/images/anh-san-pham.png",
-        imageAlt: "(Dermalogica) Pro Restore 12 × 0.1oz (3 ml tubes) vials Professional",
-        oldPrice: "$ 85.00",
-        price: "$ 65.00",
-    },
-    {
-        id: 5,
-        slug: "exo-booster-3-pack",
-        name: "(Dermalogica) Exo Booster/ 3 pack Professional",
-        image: "/images/anh-san-pham.png",
-        imageAlt: "(Dermalogica) Exo Booster/ 3 pack Professional",
-        oldPrice: "$ 585.00",
-        price: "$ 465.00",
-    },
 ];
 
 const StockBasketIcon = () => (
@@ -72,17 +28,33 @@ const StockBasketIcon = () => (
     </svg>
 );
 
-export default function ProductDetailContent({ slug }: ProductDetailContentProps) {
+export default function ProductDetailContent({ slug, initialProduct, suggestedProducts }: ProductDetailContentProps) {
     const [activeTab, setActiveTab] = useState<TabType>("describe");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    const foundProduct = SUGGESTED_PRODUCTS.find((p) => p.slug === slug);
-    const currentProduct: Product = foundProduct || {
+    // Images from gallery or fallback
+    const images: string[] = (initialProduct?.galleryImages?.nodes && initialProduct.galleryImages.nodes.length > 0)
+        ? initialProduct.galleryImages.nodes.map(n => n.sourceUrl || DEFAULT_PRODUCT_IMAGES[0]).filter(Boolean) as string[]
+        : initialProduct?.image?.sourceUrl
+            ? [initialProduct.image.sourceUrl]
+            : DEFAULT_PRODUCT_IMAGES;
+
+    const currentProduct: Product = initialProduct ? {
+        id: initialProduct.databaseId || Number(initialProduct.id) || 1,
+        slug: initialProduct.slug || slug,
+        name: initialProduct.name,
+        image: images[0] || DEFAULT_PRODUCT_IMAGES[0],
+        imageAlt: initialProduct.name,
+        price: initialProduct.price || initialProduct.salePrice || "$ 65.00",
+        oldPrice: initialProduct.regularPrice || "",
+        stock: initialProduct.stock || 26,
+        description: initialProduct.description ? initialProduct.description.replace(/<[^>]*>/g, '').trim() : "Light Energy Masque works together with light therapy to amplify its effects.",
+    } : {
         id: 1,
         slug: slug,
         name: "(Dermalogica) Light Energy Masque Professional",
-        image: PRODUCT_IMAGES[0],
+        image: DEFAULT_PRODUCT_IMAGES[0],
         imageAlt: "(Dermalogica) Light Energy Masque Professional",
         price: "$ 65.00",
         oldPrice: "$ 85.00",
@@ -90,12 +62,26 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
         description: "Light Energy Masque works together with light therapy to amplify its effects. It helps support skin's energy, smooth skin texture, diminish the look of lines and wrinkles faster than light energy alone and soothes and calms inflammation or redness from light therapy.",
     };
 
+    const suggestedList: Product[] = (suggestedProducts && suggestedProducts.length > 0)
+        ? suggestedProducts.filter(p => p.slug !== slug).slice(0, 5).map((p, index) => ({
+            id: p.databaseId || Number(p.id) || index + 1,
+            slug: p.slug,
+            name: p.name,
+            image: p.image?.sourceUrl || DEFAULT_PRODUCT_IMAGES[0],
+            imageAlt: p.name,
+            oldPrice: p.regularPrice || "",
+            price: p.price || p.salePrice || "$ 0.00",
+            description: p.description ? p.description.replace(/<[^>]*>/g, '').trim() : '',
+            stock: p.stock || 26,
+        }))
+        : [];
+
     const handlePrevImage = () => {
-        setCurrentImageIndex((prev) => (prev === 0 ? PRODUCT_IMAGES.length - 1 : prev - 1));
+        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prev) => (prev === PRODUCT_IMAGES.length - 1 ? 0 : prev + 1));
+        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
 
     return (
@@ -146,8 +132,8 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
 
                                 <div className={styles["product-detail-section__image-box"]}>
                                     <img
-                                        src={PRODUCT_IMAGES[currentImageIndex]}
-                                        alt="Product detail"
+                                        src={images[currentImageIndex] || DEFAULT_PRODUCT_IMAGES[0]}
+                                        alt={currentProduct.name}
                                         className={styles["product-detail-section__image"]}
                                     />
                                 </div>
@@ -324,7 +310,7 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
                     </div>
 
                     <div className={styles["suggested-products__grid"]}>
-                        {SUGGESTED_PRODUCTS.map((item) => (
+                        {(suggestedList.length > 0 ? suggestedList : []).map((item) => (
                             <ProductCard
                                 key={item.id}
                                 product={item}

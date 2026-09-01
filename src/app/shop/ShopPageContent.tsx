@@ -145,21 +145,38 @@ const PRODUCTS_DATA: Product[] = [
     },
 ];
 
+import { WPProduct } from "@/types/wordpress";
+
 interface ShopPageContentProps {
+    initialProducts?: WPProduct[];
     noMarginTop?: boolean;
     isDashboard?: boolean;
 }
 
-export default function ShopPageContent({ noMarginTop, isDashboard }: ShopPageContentProps = {}) {
+export default function ShopPageContent({ initialProducts, noMarginTop, isDashboard }: ShopPageContentProps = {}) {
     const isNoMargin = noMarginTop || isDashboard;
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    const products: Product[] = (initialProducts && initialProducts.length > 0)
+        ? initialProducts.map((p, index) => ({
+            id: p.databaseId || Number(p.id) || index + 1,
+            slug: p.slug,
+            name: p.name,
+            image: p.image?.sourceUrl || '/images/anh-san-pham.png',
+            imageAlt: p.image?.altText || p.name,
+            oldPrice: p.regularPrice || '',
+            price: p.price || p.salePrice || '$ 0.00',
+            description: p.description ? p.description.replace(/<[^>]*>/g, '').trim() : '',
+            stock: p.stock || 26,
+        }))
+        : PRODUCTS_DATA;
 
     return (
         <>
             <BannerSection noMarginTop={isNoMargin} />
             <ShopSection
-                products={PRODUCTS_DATA}
+                products={products}
                 onOpenFilter={() => setIsFilterOpen(true)}
                 onQuickView={(prod) => setSelectedProduct(prod)}
             />
