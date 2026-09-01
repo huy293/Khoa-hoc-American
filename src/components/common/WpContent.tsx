@@ -4,6 +4,7 @@ import styles from '@/styles/common/WpContent.module.css';
 
 interface WpContentProps {
   content?: string;
+  html?: string;
   className?: string;
 }
 
@@ -11,10 +12,11 @@ interface WpContentProps {
  * Component hiển thị nội dung HTML từ WordPress Gutenberg / Classic Editor
  * Tự động làm sạch link nội bộ, tối ưu responsive cho hình ảnh và video nhúng
  */
-export default function WpContent({ content, className = '' }: WpContentProps) {
-  if (!content) return null;
+export default function WpContent({ content, html, className = '' }: WpContentProps) {
+  const rawHtml = html || content;
+  if (!rawHtml) return null;
 
-  const sanitizedContent = cleanWpContent(content);
+  const sanitizedContent = cleanWpContent(rawHtml);
 
   return (
     <div

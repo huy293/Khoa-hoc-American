@@ -104,16 +104,31 @@ const ArrowRightIcon = () => (
     </svg>
 );
 
+import { WPCourse } from '@/types/wordpress';
+
 interface CourseDetailHeroProps {
     /** Whether user has enrolled/purchased this course (from auth/backend API) */
     isEnrolled?: boolean;
     courseSlug?: string;
+    course?: WPCourse | null;
 }
 
 export default function CourseDetailHero({
     isEnrolled = false,
     courseSlug = 'hydra-facial',
+    course,
 }: CourseDetailHeroProps) {
+    const cf = course?.courseFields || {};
+    const title = course?.title || "HYDRA FACIAL";
+    const category = cf.category || "CERTIFICATE TRAINING";
+    const lessons = cf.lessons || "12 lessons";
+    const duration = cf.duration || "3 weeks";
+    const description = cf.subtitle || course?.excerpt || "Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";
+    const rating = cf.rating || "4.9/5.0";
+    const traineeCount = cf.traineeCount || "(2.700+ trainee)";
+    const trainerName = cf.trainer?.name || "Kathleen trainer";
+    const trainerAvatar = cf.trainer?.avatar || "/images/home/kathleen.png";
+
     return (
         <section className={styles['detail-hero']}>
             <div className={styles['detail-hero__container']}>
@@ -128,26 +143,26 @@ export default function CourseDetailHero({
                             </Link>
                             <span className={styles['detail-hero__crumb-separator']}>&gt;</span>
                             <span className={styles['detail-hero__crumb']}>
-                                CERTIFICATE TRAINING
+                                {category}
                             </span>
                             <span className={styles['detail-hero__crumb-separator']}>&gt;</span>
                             <span className={styles['detail-hero__crumb-active']}>
-                                HYDRA FACIAL
+                                {title}
                             </span>
                         </div>
 
                         {/* Main Course Title */}
-                        <h1 className={styles['detail-hero__title']}>HYDRA FACIAL</h1>
+                        <h1 className={styles['detail-hero__title']}>{title}</h1>
 
                         {/* Lessons & Duration Meta */}
                         <div className={styles['detail-hero__meta']}>
                             <div className={styles['detail-hero__meta-item']}>
                                 <BookIcon />
-                                <span>12 lessons</span>
+                                <span>{lessons}</span>
                             </div>
                             <div className={styles['detail-hero__meta-item']}>
                                 <ClockMetaIcon />
-                                <span>3 weeks</span>
+                                <span>{duration}</span>
                             </div>
                         </div>
                     </div>
@@ -155,7 +170,7 @@ export default function CourseDetailHero({
                     {/* Right Column */}
                     <div className={styles['detail-hero__right']}>
                         <p className={styles['detail-hero__description']}>
-                            Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.
+                            {description}
                         </p>
 
                         <div className={styles['detail-hero__actions']}>
@@ -233,15 +248,15 @@ export default function CourseDetailHero({
                     <div className={styles['overview-banner__col']}>
                         <div className={styles['overview-banner__header']}>
                             <RatingOutlineIcon />
-                            <span className={styles['overview-banner__title']}>Ratting</span>
+                            <span className={styles['overview-banner__title']}>Rating</span>
                         </div>
                         <div className={styles['overview-banner__divider']} />
                         <div className={styles['overview-banner__body']}>
                             <div className={styles['overview-banner__rating-score']}>
                                 <StarFilledIcon />
-                                <span>4.9/5.0</span>
+                                <span>{rating}</span>
                             </div>
-                            <p className={styles['overview-banner__text-trainee']}>(2.700+ trainee)</p>
+                            <p className={styles['overview-banner__text-trainee']}>{traineeCount}</p>
                         </div>
                     </div>
 
@@ -257,17 +272,17 @@ export default function CourseDetailHero({
                         <div className={styles['overview-banner__trainer-body']}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
-                                src="/images/home/kathleen.png"
-                                alt="Kathleen trainer"
+                                src={trainerAvatar}
+                                alt={trainerName}
                                 className={styles['overview-banner__trainer-img']}
                             />
                             <div className={styles['overview-banner__trainer-info']}>
                                 <span className={styles['overview-banner__trainer-name']}>
-                                    Kathleen trainer
+                                    {trainerName}
                                 </span>
                                 <div className={styles['overview-banner__trainer-stars']}>
                                     <StarFilledIcon />
-                                    <span>4.9/5.0</span>
+                                    <span>{rating}</span>
                                 </div>
                             </div>
                         </div>

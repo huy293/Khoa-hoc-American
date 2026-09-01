@@ -1,24 +1,49 @@
 import styles from "@/styles/home/OurPeople.module.css";
+import { WPHomeFields } from "@/types/wordpress";
 
-export default function OurPeople() {
+interface OurPeopleProps {
+    data?: Partial<WPHomeFields>;
+}
+
+export default function OurPeople({ data }: OurPeopleProps = {}) {
+    const eyebrow = data?.home_people_eyebrow || "OUR PEOPLES";
+    const title = data?.home_people_title || "Learn from the Experts";
+    const description = data?.home_people_desc || "Focused training paths for skin, laser, permanent makeup, and professional licensing.";
+    const quote = data?.home_people_quote || "Every student leaves with <br />work I would sign <br /> my name to.";
+    const quoteAuthor = data?.home_people_author || "EMILY";
+
+    const instructor1 = data?.home_people_list?.[0] || {
+        name: "Kathleen",
+        role: "Master Trainer",
+        bio: "Trained at PhiBrows, Extreme Lash and Will Anthony Permanent Makeup Academy",
+        image: "/images/home/kathleen.png",
+    };
+
+    const instructor2 = data?.home_people_list?.[1] || {
+        name: "Emily",
+        role: "Master Trainer",
+        bio: "Trained at PhiBrows, Extreme Lash and Will Anthony Permanent Makeup Academy",
+        image: "/images/home/emily-2.png",
+    };
+
+    const img1 = typeof instructor1.image === 'string' ? instructor1.image : (instructor1.image?.sourceUrl || "/images/home/kathleen.png");
+    const img2 = typeof instructor2.image === 'string' ? instructor2.image : (instructor2.image?.sourceUrl || "/images/home/emily-2.png");
+
     return (
         <section className={styles["our-people"]}>
-            {/* Background Decorative Large Circle & Star */}
-
-
             <div className={styles["our-people__container"]}>
                 {/* 1. Header Row */}
                 <div className={styles["our-people__header"]}>
                     <div className={styles["our-people__header-left"]}>
-                        <p className={styles["our-people__eyebrow"]}>OUR PEOPLES</p>
-                        <h2 className={styles["our-people__title"]}>Learn from the Experts</h2>
+                        <p className={styles["our-people__eyebrow"]}>{eyebrow}</p>
+                        <h2 className={styles["our-people__title"]}>{title}</h2>
                     </div>
 
                     <div className={styles["our-people__header-right"]}>
                         <p className={styles["our-people__description"]}>
-                            Focused training paths for skin, laser, permanent makeup, and professional licensing.
+                            {description}
                         </p>
-                        <a href="#explore" className={styles["our-people__link"]}>
+                        <a href="/courses" className={styles["our-people__link"]}>
                             <span>EXPLORE MORE</span>
                             <svg
                                 width="14"
@@ -67,72 +92,64 @@ export default function OurPeople() {
                                     </linearGradient>
                                 </defs>
                             </svg>
-
                         </div>
                     </div>
+
                     {/* Left Column: Quote */}
                     <div className={styles["our-people__quote-wrapper"]}>
-
                         <div className={styles["our-people__quote-mark"]}>
                             <svg width="39" height="31" viewBox="0 0 39 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20.3585 23.625C20.3585 19.2917 21.9528 15 25.1415 10.75C28.3302 6.41667 32.7453 2.83333 38.3868 0L39 1.75C35.1572 4.08333 32.0912 6.70833 29.8019 9.625C27.5126 12.4583 26.2453 15.2917 26 18.125C26.9811 17.2083 28.0031 16.4583 29.066 15.875C30.2107 15.2917 31.3145 15 32.3774 15C33.522 15 34.3805 15.4167 34.9528 16.25C35.5252 17 35.8113 18.0417 35.8113 19.375C35.8113 21.125 35.3208 22.9167 34.3396 24.75C33.3585 26.5 32.0912 28 30.5377 29.25C29.066 30.4167 27.4717 31 25.7547 31C23.8742 31 22.4843 30.3333 21.5849 29C20.7673 27.6667 20.3585 25.875 20.3585 23.625ZM0 23.625C0 19.2917 1.59434 15 4.78302 10.75C7.9717 6.41667 12.3868 2.83333 18.0283 0L18.6415 1.75C14.7987 4.08333 11.7327 6.70833 9.4434 9.625C7.15409 12.4583 5.88679 15.2917 5.64151 18.125C6.62264 17.2083 7.64465 16.4583 8.70755 15.875C9.8522 15.2917 10.956 15 12.0189 15C13.1635 15 14.022 15.4167 14.5943 16.25C15.1667 17 15.4528 18.0417 15.4528 19.375C15.4528 21.125 14.9623 22.9167 13.9811 24.75C13 26.5 11.7327 28 10.1792 29.25C8.70755 30.4167 7.11321 31 5.39623 31C3.51572 31 2.12579 30.3333 1.22641 29C0.408805 27.6667 0 25.875 0 23.625Z" fill="#BC7300" fillOpacity="0.8" />
                             </svg>
-
                         </div>
-                        <p className={styles["our-people__quote-text"]}>
-                            Every student leaves with
-                            <br />
-                            work I would sign
-                            <br /> my name to.
-                        </p>
+                        <p
+                            className={styles["our-people__quote-text"]}
+                            dangerouslySetInnerHTML={{ __html: quote }}
+                        />
                         <div className={styles["our-people__quote-divider"]}></div>
-                        <p className={styles["our-people__quote-author"]}>EMILY</p>
+                        <p className={styles["our-people__quote-author"]}>{quoteAuthor}</p>
                     </div>
 
                     {/* Right Column: 2 Instructors Showcase */}
                     <div className={styles["our-people__instructors-wrapper"]}>
-                        {/* Soft Glow Halo */}
                         <div className={styles["our-people__glow"]}></div>
 
                         <div className={styles["our-people__instructors"]}>
-                            {/* Instructor 1: Kathleen */}
                             <div className={styles["our-people__instructor"]}>
                                 <div className={styles["our-people__instructor-image-box"]}>
                                     <img
-                                        src="/images/home/kathleen.png"
-                                        alt="Kathleen"
+                                        src={img1}
+                                        alt={instructor1.name}
                                         className={styles["our-people__instructor-image"]}
                                     />
                                 </div>
-
                             </div>
 
-                            {/* Instructor 2: Emily */}
                             <div className={styles["our-people__instructor"]}>
                                 <div className={styles["our-people__instructor-image-box"]}>
                                     <img
-                                        src="/images/home/emily-2.png"
-                                        alt="Emily"
+                                        src={img2}
+                                        alt={instructor2.name}
                                         className={styles["our-people__instructor-image"]}
                                     />
                                 </div>
-
                             </div>
                         </div>
+
                         <div className={styles["our-people__instructors-info-wrapper"]}>
                             <span className={styles["our-people__instructors-backgorund-blur"]}></span>
                             <div className={styles["our-people__instructor-info"]}>
-                                <h3 className={styles["our-people__instructor-name"]}>Kathleen</h3>
-                                <p className={styles["our-people__instructor-role"]}>Master Trainer</p>
+                                <h3 className={styles["our-people__instructor-name"]}>{instructor1.name}</h3>
+                                <p className={styles["our-people__instructor-role"]}>{instructor1.role}</p>
                                 <p className={styles["our-people__instructor-bio"]}>
-                                    Trained at PhiBrows, Extreme Lash and Will Anthony Permanent Makeup Academy
+                                    {instructor1.bio}
                                 </p>
                             </div>
                             <div className={styles["our-people__instructor-info"]}>
-                                <h3 className={styles["our-people__instructor-name"]}>Emily</h3>
-                                <p className={styles["our-people__instructor-role"]}>Master Trainer</p>
+                                <h3 className={styles["our-people__instructor-name"]}>{instructor2.name}</h3>
+                                <p className={styles["our-people__instructor-role"]}>{instructor2.role}</p>
                                 <p className={styles["our-people__instructor-bio"]}>
-                                    Trained at PhiBrows, Extreme Lash and Will Anthony Permanent Makeup Academy
+                                    {instructor2.bio}
                                 </p>
                             </div>
                         </div>

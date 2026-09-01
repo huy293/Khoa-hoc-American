@@ -145,15 +145,16 @@ const PRODUCTS_DATA: Product[] = [
     },
 ];
 
-import { WPProduct } from "@/types/wordpress";
+import { WPProduct, WPShopFields } from "@/types/wordpress";
 
 interface ShopPageContentProps {
     initialProducts?: WPProduct[];
+    bannerData?: Partial<WPShopFields>;
     noMarginTop?: boolean;
     isDashboard?: boolean;
 }
 
-export default function ShopPageContent({ initialProducts, noMarginTop, isDashboard }: ShopPageContentProps = {}) {
+export default function ShopPageContent({ initialProducts, bannerData, noMarginTop, isDashboard }: ShopPageContentProps = {}) {
     const isNoMargin = noMarginTop || isDashboard;
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -174,7 +175,7 @@ export default function ShopPageContent({ initialProducts, noMarginTop, isDashbo
 
     return (
         <>
-            <BannerSection noMarginTop={isNoMargin} />
+            <BannerSection noMarginTop={isNoMargin} data={bannerData} />
             <ShopSection
                 products={products}
                 onOpenFilter={() => setIsFilterOpen(true)}

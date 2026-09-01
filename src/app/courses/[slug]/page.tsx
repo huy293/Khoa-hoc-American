@@ -51,11 +51,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
+  const course = await getWpCourseBySlug(slug);
   
   return (
     <main>
-      <CourseDetailHero />
-      <AboutCourse />
+      <CourseDetailHero courseSlug={slug} course={course} />
+      <AboutCourse course={course} />
       <TrainingCurriculum />
       <CourseBenefits />
     </main>

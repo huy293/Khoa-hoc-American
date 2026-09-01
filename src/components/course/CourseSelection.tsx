@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import styles from '@/styles/course/CourseSelection.module.css';
 import CourseCard from '@/components/cards/CourseCard';
+import { WPCourse } from '@/types/wordpress';
 
 /* ── Chevron Down Icon for Load More ── */
 const ChevronDownIcon = () => (
@@ -11,8 +12,15 @@ const ChevronDownIcon = () => (
     </svg>
 );
 
+export interface CourseSelectionProps {
+    eyebrow?: string;
+    title?: string;
+    courses?: WPCourse[];
+}
+
 interface CourseItem {
     id: string;
+    slug?: string;
     image: string;
     tag: string;
     rating: string;
@@ -193,23 +201,65 @@ const TABS = [
     'P.M.U TRAINING COURSES',
 ];
 
-export default function CourseSelection() {
-    const [activeTab, setActiveTab] = useState('CERTIFICATE TRAINING');
+export default function CourseSelection({
+    eyebrow = "SELECTION OF COURSE",
+    title = "Master Your Craft. <br />Build Your Beauty Career.",
+    courses,
+}: CourseSelectionProps = {}) {
+    const [activeTab, setActiveTab] = useState('ALL COURSE');
+
+    const mappedCourses: CourseItem[] = (courses && courses.length > 0)
+        ? courses.map((c) => {
+            const cf = (c.courseFields || {}) as any;
+            const featuredImg = c.featuredImage?.node?.sourceUrl || '/images/courses/card-hydra.jpg';
+            const rawCurriculum = cf.curriculum;
+            const currList: string[] = Array.isArray(rawCurriculum)
+                ? rawCurriculum.map((item: any) => typeof item === 'string' ? item : (item?.title || 'Module'))
+                : ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'];
+
+            return {
+                id: c.id || c.slug,
+                slug: c.slug,
+                image: featuredImg,
+                tag: (typeof cf.tag === 'string' ? cf.tag : '') || 'Facial class',
+                rating: (typeof cf.rating === 'string' ? cf.rating : '') || '5.0/5.0',
+                traineeCount: (typeof cf.traineeCount === 'string' ? cf.traineeCount : '') || '(1.500+ trainee)',
+                title: c.title,
+                subtitle: (typeof cf.subtitle === 'string' ? cf.subtitle : (c.excerpt ? c.excerpt.replace(/<[^>]*>/g, '').trim() : '')) || '',
+                module: (typeof cf.module === 'string' ? cf.module : '') || '4 modules',
+                lessons: (typeof cf.lessons === 'string' ? cf.lessons : '') || '12 lessons',
+                quizzes: (typeof cf.quizzes === 'string' ? cf.quizzes : '') || '3 quizzes',
+                curriculum: currList,
+                trainer: {
+                    name: cf.trainer?.name || 'Master Instructor',
+                    avatar: cf.trainer?.avatar || '/images/home/kathleen.png',
+                    rating: cf.trainer?.rating || '5.0/5.0',
+                },
+                category: (typeof cf.category === 'string' ? cf.category : '') || 'CERTIFICATE TRAINING',
+            };
+        })
+        : COURSES_DATA;
+
+    const filteredCourses = activeTab === 'ALL COURSE'
+        ? mappedCourses
+        : mappedCourses.filter(c => c.category.toLowerCase().includes(activeTab.toLowerCase()) || activeTab.toLowerCase().includes(c.category.toLowerCase()));
+
+    const displayCourses = filteredCourses.length > 0 ? filteredCourses : mappedCourses;
 
     return (
         <section className={styles['selection']}>
             <div className={styles['selection__container']}>
                 {/* 1. Eyebrow */}
                 <div className={styles['selection__eyebrow-wrapper']}>
-                    <p className={styles['selection__eyebrow']}>SELECTION OF COURSE</p>
+                    <p className={styles['selection__eyebrow']}>{eyebrow}</p>
                     <div className={styles['selection__eyebrow-line']} />
                 </div>
 
                 {/* 2. Heading */}
-                <h2 className={styles['selection__title']}>
-                    Master Your Craft. <br />
-                    Build Your Beauty Career.
-                </h2>
+                <h2
+                    className={styles['selection__title']}
+                    dangerouslySetInnerHTML={{ __html: title }}
+                />
 
                 {/* 3. Category Filter Tabs */}
                 <div className={styles['selection__tabs']}>
@@ -231,9 +281,10 @@ export default function CourseSelection() {
 
                 {/* 4. Course Cards Grid */}
                 <div className={styles['selection__grid']}>
-                    {COURSES_DATA.map((course, idx) => (
+                    {displayCourses.map((course, idx) => (
                         <CourseCard
                             key={`${course.id}-${idx}`}
+                            courseUrl={course.slug ? `/courses/${course.slug}` : undefined}
                             image={course.image}
                             tag={course.tag}
                             rating={course.rating}

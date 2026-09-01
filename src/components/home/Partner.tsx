@@ -1,12 +1,17 @@
 import styles from '@/styles/home/Partner.module.css';
+import { WPPartnerLogo } from '@/types/wordpress';
 
-interface PartnerLogo {
+export interface PartnerProps {
+    logos?: WPPartnerLogo[];
+}
+
+interface InternalPartnerLogo {
     id: string;
     name: string;
     src: string;
 }
 
-const partnerLogos: PartnerLogo[] = [
+const DEFAULT_PARTNER_LOGOS: InternalPartnerLogo[] = [
     {
         id: 'young-nails',
         name: 'Young Nails',
@@ -34,16 +39,22 @@ const partnerLogos: PartnerLogo[] = [
     },
 ];
 
-// Hàm nhân bản mảng logo nếu số lượng ít hơn 15
-const getDisplayLogos = (items: PartnerLogo[], minCount: number = 15): PartnerLogo[] => {
+const getDisplayLogos = (items: InternalPartnerLogo[], minCount: number = 15): InternalPartnerLogo[] => {
     if (!items || items.length === 0) return [];
     const repeatCount = Math.ceil(minCount / items.length);
     return Array.from({ length: repeatCount }, () => items).flat();
 };
 
-const displayLogos = getDisplayLogos(partnerLogos, 15);
+export default function Partner({ logos }: PartnerProps = {}) {
+    const rawList: InternalPartnerLogo[] = (logos && logos.length > 0)
+        ? logos.map((item, index) => ({
+            id: `partner-${index}`,
+            name: item.name || `Partner ${index + 1}`,
+            src: typeof item.logo === 'string' ? item.logo : (item.logo?.sourceUrl || DEFAULT_PARTNER_LOGOS[index % DEFAULT_PARTNER_LOGOS.length].src),
+        }))
+        : DEFAULT_PARTNER_LOGOS;
 
-export default function Partner() {
+    const displayLogos = getDisplayLogos(rawList, 15);
     return (
         <section className={styles['partner']}>
             <div className={styles['partner__wrapper']}>

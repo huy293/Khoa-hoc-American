@@ -1,11 +1,25 @@
 import styles from "@/styles/home/HeroSection.module.css";
+import { WPHomeFields } from "@/types/wordpress";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+    data?: Partial<WPHomeFields>;
+}
+
+export default function HeroSection({ data }: HeroSectionProps = {}) {
+    const eyebrow = data?.hero_eyebrow || "HOUSTON, TEXAS · EST. 2015";
+    const description = data?.hero_description || "Couture Beauty Academy is a professional beauty & aesthetic training institution in Houston — home to estheticians, laser specialists and permanent-makeup artists.";
+    const btn1Text = data?.hero_btn_1_text || "CONTACT ADMISSIONS";
+    const btn1Link = data?.hero_btn_1_link || "/contact";
+    const btn2Text = data?.hero_btn_2_text || "DISCOVER THE ACADEMY";
+    const btn2Link = data?.hero_btn_2_link || "/courses";
+    const bgImage = typeof data?.hero_bg_image === 'string' ? data.hero_bg_image : (data?.hero_bg_image?.sourceUrl || "/images/home/hero_section_background.png");
+    const memberImage = typeof data?.hero_member_image === 'string' ? data.hero_member_image : (data?.hero_member_image?.sourceUrl || "/images/home/coutrue-beauty-academy_member.png");
+
     return (
         <section className={styles["hero"]}>
             {/* 1. Background image */}
             <img
-                src="/images/home/hero_section_background.png"
+                src={bgImage}
                 alt="Hero Background"
                 className={styles["hero__background"]}
             />
@@ -17,7 +31,7 @@ export default function HeroSection() {
                     <div className={styles["hero__content"]}>
                         <div className={styles["hero__eyebrow"]}>
                             <div className={styles["hero__eyebrow-text"]}>
-                                HOUSTON, TEXAS · EST. 2015
+                                {eyebrow}
                             </div>
                             <div className={styles["hero__eyebrow-divider"]}>
                                 <svg width="376" height="48" viewBox="0 0 376 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,7 +62,6 @@ export default function HeroSection() {
                                         </linearGradient>
                                     </defs>
                                 </svg>
-
                             </div>
                         </div>
 
@@ -59,21 +72,21 @@ export default function HeroSection() {
                         />
 
                         <p className={styles["hero__description"]}>
-                            Couture Beauty Academy is a professional beauty & aesthetic training institution in Houston — home to estheticians, laser specialists and permanent-makeup artists.
+                            {description}
                         </p>
 
                         <div className={styles["hero__actions"]}>
                             <a
-                                href="#contact"
+                                href={btn1Link}
                                 className={`${styles["hero__btn"]} ${styles["hero__btn--primary"]}`}
                             >
-                                CONTACT ADMISSIONS
+                                {btn1Text}
                             </a>
                             <a
-                                href="#discover"
+                                href={btn2Link}
                                 className={`${styles["hero__btn"]} ${styles["hero__btn--secondary"]}`}
                             >
-                                <span>DISCOVER THE ACADEMY</span>
+                                <span>{btn2Text}</span>
                                 <svg
                                     className={styles["hero__btn-icon"]}
                                     width="18"
@@ -99,7 +112,7 @@ export default function HeroSection() {
                         <div className={styles["hero__image-frame"]}>
                             <div className={styles["hero__image-radial-glow"]}></div>
                             <img
-                                src="/images/home/coutrue-beauty-academy_member.png"
+                                src={memberImage}
                                 alt="Couture Beauty Academy Member"
                                 className={styles["hero__image"]}
                             />

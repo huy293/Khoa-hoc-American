@@ -1,4 +1,5 @@
-import CoursePage, { metadata } from '../courses/page';
+import CoursePage, { generateMetadata } from '../courses/page';
 
-export { metadata };
+export { generateMetadata };
 export default CoursePage;
+

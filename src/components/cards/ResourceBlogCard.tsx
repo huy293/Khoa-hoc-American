@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import styles from '@/styles/card/ResourceBlogCard.module.css';
 
 export interface ResourceBlogAuthor {
@@ -10,6 +11,7 @@ export interface ResourceBlogAuthor {
 }
 
 export interface ResourceBlogCardProps {
+    slug?: string;
     image: string;
     imageAlt?: string;
     title: string;
@@ -22,6 +24,7 @@ export interface ResourceBlogCardProps {
 }
 
 export const ResourceBlogCard: React.FC<ResourceBlogCardProps> = ({
+    slug,
     image,
     imageAlt = '5 HydraFacial Techniques',
     title,
@@ -32,6 +35,8 @@ export const ResourceBlogCard: React.FC<ResourceBlogCardProps> = ({
     onWishlist,
     className = '',
 }) => {
+    const detailHref = slug ? `/resources/${slug}` : '#';
+
     return (
         <article className={`${styles['resources-blog__card']} ${className}`.trim()}>
             {/* Card Media & Floating Actions */}

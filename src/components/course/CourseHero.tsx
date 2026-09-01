@@ -1,6 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import styles from '@/styles/course/CourseHero.module.css';
+import { WPCoursesFields } from '@/types/wordpress';
+
+interface CourseHeroProps {
+    data?: Partial<WPCoursesFields>;
+}
 
 /* ── Check SVG Icon ── */
 const CheckIcon = () => (
@@ -42,14 +47,25 @@ const ArrowRightIcon = () => (
     </svg>
 );
 
-export default function CourseHero() {
+export default function CourseHero({ data }: CourseHeroProps = {}) {
+    const eyebrow = data?.course_hero_eyebrow || "Build Your Career with Confidence";
+    const title = data?.course_hero_title || "Professional Facial <br />And Skincare Course";
+    const badge1 = data?.course_hero_badge_1 || "Learn From Experts";
+    const badge2 = data?.course_hero_badge_2 || "Master the Art of Beauty.";
+    const description = data?.course_hero_description || "Train hands-on with certified beauty professionals who bring years of real-world experience, advanced techniques, and personalized guidance into every class.";
+    const btn1Text = data?.course_hero_btn_1_text || "ABOUT THE COURSE";
+    const btn1Link = data?.course_hero_btn_1_link || "#about-course";
+    const btn2Text = data?.course_hero_btn_2_text || "REGISTER FOR THE COURSE";
+    const btn2Link = data?.course_hero_btn_2_link || "#register";
+    const bgImage = typeof data?.course_hero_bg === 'string' ? data.course_hero_bg : (data?.course_hero_bg?.sourceUrl || "/images/courses/course-hero-bg.jpg");
+
     return (
         <section className={styles['course-hero']}>
             {/* Background Image */}
             <div className={styles['course-hero__bg-wrapper']}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                    src="/images/courses/course-hero-bg.jpg"
+                    src={bgImage}
                     alt="Professional Facial And Skincare Course Classroom"
                     className={styles['course-hero__bg-img']}
                 />
@@ -63,45 +79,45 @@ export default function CourseHero() {
                 <div className={styles['course-hero__content']}>
                     {/* Eyebrow */}
                     <p className={styles['course-hero__eyebrow']}>
-                        Build Your Career with Confidence
+                        {eyebrow}
                     </p>
 
                     {/* Title */}
-                    <h1 className={styles['course-hero__title']}>
-                        Professional Facial <br />
-                        And Skincare Course
-                    </h1>
+                    <h1
+                        className={styles['course-hero__title']}
+                        dangerouslySetInnerHTML={{ __html: title }}
+                    />
 
                     {/* Feature Badges */}
                     <div className={styles['course-hero__badges']}>
                         <div className={styles['course-hero__badge']}>
                             <CheckIcon />
-                            <span>Learn From Experts</span>
+                            <span>{badge1}</span>
                         </div>
                         <div className={styles['course-hero__badge']}>
                             <CheckIcon />
-                            <span>Master the Art of Beauty.</span>
+                            <span>{badge2}</span>
                         </div>
                     </div>
 
                     {/* Description */}
                     <p className={styles['course-hero__description']}>
-                        Train hands-on with certified beauty professionals who bring years of real-world experience, advanced techniques, and personalized guidance into every class.
+                        {description}
                     </p>
 
                     {/* 2 Buttons */}
                     <div className={styles['course-hero__actions']}>
                         <Link
-                            href="#about-course"
+                            href={btn1Link}
                             className={`${styles['course-hero__btn']} ${styles['course-hero__btn--primary']}`}
                         >
-                            ABOUT THE COURSE
+                            {btn1Text}
                         </Link>
                         <Link
-                            href="#register"
+                            href={btn2Link}
                             className={`${styles['course-hero__btn']} ${styles['course-hero__btn--secondary']}`}
                         >
-                            <span>REGISTER FOR THE COURSE</span>
+                            <span>{btn2Text}</span>
                             <ArrowRightIcon />
                         </Link>
                     </div>
