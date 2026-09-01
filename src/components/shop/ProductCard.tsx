@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "@/styles/shop/ProductCard.module.css";
 
 export interface Product {
@@ -17,10 +20,14 @@ interface ProductCardProps {
     product: Product;
     onQuickView?: (product: Product) => void;
     className?: string;
+    basePath?: string;
 }
 
-export default function ProductCard({ product, onQuickView, className }: ProductCardProps) {
-    const productUrl = `/shop/${product.slug || product.id}`;
+export default function ProductCard({ product, onQuickView, className, basePath }: ProductCardProps) {
+    const pathname = usePathname();
+    const isDashboard = pathname?.startsWith("/dashboard");
+    const resolvedBasePath = basePath || (isDashboard ? "/dashboard/shop" : "/shop");
+    const productUrl = `${resolvedBasePath}/${product.slug || product.id}`;
 
     return (
         <article className={`${styles["product-card"]} ${className || ""}`}>

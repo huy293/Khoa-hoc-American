@@ -1,0 +1,99 @@
+/* ==========================================================================
+   WpContent Component Stylesheet
+   Chuẩn WordPress Gutenberg & Classic Content (HomeNest Architecture)
+   ========================================================================== */
+
+.wpContent {
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Inter', sans-serif;
+    color: #2C241B;
+    line-height: 170%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.wpContent :where(h1, h2, h3, h4, h5, h6),
+.chimotbailog :where(h1, h2, h3, h4, h5, h6),
+.hn__gioi-thieu-san-pham__content :where(h1, h2, h3, h4, h5, h6) {
+    font-weight: 700;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h2 {
+    font-size: 1.5em;
+    margin: 0.75em 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h3 {
+    font-size: 1.17em;
+    margin: 0.83em 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h4 {
+    font-size: 1em;
+    margin: 1em 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h5 {
+    font-size: 0.83em;
+    margin: 1.5em 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h6 {
+    font-size: 0.75em;
+    margin: 1.67em 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) p {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    line-height: 170%;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 20px auto;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table {
+    display: table !important;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table,
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table :where(thead, tbody, th, td) {
+    font-size: 1em !important;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table :where(th, td) {
+    border: 1px solid #E5D9C8;
+    padding: 10px 14px;
+    text-align: left;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) figcaption {
+    font-size: 0.9em !important;
+    text-align: center;
+    color: #796B58;
+    margin-top: 8px;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) ul,
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) li {
+    margin-bottom: 8px;
+}

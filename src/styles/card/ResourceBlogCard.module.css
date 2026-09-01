@@ -152,6 +152,37 @@
     white-space: nowrap;
 }
 
+.resources-blog__download-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.resources-blog__download-btn:hover {
+    transform: scale(1.06);
+    opacity: 0.92;
+}
+
+.resources-blog__download-btn:active {
+    transform: scale(0.96);
+}
+
+.resources-blog__download-btn svg {
+    width: 42px;
+    height: 42px;
+    display: block;
+}
+
 /* ══════════════════════════════════════════
    Responsive Breakpoints for Card (6 Breakpoints)
    ══════════════════════════════════════════ */

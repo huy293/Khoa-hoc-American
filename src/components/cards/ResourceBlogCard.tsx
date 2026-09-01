@@ -18,6 +18,8 @@ export interface ResourceBlogCardProps {
     readTime?: string;
     onShare?: () => void;
     onWishlist?: () => void;
+    onDownload?: () => void;
+    isLiked?: boolean;
     className?: string;
 }
 
@@ -30,6 +32,8 @@ export const ResourceBlogCard: React.FC<ResourceBlogCardProps> = ({
     readTime = '1 min read',
     onShare,
     onWishlist,
+    onDownload,
+    isLiked = false,
     className = '',
 }) => {
     return (
@@ -72,8 +76,8 @@ export const ResourceBlogCard: React.FC<ResourceBlogCardProps> = ({
                             width="18"
                             height="18"
                             viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
+                            fill={isLiked ? '#C28200' : 'none'}
+                            stroke={isLiked ? '#C28200' : 'currentColor'}
                             strokeWidth="2.2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -90,7 +94,7 @@ export const ResourceBlogCard: React.FC<ResourceBlogCardProps> = ({
                 <p className={styles['resources-blog__card-desc']}>{description}</p>
                 <hr className={styles['resources-blog__card-divider']} />
 
-                {/* Card Footer (Author & Read Time) */}
+                {/* Card Footer (Author & Download / Read Time) */}
                 <div className={styles['resources-blog__card-footer']}>
                     <div className={styles['resources-blog__author']}>
                         <div className={styles['resources-blog__author-avatar']}>
@@ -110,8 +114,29 @@ export const ResourceBlogCard: React.FC<ResourceBlogCardProps> = ({
                             </p>
                         </div>
                     </div>
-                    {readTime && (
-                        <p className={styles['resources-blog__read-time']}>{readTime}</p>
+                    {onDownload ? (
+                        <button
+                            type="button"
+                            className={styles['resources-blog__download-btn']}
+                            aria-label="Download Resource"
+                            onClick={onDownload}
+                            title="Download Resource"
+                        >
+                            <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="42" height="42" rx="21" fill="#FFF6E3" />
+                                <path
+                                    d="M21 24V12M26 19L21 24L16 19M30 24V28C30 28.5304 29.7893 29.0391 29.4142 29.4142C29.0391 29.7893 28.5304 30 28 30H14C13.4696 30 12.9609 29.7893 12.5858 29.4142C12.2107 29.0391 12 28.5304 12 28V24"
+                                    stroke="#996100"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
+                    ) : (
+                        readTime && (
+                            <p className={styles['resources-blog__read-time']}>{readTime}</p>
+                        )
                     )}
                 </div>
             </div>

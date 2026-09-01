@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/shop/BannerSection.module.css';
 
 interface BannerSectionProps {
@@ -6,7 +9,9 @@ interface BannerSectionProps {
 }
 
 export default function BannerSection({ noMarginTop, isDashboard }: BannerSectionProps = {}) {
-    const isNoMargin = noMarginTop || isDashboard;
+    const pathname = usePathname();
+    const autoDashboard = pathname?.startsWith('/dashboard');
+    const isNoMargin = noMarginTop || isDashboard || autoDashboard;
 
     return (
         <section className={`${styles["shop-banner"]} ${isNoMargin ? styles["shop-banner--no-margin"] : ""}`}>
@@ -30,5 +35,3 @@ export default function BannerSection({ noMarginTop, isDashboard }: BannerSectio
         </section>
     );
 }
-
-

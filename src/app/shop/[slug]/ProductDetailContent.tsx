@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import BannerSection from "@/components/shop/BannerSection";
 import ProductCard, { Product } from "@/components/shop/ProductCard";
 import QuickViewProduct from "@/components/shop/QuickViewProduct";
@@ -73,6 +74,10 @@ const StockBasketIcon = () => (
 );
 
 export default function ProductDetailContent({ slug }: ProductDetailContentProps) {
+    const pathname = usePathname();
+    const isDashboard = pathname?.startsWith("/dashboard");
+    const shopUrl = isDashboard ? "/dashboard/shop" : "/shop";
+
     const [activeTab, setActiveTab] = useState<TabType>("describe");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -99,34 +104,18 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
     };
 
     return (
-        <main className={styles["product-detail"]}>
-            <BannerSection />
+        <div className={styles["product-detail"]}>
+            <BannerSection noMarginTop={isDashboard} />
 
             {/* 1. Main Product Section */}
             <section className={styles["shop-products"]}>
                 <div className={styles["shop-products__wrapper"]}>
                     <div className={styles["shop-products__container"]}>
-                        {/* Top Header Row (Title & In Stock Badge) */}
+                        {/* Top Header Row (Product Title) */}
                         <div className={styles["shop-products__top-row"]}>
                             <div className={styles["shop-products__header"]}>
                                 <h2 className={styles["shop-products__title"]}>{currentProduct.name}</h2>
                             </div>
-
-                            {/* In Stock Badge Button */}
-                            <button
-                                type="button"
-                                className={styles["product-detail__stock-badge"]}
-                                onClick={() => setSelectedProduct(currentProduct)}
-                                aria-label="View In Stock product details"
-                            >
-                                <div className={styles["product-detail__stock-icon-wrap"]}>
-                                    <StockBasketIcon />
-                                </div>
-                                <div className={styles["product-detail__stock-text-wrap"]}>
-                                    <span className={styles["product-detail__stock-label"]}>In stock:</span>
-                                    <span className={styles["product-detail__stock-value"]}>26 product</span>
-                                </div>
-                            </button>
                         </div>
 
                         {/* Main Detail Content (2 Columns: Gallery & Tabbed Information) */}
@@ -307,6 +296,28 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
                                         </div>
                                     )}
                                 </div>
+
+                                {/* Action Buttons: Add to cart & Buy Now */}
+                                <div className={styles["product-detail-section__actions"]}>
+                                    <button
+                                        type="button"
+                                        className={styles["product-detail-section__btn-cart"]}
+                                        onClick={() => {
+                                            alert(`Đã thêm "${currentProduct.name}" vào giỏ hàng!`);
+                                        }}
+                                    >
+                                        ADD TO CART
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles["product-detail-section__btn-buy"]}
+                                        onClick={() => {
+                                            alert(`Tiến hành thanh toán cho "${currentProduct.name}"!`);
+                                        }}
+                                    >
+                                        BUY NOW
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -318,7 +329,7 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
                 <div className={styles["suggested-products__wrapper"]}>
                     <div className={styles["suggested-products__header"]}>
                         <h2 className={styles["suggested-products__title"]}>SUGGESTED PRODUCTS</h2>
-                        <Link href="/shop" className={styles["suggested-products__see-more"]}>
+                        <Link href={shopUrl} className={styles["suggested-products__see-more"]}>
                             See more
                         </Link>
                     </div>
@@ -340,6 +351,6 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
                 product={selectedProduct}
                 onClose={() => setSelectedProduct(null)}
             />
-        </main>
+        </div>
     );
 }

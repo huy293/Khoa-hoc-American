@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ProductDetailContent from "./ProductDetailContent";
+import ProductDetailContent from "@/app/shop/[slug]/ProductDetailContent";
 import { getRestCustomPostType } from "@/lib/wordpress-queries";
 import { WPProduct } from "@/types/wordpress";
 
@@ -37,9 +37,5 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProductDetailPage({ params }: PageProps) {
     const { slug } = await params;
 
-    return (
-        <main>
-            <ProductDetailContent slug={slug} />
-        </main>
-    );
+    return <ProductDetailContent slug={slug} />;
 }
