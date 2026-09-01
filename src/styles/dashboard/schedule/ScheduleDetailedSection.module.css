@@ -300,6 +300,14 @@
     .detailed-wrapper {
         padding: 0 60px;
     }
+
+    .detailed-heading {
+        margin-bottom: 50px;
+    }
+
+    .detailed-list {
+        gap: 50px;
+    }
 }
 
 @container detailed-schedule-section (max-width: 1366px) {
@@ -307,8 +315,28 @@
         padding: 0 40px;
     }
 
+    .detailed-heading {
+        margin-bottom: 40px;
+    }
+
+    .detailed-list {
+        gap: 40px;
+    }
+
     .detailed-item {
         grid-template-columns: 2.2fr 1.6fr 1.2fr;
+    }
+
+    .detailed-item__title {
+        font-size: 18px;
+    }
+
+    .detailed-item__location-text {
+        font-size: 18px;
+    }
+
+    .detailed-item__badge {
+        font-size: 14px;
     }
 
     .detailed-item__course {
@@ -329,21 +357,25 @@
         padding: 0 32px;
     }
 
+    .detailed-group {
+        gap: 24px;
+    }
+
     .detailed-item {
-        grid-template-columns: 1.8fr 1.4fr 1.2fr;
+        grid-template-columns: 1.9fr 1.4fr 1.1fr;
         gap: 16px;
     }
 
     .detailed-item__course {
-        padding-right: 14px;
+        padding-right: 16px;
     }
 
     .detailed-item__location {
-        padding: 0 14px;
+        padding: 0 16px;
     }
 
     .detailed-item__trainer {
-        padding-left: 14px;
+        padding-left: 16px;
     }
 }
 
@@ -354,19 +386,30 @@
 
     .detailed-group {
         flex-direction: column;
-        gap: 14px;
+        gap: 16px;
     }
 
     .detailed-date-badge {
-        width: 100%;
+        width: auto;
+        align-self: flex-start;
         flex-direction: row;
-        gap: 12px;
-        padding: 10px 16px;
+        align-items: baseline;
+        gap: 10px;
+        padding: 10px 18px;
     }
 
-    .detailed-date-badge__day-name,
-    .detailed-date-badge__day-num,
+    .detailed-date-badge__day-name {
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .detailed-date-badge__day-num {
+        font-size: 20px;
+        margin: 0;
+    }
+
     .detailed-date-badge__month {
+        font-size: 16px;
         margin: 0;
     }
 
@@ -374,6 +417,10 @@
         grid-template-columns: 1fr;
         gap: 14px;
         padding: 16px 0;
+    }
+
+    .detailed-item__course {
+        padding-right: 0;
     }
 
     .detailed-item__location {
@@ -391,18 +438,72 @@
     .detailed-wrapper {
         padding: 0 20px;
     }
+
+    .detailed-section {
+        padding: 16px 0 60px;
+    }
+
+    .detailed-heading {
+        margin-bottom: 32px;
+    }
+
+    .detailed-list {
+        gap: 36px;
+    }
+
+    .detailed-item__title {
+        font-size: 17px;
+    }
+
+    .detailed-item__location-text {
+        font-size: 16px;
+    }
 }
 
 @container detailed-schedule-section (max-width: 576px) {
-    .detailed-section {
-        padding: 16px 0 50px;
-    }
-
     .detailed-wrapper {
         padding: 0 16px;
     }
 
-    .detailed-item__title {
+    .detailed-section {
+        padding: 10px 0 45px;
+    }
+
+    .detailed-heading {
+        margin-bottom: 24px;
+    }
+
+    .detailed-list {
+        gap: 28px;
+    }
+
+    .detailed-date-badge {
+        padding: 8px 14px;
+        gap: 8px;
+    }
+
+    .detailed-date-badge__day-name {
+        font-size: 14px;
+    }
+
+    .detailed-date-badge__day-num {
+        font-size: 18px;
+    }
+
+    .detailed-date-badge__month {
         font-size: 15px;
+    }
+
+    .detailed-item__title {
+        font-size: 16px;
+    }
+
+    .detailed-item__location-text {
+        font-size: 15px;
+    }
+
+    .detailed-item__badge {
+        font-size: 13px;
+        padding: 3px 8px;
     }
 }

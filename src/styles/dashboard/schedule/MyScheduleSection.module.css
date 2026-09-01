@@ -617,6 +617,10 @@
     .schedule-wrapper {
         padding: 0 60px;
     }
+
+    .schedule-container {
+        gap: 60px;
+    }
 }
 
 @container schedule-section (max-width: 1366px) {
@@ -625,7 +629,16 @@
     }
 
     .schedule-container {
-        gap: 48px;
+        grid-template-columns: 2.6fr 1fr;
+        gap: 40px;
+    }
+
+    .schedule-header__title {
+        font-size: 32px;
+    }
+
+    .schedule-header__subtitle {
+        font-size: 18px;
     }
 }
 
@@ -635,8 +648,12 @@
     }
 
     .schedule-container {
-        grid-template-columns: 2.6fr 1fr;
-        gap: 36px;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 32px;
+    }
+
+    .schedule-grid__body-scroll {
+        height: 440px;
     }
 }
 
@@ -647,13 +664,23 @@
 
     .schedule-container {
         grid-template-columns: 1fr;
-        gap: 36px;
+        gap: 40px;
     }
 
     .schedule-aside {
-        max-width: 480px;
+        max-width: 520px;
         margin: 0 auto;
         width: 100%;
+    }
+
+    .schedule-timetable {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+    }
+
+    .schedule-grid {
+        min-width: 640px;
     }
 }
 
@@ -661,15 +688,40 @@
     .schedule-wrapper {
         padding: 0 20px;
     }
+
+    .schedule-section {
+        padding: 40px 0 50px;
+    }
+
+    .schedule-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .schedule-header__title {
+        font-size: 28px;
+    }
+
+    .schedule-header__subtitle {
+        font-size: 16px;
+    }
+
+    .schedule-aside {
+        padding: 20px 16px;
+        gap: 16px;
+        max-width: 100%;
+    }
 }
 
 @container schedule-section (max-width: 576px) {
-    .schedule-section {
-        padding: 20px 0 40px;
-    }
-
     .schedule-wrapper {
         padding: 0 16px;
+    }
+
+    .schedule-section {
+        padding: 30px 0 40px;
     }
 
     .schedule-container {
@@ -677,14 +729,43 @@
     }
 
     .schedule-header__title {
-        font-size: 26px;
+        font-size: 24px;
     }
 
     .schedule-header__subtitle {
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .schedule-aside {
+        padding: 16px 12px;
+    }
+
+    .calendar-details {
         padding: 16px;
+    }
+
+    .calendar-details__title {
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+
+    .calendar-details__label {
+        font-size: 14.5px;
+    }
+
+    .mini-calendar__header {
+        padding: 12px 6px;
+    }
+
+    .mini-calendar__month-title {
+        font-size: 18px;
+    }
+
+    .mini-calendar__body {
+        padding: 10px 4px;
+    }
+
+    .mini-calendar__weekday {
+        font-size: 13px;
     }
 }
