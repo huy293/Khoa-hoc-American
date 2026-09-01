@@ -1,0 +1,509 @@
+/* ==========================================================================
+   ScheduleDetailedSection Component Stylesheet (BEM Methodology)
+   ========================================================================== */
+
+.detailed-section {
+    width: 100%;
+    padding: 20px 0 80px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFFFF;
+    container-type: inline-size;
+    container-name: detailed-schedule-section;
+}
+
+.detailed-wrapper {
+    width: 100%;
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
+.detailed-container {
+    max-width: 1670px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* Section Heading Override if needed */
+.detailed-heading {
+    margin-bottom: 60px;
+}
+
+/* ══════════════════════════════════════════
+   1. Groups List & Group Item
+   ══════════════════════════════════════════ */
+.detailed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.detailed-group {
+    display: flex;
+    align-items: stretch;
+    gap: 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ── Left Date Badge ── */
+.detailed-date-badge {
+    width: 118px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    gap: 4px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.detailed-date-badge--cream {
+    background-color: #FFF2D7;
+}
+
+.detailed-date-badge--cream .detailed-date-badge__day-name,
+.detailed-date-badge--cream .detailed-date-badge__day-num,
+.detailed-date-badge--cream .detailed-date-badge__month {
+    color: #836125;
+}
+
+.detailed-date-badge--gray {
+    background-color: #F5F5F5;
+}
+
+.detailed-date-badge--gray .detailed-date-badge__day-name,
+.detailed-date-badge--gray .detailed-date-badge__day-num,
+.detailed-date-badge--gray .detailed-date-badge__month {
+    color: #8B8B8B;
+}
+
+.detailed-date-badge__day-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0;
+    margin: 0;
+}
+
+.detailed-date-badge__day-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 100%;
+    letter-spacing: 0;
+    margin: 0;
+}
+
+.detailed-date-badge__month {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0;
+    margin: 0;
+}
+
+/* ── Right Content Card ── */
+.detailed-group__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    box-sizing: border-box;
+}
+
+/* ══════════════════════════════════════════
+   2. Schedule Row Item
+   ══════════════════════════════════════════ */
+.detailed-item {
+    display: grid;
+    grid-template-columns: 2.3fr 1.8fr 1.3fr;
+    align-items: center;
+    padding: 18px 0;
+    box-sizing: border-box;
+    border-bottom: 1px solid #C5C5C5;
+    width: 100%;
+}
+
+.detailed-group__content .detailed-item:last-child {
+    border-bottom: 1px solid #C5C5C5;
+}
+
+/* ── Column 1: Course Info & Pills ── */
+.detailed-item__course {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 28px;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.detailed-item__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: 0;
+    margin: 0;
+    word-break: break-word;
+}
+
+.detailed-item__title--gold {
+    color: #C6881C;
+}
+
+.detailed-item__title--dark {
+    color: #595959;
+}
+
+.detailed-item__badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.detailed-item__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid #D9D9D9;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #595959;
+    line-height: 16px;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.detailed-item__badge-icon {
+    flex-shrink: 0;
+    color: #595959;
+}
+
+/* ── Column 2: Location / Format ── */
+.detailed-item__location {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 28px;
+    box-sizing: border-box;
+    border-left: 1px solid #B2B2B2;
+    min-width: 0;
+    height: 100%;
+}
+
+.detailed-item__location-icon {
+    flex-shrink: 0;
+    color: #595959;
+    width: 22px;
+    height: 22px;
+}
+
+.detailed-item__location-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #595959;
+    line-height: 100%;
+    letter-spacing: 0;
+    margin: 0;
+    word-break: break-word;
+}
+
+/* ── Column 3: Trainer Info ── */
+.detailed-item__trainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 28px;
+    box-sizing: border-box;
+    border-left: 1px solid #B2B2B2;
+    min-width: 0;
+    height: 100%;
+}
+
+.detailed-item__trainer-avatar-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #F0F0F0;
+    position: relative;
+}
+
+.detailed-item__trainer-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detailed-item__trainer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.detailed-item__trainer-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1A1A1A;
+    line-height: 120%;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.detailed-item__trainer-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #F79E1B;
+    line-height: 1;
+}
+
+.detailed-item__star-icon {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    color: #F79E1B;
+    fill: #F79E1B;
+}
+
+/* ══════════════════════════════════════════
+   3. Responsive Container Queries (6 Breakpoints)
+   ══════════════════════════════════════════ */
+@container detailed-schedule-section (max-width: 1600px) {
+    .detailed-wrapper {
+        padding: 0 60px;
+    }
+
+    .detailed-heading {
+        margin-bottom: 50px;
+    }
+
+    .detailed-list {
+        gap: 50px;
+    }
+}
+
+@container detailed-schedule-section (max-width: 1366px) {
+    .detailed-wrapper {
+        padding: 0 40px;
+    }
+
+    .detailed-heading {
+        margin-bottom: 40px;
+    }
+
+    .detailed-list {
+        gap: 40px;
+    }
+
+    .detailed-item {
+        grid-template-columns: 2.2fr 1.6fr 1.2fr;
+    }
+
+    .detailed-item__title {
+        font-size: 18px;
+    }
+
+    .detailed-item__location-text {
+        font-size: 18px;
+    }
+
+    .detailed-item__badge {
+        font-size: 14px;
+    }
+
+    .detailed-item__course {
+        padding-right: 20px;
+    }
+
+    .detailed-item__location {
+        padding: 0 20px;
+    }
+
+    .detailed-item__trainer {
+        padding-left: 20px;
+    }
+}
+
+@container detailed-schedule-section (max-width: 1200px) {
+    .detailed-wrapper {
+        padding: 0 32px;
+    }
+
+    .detailed-group {
+        gap: 24px;
+    }
+
+    .detailed-item {
+        grid-template-columns: 1.9fr 1.4fr 1.1fr;
+        gap: 16px;
+    }
+
+    .detailed-item__course {
+        padding-right: 16px;
+    }
+
+    .detailed-item__location {
+        padding: 0 16px;
+    }
+
+    .detailed-item__trainer {
+        padding-left: 16px;
+    }
+}
+
+@container detailed-schedule-section (max-width: 996px) {
+    .detailed-wrapper {
+        padding: 0 24px;
+    }
+
+    .detailed-group {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .detailed-date-badge {
+        width: auto;
+        align-self: flex-start;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 10px;
+        padding: 10px 18px;
+    }
+
+    .detailed-date-badge__day-name {
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .detailed-date-badge__day-num {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .detailed-date-badge__month {
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .detailed-item {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 16px 0;
+    }
+
+    .detailed-item__course {
+        padding-right: 0;
+    }
+
+    .detailed-item__location {
+        padding: 0;
+        border-left: none;
+    }
+
+    .detailed-item__trainer {
+        padding-left: 0;
+        border-left: none;
+    }
+}
+
+@container detailed-schedule-section (max-width: 768px) {
+    .detailed-wrapper {
+        padding: 0 20px;
+    }
+
+    .detailed-section {
+        padding: 16px 0 60px;
+    }
+
+    .detailed-heading {
+        margin-bottom: 32px;
+    }
+
+    .detailed-list {
+        gap: 36px;
+    }
+
+    .detailed-item__title {
+        font-size: 17px;
+    }
+
+    .detailed-item__location-text {
+        font-size: 16px;
+    }
+}
+
+@container detailed-schedule-section (max-width: 576px) {
+    .detailed-wrapper {
+        padding: 0 16px;
+    }
+
+    .detailed-section {
+        padding: 10px 0 45px;
+    }
+
+    .detailed-heading {
+        margin-bottom: 24px;
+    }
+
+    .detailed-list {
+        gap: 28px;
+    }
+
+    .detailed-date-badge {
+        padding: 8px 14px;
+        gap: 8px;
+    }
+
+    .detailed-date-badge__day-name {
+        font-size: 14px;
+    }
+
+    .detailed-date-badge__day-num {
+        font-size: 18px;
+    }
+
+    .detailed-date-badge__month {
+        font-size: 15px;
+    }
+
+    .detailed-item__title {
+        font-size: 16px;
+    }
+
+    .detailed-item__location-text {
+        font-size: 15px;
+    }
+
+    .detailed-item__badge {
+        font-size: 13px;
+        padding: 3px 8px;
+    }
+}

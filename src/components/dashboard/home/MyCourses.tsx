@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/dashboard/home/MyCourses.module.css';
 import CourseCard from '@/components/cards/CourseCard';
+import DashboardHeadings from '@/components/dashboard/DashboardHeadings';
 
 /* ── SVG Icons ── */
 const SearchIcon = () => (
@@ -346,11 +347,11 @@ export default function MyCourses({
     return (
         <section className={styles['my-courses']} aria-label="My Courses Section">
             {/* 1. Header: Tag & Title */}
-            <div className={styles['my-courses__header']}>
-                <span className={styles['my-courses__tag']}>{tag}</span>
-                <div className={styles['my-courses__divider']}></div>
-                <h2 className={styles['my-courses__title']}>{title}</h2>
-            </div>
+            <DashboardHeadings
+                tag={tag}
+                title={title}
+                className={styles['my-courses__header']}
+            />
 
             {/* 2. Filter Tabs & See more / Search */}
             <div className={styles['my-courses__nav-row']}>

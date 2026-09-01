@@ -40,11 +40,12 @@ export default async function ProductDetailPage({ params }: PageProps) {
     const suggestedProducts = await getWpProducts(10);
 
     return (
-        <ProductDetailContent
-            slug={slug}
-            initialProduct={product || undefined}
-            suggestedProducts={suggestedProducts}
-        />
+        <main>
+            <ProductDetailContent
+                slug={slug}
+                initialProduct={product || undefined}
+                suggestedProducts={suggestedProducts}
+            />
+        </main>
     );
 }
-

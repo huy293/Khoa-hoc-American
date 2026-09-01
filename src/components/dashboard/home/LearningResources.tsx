@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/dashboard/home/LearningResources.module.css';
 import ResourceBlogCard from '@/components/cards/ResourceBlogCard';
+import DashboardHeadings from '@/components/dashboard/DashboardHeadings';
 
 /* ── SVG Icons ── */
 const ChevronRightIcon = () => (
@@ -152,11 +153,11 @@ export default function LearningResources({
     return (
         <section className={styles['learning-resources']} aria-label="Learning Resources Section">
             {/* 1. Header: Tag & Title */}
-            <div className={styles['learning-resources__header']}>
-                <span className={styles['learning-resources__tag']}>{tag}</span>
-                <div className={styles['learning-resources__divider']}></div>
-                <h2 className={styles['learning-resources__title']}>{title}</h2>
-            </div>
+            <DashboardHeadings
+                tag={tag}
+                title={title}
+                className={styles['learning-resources__header']}
+            />
 
             {/* 2. Filter Tabs & See more */}
             {(filterTab || seemore) && (

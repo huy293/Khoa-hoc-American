@@ -1,104 +1,137 @@
+/* ==========================================================================
+   WpContent Component Stylesheet
+   Chuẩn WordPress Gutenberg & Classic Content (HomeNest Architecture)
+   ========================================================================== */
+
 .wpContent {
-  width: 100%;
-  font-size: 1.0625rem;
-  line-height: 1.8;
-  color: #333333;
+    width: 100%;
+    max-width: 100%;
+    font-size: 1.0625rem;
+    font-family: 'Inter', sans-serif;
+    color: #2C241B;
+    line-height: 1.8;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
-.wpContent h1,
-.wpContent h2,
-.wpContent h3,
-.wpContent h4,
-.wpContent h5,
-.wpContent h6 {
-  color: #191713;
-  font-family: inherit;
-  font-weight: 600;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  line-height: 1.3;
+.wpContent :where(h1, h2, h3, h4, h5, h6),
+.chimotbailog :where(h1, h2, h3, h4, h5, h6),
+.hn__gioi-thieu-san-pham__content :where(h1, h2, h3, h4, h5, h6) {
+    color: #191713;
+    font-weight: 700;
+    line-height: 1.3;
 }
 
-.wpContent h2 {
-  font-size: 1.75rem;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
 }
 
-.wpContent h3 {
-  font-size: 1.375rem;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h2 {
+    font-size: 1.5em;
+    margin: 0.75em 0;
 }
 
-.wpContent p {
-  margin-bottom: 1.25rem;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h3 {
+    font-size: 1.17em;
+    margin: 0.83em 0;
 }
 
-.wpContent img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin: 1.5rem 0;
-  display: block;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h4 {
+    font-size: 1em;
+    margin: 1em 0;
 }
 
-.wpContent figure {
-  margin: 1.5rem 0;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h5 {
+    font-size: 0.83em;
+    margin: 1.5em 0;
 }
 
-.wpContent figure figcaption {
-  font-size: 0.875rem;
-  color: #666666;
-  text-align: center;
-  margin-top: 0.5rem;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) h6 {
+    font-size: 0.75em;
+    margin: 1.67em 0;
 }
 
-.wpContent ul,
-.wpContent ol {
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) p {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    line-height: 170%;
 }
 
-.wpContent li {
-  margin-bottom: 0.5rem;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 20px auto;
 }
 
-.wpContent blockquote {
-  border-left: 4px solid #8A5800;
-  padding-left: 1.25rem;
-  margin: 1.5rem 0;
-  color: #555555;
-  font-style: italic;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) figure {
+    margin: 1.5rem 0;
 }
 
-.wpContent table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) figure figcaption,
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) figcaption {
+    font-size: 0.9em !important;
+    text-align: center;
+    color: #796B58;
+    margin-top: 8px;
 }
 
-.wpContent th,
-.wpContent td {
-  border: 1px solid #E0D0AE;
-  padding: 0.75rem;
-  text-align: left;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) ul,
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) ol {
+    margin: 16px 0;
+    padding-left: 24px;
 }
 
-.wpContent th {
-  background-color: #FBF8F2;
-  font-weight: 600;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) li {
+    margin-bottom: 8px;
 }
 
-.wpContent a {
-  color: #8A5800;
-  text-decoration: underline;
-  transition: opacity 0.2s ease;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) blockquote {
+    border-left: 4px solid #8A5800;
+    padding-left: 1.25rem;
+    margin: 1.5rem 0;
+    color: #555555;
+    font-style: italic;
 }
 
-.wpContent a:hover {
-  opacity: 0.8;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table {
+    display: table !important;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
 }
 
-.wpContent iframe,
-.wpContent video {
-  max-width: 100%;
-  border-radius: 8px;
-  margin: 1.5rem 0;
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table,
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table :where(thead, tbody, th, td) {
+    font-size: 1em !important;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table :where(th, td) {
+    border: 1px solid #E5D9C8;
+    padding: 10px 14px;
+    text-align: left;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) table th {
+    background-color: #FBF8F2;
+    font-weight: 600;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) a {
+    color: #8A5800;
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) a:hover {
+    opacity: 0.8;
+}
+
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) iframe,
+:where(.wpContent, .chimotbailog, .hn__gioi-thieu-san-pham__content) video {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1.5rem 0;
 }
