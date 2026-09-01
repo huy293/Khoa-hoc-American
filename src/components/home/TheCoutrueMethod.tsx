@@ -1,18 +1,40 @@
 import styles from '@/styles/home/TheCoutrueMethod.module.css';
+import { WPHomeFields } from '@/types/wordpress';
 
-export default function TheCoutrueMethod() {
+interface TheCoutrueMethodProps {
+    data?: Partial<WPHomeFields>;
+}
+
+const DEFAULT_STEPS = [
+    {
+        title: "We teach in the room",
+        desc: "Every course is taught in person, in our Houston classrooms.",
+    },
+    {
+        title: "We teach on live models",
+        desc: "Students practise on real skin under supervision",
+    },
+    {
+        title: "No certificate without assessment",
+        desc: "Every course is taught in person, in our classrooms.",
+    },
+    {
+        title: "Professional line training",
+        desc: "Students learn on the same professional lines",
+    },
+];
+
+export default function TheCoutrueMethod({ data }: TheCoutrueMethodProps = {}) {
+    const title = data?.method_title || "THE COUTURE METHOD";
+    const videoUrl = data?.method_video || "/videos/Gold_line_drawing_animation.mp4";
+    const steps = (data?.method_steps && data.method_steps.length > 0) ? data.method_steps : DEFAULT_STEPS;
+
     return (
         <section className={styles['the-coutrue-method']}>
-
             <div className={styles['the-coutrue-method__circle']}>
-                <span className={styles['the-coutrue-method__circle-1']}>
-
-                </span>
-                <span className={styles['the-coutrue-method__circle-2']}>
-
-                </span>
+                <span className={styles['the-coutrue-method__circle-1']}></span>
+                <span className={styles['the-coutrue-method__circle-2']}></span>
             </div>
-
 
             <div className={styles['the-coutrue-method__container']}>
                 <div className={styles['the-coutrue-method__content']}>
@@ -26,7 +48,6 @@ export default function TheCoutrueMethod() {
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                             >
-                                {/* Outer ring with clean gap where the text sits */}
                                 <path
                                     d="M 197, 23 A 248,248 0 1,1 23, 197"
                                     stroke="#E3CDAE"
@@ -34,8 +55,6 @@ export default function TheCoutrueMethod() {
                                     strokeOpacity="0.75"
                                     fill="none"
                                 />
-
-                                {/* Path for text positioned right on the same circle line */}
                                 <path
                                     id="howWeTeachCurve"
                                     d="M 20, 205 A 248,248 0 0,1 205, 20"
@@ -55,7 +74,7 @@ export default function TheCoutrueMethod() {
                             <div className={styles["the-coutrue-method__video-frame"]}>
                                 <div className={styles["the-coutrue-method__video-inner"]}>
                                     <video
-                                        src="/videos/Gold_line_drawing_animation.mp4"
+                                        src={videoUrl}
                                         autoPlay
                                         loop
                                         muted
@@ -69,56 +88,22 @@ export default function TheCoutrueMethod() {
 
                     {/* Right Column: Title and Course List */}
                     <div className={styles['the-coutrue-method__info-wrapper']}>
-                        <h2 className={styles['the-coutrue-method__title']}>THE COUTURE METHOD</h2>
+                        <h2 className={styles['the-coutrue-method__title']}>{title}</h2>
                         <ul className={styles['the-coutrue-method__list-courses']}>
-                            <li className={styles['the-coutrue-method__course-item-wrapper']}>
-                                <div className={styles['the-coutrue-method__list-courses__item']}>
-                                    <div className={styles['the-coutrue-method__item-number-box']}>
-                                        <p className={styles['the-coutrue-method__item-number']}>1</p>
-                                    </div>
+                            {steps.map((step, index) => (
+                                <li key={index} className={styles['the-coutrue-method__course-item-wrapper']}>
+                                    <div className={styles['the-coutrue-method__list-courses__item']}>
+                                        <div className={styles['the-coutrue-method__item-number-box']}>
+                                            <p className={styles['the-coutrue-method__item-number']}>{index + 1}</p>
+                                        </div>
 
-                                    <div className={styles['the-coutrue-method__item-text']}>
-                                        <h3 className={styles['the-coutrue-method__item-title']}>We teach in the room</h3>
-                                        <p className={styles['the-coutrue-method__item-desc']}>Every course is taught in person, in our Houston classrooms.</p>
+                                        <div className={styles['the-coutrue-method__item-text']}>
+                                            <h3 className={styles['the-coutrue-method__item-title']}>{step.title}</h3>
+                                            <p className={styles['the-coutrue-method__item-desc']}>{step.desc}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                            <li className={styles['the-coutrue-method__course-item-wrapper']}>
-                                <div className={styles['the-coutrue-method__list-courses__item']}>
-                                    <div className={styles['the-coutrue-method__item-number-box']}>
-                                        <p className={styles['the-coutrue-method__item-number']}>2</p>
-                                    </div>
-
-                                    <div className={styles['the-coutrue-method__item-text']}>
-                                        <h3 className={styles['the-coutrue-method__item-title']}>We teach on live models</h3>
-                                        <p className={styles['the-coutrue-method__item-desc']}>Students practise on real skin under supervision</p>
-                                    </div>
-                                </div>
-                            </li>
-                            <li className={styles['the-coutrue-method__course-item-wrapper']}>
-                                <div className={styles['the-coutrue-method__list-courses__item']}>
-                                    <div className={styles['the-coutrue-method__item-number-box']}>
-                                        <p className={styles['the-coutrue-method__item-number']}>3</p>
-                                    </div>
-
-                                    <div className={styles['the-coutrue-method__item-text']}>
-                                        <h3 className={styles['the-coutrue-method__item-title']}>No certificate without assessment</h3>
-                                        <p className={styles['the-coutrue-method__item-desc']}>Every course is taught in person, in our classrooms.</p>
-                                    </div>
-                                </div>
-                            </li>
-                            <li className={styles['the-coutrue-method__course-item-wrapper']}>
-                                <div className={styles['the-coutrue-method__list-courses__item']}>
-                                    <div className={styles['the-coutrue-method__item-number-box']}>
-                                        <p className={styles['the-coutrue-method__item-number']}>4</p>
-                                    </div>
-
-                                    <div className={styles['the-coutrue-method__item-text']}>
-                                        <h3 className={styles['the-coutrue-method__item-title']}>We teach in the room</h3>
-                                        <p className={styles['the-coutrue-method__item-desc']}>Students learn on the same professional lines </p>
-                                    </div>
-                                </div>
-                            </li>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>

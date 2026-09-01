@@ -14,7 +14,7 @@ import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/free-mode';
 
-import { WPPost } from '@/types/wordpress';
+import { WPPost, WPResourcesFields } from '@/types/wordpress';
 
 const DEFAULT_POST_IMAGES = [
     '/images/courses/card-hydra.jpg',
@@ -23,17 +23,7 @@ const DEFAULT_POST_IMAGES = [
     '/images/courses/card-advance.jpg',
 ];
 
-const galleryImages = [
-    '/images/gallery/image-1.jpg',
-    '/images/gallery/image-2.jpg',
-    '/images/gallery/image-3.jpg',
-    '/images/gallery/image-4.jpg',
-    '/images/gallery/image-5.jpg',
-    '/images/gallery/image-6.jpg',
-    '/images/gallery/image-7.jpg',
-    '/images/gallery/image-8.jpg',
-    '/images/gallery/image-9.jpg',
-    '/images/gallery/image-10.jpg',
+const DEFAULT_GALLERY_IMAGES = [
     '/images/gallery/image-1.jpg',
     '/images/gallery/image-2.jpg',
     '/images/gallery/image-3.jpg',
@@ -48,12 +38,24 @@ const galleryImages = [
 
 interface ResourceContentProps {
     initialPosts?: WPPost[];
+    data?: Partial<WPResourcesFields>;
 }
 
-export default function ResourceContent({ initialPosts }: ResourceContentProps = {}) {
+export default function ResourceContent({ initialPosts, data }: ResourceContentProps = {}) {
     const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [visibleCount, setVisibleCount] = useState<number>(4);
+
+    const rawGallery: string[] = (data?.resources_gallery_images && data.resources_gallery_images.length > 0)
+        ? data.resources_gallery_images.map((img: any) => {
+            if (typeof img === 'string') return img;
+            if (img?.sourceUrl) return img.sourceUrl;
+            if (typeof img?.image === 'string') return img.image;
+            if (img?.image?.sourceUrl) return img.image.sourceUrl;
+            return '/images/gallery/image-1.jpg';
+        })
+        : DEFAULT_GALLERY_IMAGES;
+    const galleryImages = rawGallery.length < 10 ? [...rawGallery, ...rawGallery] : rawGallery;
 
     // Map WordPress Posts or Fallback Posts
     const postsList = (initialPosts && initialPosts.length > 0)
@@ -148,18 +150,23 @@ export default function ResourceContent({ initialPosts }: ResourceContentProps =
             <section className={styles['resources-hero']}>
                 <div className={styles['resources-hero__wrapper']}>
                     <div className={styles['resources-hero__content']}>
-                        <p className={styles['resources-hero__subtitle']}>Explore. Learn. Be Inspired</p>
+                        <p className={styles['resources-hero__subtitle']}>{data?.resources_hero_subtitle || "Explore. Learn. Be Inspired"}</p>
                         {/* Đường line */}
                         <span className={styles['resources-hero__divider']}></span>
-                        <h1 className={styles['resources-hero__title']}>Resources for Your Beauty Journey</h1>
+                        <h1
+                            className={styles['resources-hero__title']}
+                            dangerouslySetInnerHTML={{ __html: data?.resources_hero_title || "Resources for Your Beauty Journey" }}
+                        />
                         <p className={styles['resources-hero__description']}>
-                            Explore expert articles, training videos, and inspiring moments from our academy to support your learning and professional growth.
+                            {data?.resources_hero_desc || "Explore expert articles, training videos, and inspiring moments from our academy to support your learning and professional growth."}
                         </p>
 
                         <div className={styles['resources-hero__actions']}>
-                            <a href="#about" className={styles['resources-hero__btn-about']}>about us</a>
-                            <a href="#courses" className={styles['resources-hero__btn-courses']}>
-                                <span>Explore Our Courses</span>
+                            <a href={data?.resources_hero_btn_1_link || "/about-us"} className={styles['resources-hero__btn-about']}>
+                                {data?.resources_hero_btn_1_text || "about us"}
+                            </a>
+                            <a href={data?.resources_hero_btn_2_link || "/courses"} className={styles['resources-hero__btn-courses']}>
+                                <span>{data?.resources_hero_btn_2_text || "Explore Our Courses"}</span>
                                 <svg
                                     className={styles['resources-hero__btn-icon']}
                                     width="18"
@@ -180,7 +187,11 @@ export default function ResourceContent({ initialPosts }: ResourceContentProps =
                         </div>
                     </div>
                 </div>
-                <img className={styles['resources-hero__bg-image']} src="/images/background-resources.jpg" alt="Resources Hero Background" />
+                <img
+                    className={styles['resources-hero__bg-image']}
+                    src={typeof data?.resources_hero_bg === 'string' ? data.resources_hero_bg : (data?.resources_hero_bg?.sourceUrl || "/images/background-resources.jpg")}
+                    alt="Resources Hero Background"
+                />
             </section>
 
             {/* ==========================================
@@ -195,23 +206,26 @@ export default function ResourceContent({ initialPosts }: ResourceContentProps =
                                 eyebrowClassName={styles['resources-blog__eyebrow']}
                                 dividerClassName={styles['resources-blog__divider']}
                                 titleClassName={styles['resources-blog__title']}
-                                eyebrow="Blog"
+                                eyebrow={data?.resources_blog_eyebrow || "Blog"}
                                 title={
-                                    <>
-                                        Blog Us About <br />
-                                        Beauty Insights &amp; Expert Advice
-                                    </>
+                                    data?.resources_blog_title ? (
+                                        <span dangerouslySetInnerHTML={{ __html: data.resources_blog_title }} />
+                                    ) : (
+                                        <>
+                                            Blog Us About <br />
+                                            Beauty Insights &amp; Expert Advice
+                                        </>
+                                    )
                                 }
                             />
 
                             <div className={styles['resources-blog__header-right']}>
                                 <p className={styles['resources-blog__description']}>
-                                    Explore expert tips, industry trends, treatment knowledge
+                                    {data?.resources_blog_desc || "Explore expert tips, industry trends, treatment knowledge"}
                                 </p>
                                 <ButtonStyle1
                                     className={styles['resources-blog__btn']}
                                     text="about us"
-                                    onClick={() => console.log('clicked')}
                                 />
                             </div>
                         </div>
@@ -260,17 +274,20 @@ export default function ResourceContent({ initialPosts }: ResourceContentProps =
                                 eyebrowClassName={styles['resources-gallery__eyebrow']}
                                 dividerClassName={styles['resources-gallery__divider']}
                                 titleClassName={styles['resources-gallery__title']}
-                                eyebrow="GALLERY"
-                                title="Inside Couture Beauty Academy"
+                                eyebrow={data?.resources_gallery_eyebrow || "GALLERY"}
+                                title={
+                                    data?.resources_gallery_title ? (
+                                        <span dangerouslySetInnerHTML={{ __html: data.resources_gallery_title }} />
+                                    ) : "Inside Couture Beauty Academy"
+                                }
                             />
                             <div className={styles['resources-gallery__header-right']}>
                                 <p className={styles['resources-gallery__description']}>
-                                    Explore expert tips, industry trends, treatment knowledge
+                                    {data?.resources_gallery_desc || "Explore expert tips, industry trends, treatment knowledge"}
                                 </p>
                                 <ButtonStyle1
                                     className={styles['resources-gallery__btn']}
                                     text="about us"
-                                    onClick={() => console.log('clicked')}
                                 />
                             </div>
                         </div>

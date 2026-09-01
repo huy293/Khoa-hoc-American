@@ -9,111 +9,87 @@ import {
 import { fetchGraphQL, fetchWpRest } from './wordpress';
 
 /**
- * Lấy danh sách khóa học (Custom Post Type 'course' hoặc 'courses')
+ * Lấy danh sách khóa học (Custom Post Type 'course' hoặc 'courses' hoặc 'lp_course')
  */
 export async function getWpCourses(first = 20): Promise<WPCourse[]> {
-  const query = `
-    query GetCourses($first: Int!) {
-      courses(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
-        nodes {
-          id
-          databaseId
-          title
-          slug
-          excerpt
-          content
-          date
-          modified
-          featuredImage {
-            node {
-              sourceUrl
-              altText
-              title
-            }
-          }
-          courseFields {
-            duration
-            level
-            price
-            originalPrice
-            instructor
-            benefits
-          }
-          seo {
-            title
-            metaDesc
-            canonical
-            opengraphTitle
-            opengraphDescription
-            opengraphImage {
-              sourceUrl
-            }
-          }
+  try {
+    const endpoints = ['/wp-json/wp/v2/course', '/wp-json/wp/v2/courses', '/wp-json/wp/v2/lp_course'];
+    for (const ep of endpoints) {
+      try {
+        const courses = await fetchWpRest<any[]>(`${ep}?per_page=${first}&_embed=1`);
+        if (Array.isArray(courses) && courses.length > 0) {
+          return courses.map((c) => {
+            const scf = c.acf || c.scf || {};
+            const featuredImg = c._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+            return {
+              id: String(c.id),
+              databaseId: c.id,
+              title: c.title?.rendered || '',
+              slug: c.slug,
+              excerpt: c.excerpt?.rendered || '',
+              content: c.content?.rendered || '',
+              date: c.date,
+              modified: c.modified,
+              featuredImage: featuredImg ? { node: { sourceUrl: featuredImg } } : undefined,
+              courseFields: {
+                ...scf,
+                price: scf.price || c.price || '$ 1,200',
+                duration: scf.duration || c.duration || '4 Weeks',
+                instructor: scf.instructor || 'Master Trainer',
+              },
+            };
+          });
         }
+      } catch {
+        // Thử endpoint tiếp theo
       }
     }
-  `;
-
-  try {
-    const data = await fetchGraphQL<{ courses?: { nodes: WPCourse[] } }>(query, { first });
-    return data?.courses?.nodes || [];
-  } catch (error) {
-    console.warn('Không thể lấy courses qua GraphQL:', error);
-    return [];
+  } catch {
+    // Không làm sập build
   }
+
+  return [];
 }
 
 /**
  * Lấy chi tiết khóa học theo Slug
  */
 export async function getWpCourseBySlug(slug: string): Promise<WPCourse | null> {
-  const query = `
-    query GetCourseBySlug($slug: ID!) {
-      course(id: $slug, idType: SLUG) {
-        id
-        databaseId
-        title
-        slug
-        excerpt
-        content
-        date
-        modified
-        featuredImage {
-          node {
-            sourceUrl
-            altText
-            title
-          }
-        }
-        courseFields {
-          duration
-          level
-          price
-          originalPrice
-          instructor
-          benefits
-        }
-        seo {
-          title
-          metaDesc
-          canonical
-          opengraphTitle
-          opengraphDescription
-          opengraphImage {
-            sourceUrl
-          }
-        }
-      }
-    }
-  `;
-
+  const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
   try {
-    const data = await fetchGraphQL<{ course?: WPCourse }>(query, { slug });
-    return data?.course || null;
-  } catch (error) {
-    console.warn(`Lỗi lấy chi tiết course [${slug}]:`, error);
+    const endpoints = ['/wp-json/wp/v2/course', '/wp-json/wp/v2/courses', '/wp-json/wp/v2/lp_course'];
+    for (const ep of endpoints) {
+      try {
+        const courses = await fetchWpRest<any[]>(`${ep}?slug=${cleanSlug}&_embed=1`);
+        if (Array.isArray(courses) && courses.length > 0) {
+          const c = courses[0];
+          const scf = c.acf || c.scf || {};
+          const featuredImg = c._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+          return {
+            id: String(c.id),
+            databaseId: c.id,
+            title: c.title?.rendered || '',
+            slug: c.slug,
+            excerpt: c.excerpt?.rendered || '',
+            content: c.content?.rendered || '',
+            date: c.date,
+            modified: c.modified,
+            featuredImage: featuredImg ? { node: { sourceUrl: featuredImg } } : undefined,
+            courseFields: {
+              ...scf,
+              price: scf.price || c.price || '$ 1,200',
+              duration: scf.duration || c.duration || '4 Weeks',
+              instructor: scf.instructor || 'Master Trainer',
+            },
+          };
+        }
+      } catch {}
+    }
+  } catch {
     return null;
   }
+
+  return null;
 }
 
 /**
@@ -242,7 +218,8 @@ export async function getWpPostBySlug(slug: string): Promise<WPPost | null> {
 /**
  * Lấy nội dung trang tĩnh (Page) theo Slug
  */
-export async function getWpPageBySlug(slug: string): Promise<WPPage | null> {
+export async function getWpPageBySlug<T = any>(slug: string): Promise<WPPage<T> | null> {
+  const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
   const query = `
     query GetPageBySlug($slug: ID!) {
       page(id: $slug, idType: URI) {
@@ -259,22 +236,47 @@ export async function getWpPageBySlug(slug: string): Promise<WPPage | null> {
             altText
           }
         }
-        seo {
-          title
-          metaDesc
-          canonical
-        }
       }
     }
   `;
 
+  let pageData: WPPage<T> | null = null;
+
   try {
-    const data = await fetchGraphQL<{ page?: WPPage }>(query, { slug });
-    return data?.page || null;
+    const data = await fetchGraphQL<{ page?: WPPage<T> }>(query, { slug: cleanSlug });
+    if (data?.page) {
+      pageData = data.page;
+    }
   } catch (error) {
-    console.warn(`Lỗi lấy trang [${slug}]:`, error);
-    return null;
+    console.warn(`Lỗi lấy trang [${slug}] qua GraphQL:`, error);
   }
+
+  // Nạp thêm trường SCF / ACF từ REST API nếu có
+  try {
+    const restPages = await fetchWpRest<any[]>(`/wp-json/wp/v2/pages?slug=${cleanSlug}`);
+    if (Array.isArray(restPages) && restPages.length > 0) {
+      const restPage = restPages[0];
+      const scfData = (restPage.acf || restPage.scf || {}) as T;
+      if (pageData) {
+        pageData.scf = scfData;
+        pageData.acf = scfData;
+      } else {
+        pageData = {
+          id: String(restPage.id),
+          databaseId: restPage.id,
+          title: restPage.title?.rendered || '',
+          slug: restPage.slug,
+          content: restPage.content?.rendered || '',
+          scf: scfData,
+          acf: scfData,
+        };
+      }
+    }
+  } catch {
+    // Bỏ qua lỗi REST để không làm chậm
+  }
+
+  return pageData;
 }
 
 /**
@@ -286,28 +288,42 @@ export async function getWpSiteSettings(): Promise<WPSiteSettings> {
       generalSettings {
         title
         description
+        url
       }
     }
   `;
+
+  let settings: WPSiteSettings = {
+    title: 'Couture Beauty Academy',
+    description: 'Professional Beauty & Aesthetic Training in Houston',
+    hotline: '+1 (713) 555-0199',
+    phone: '+1 (713) 555-0199',
+    email: 'admissions@couturebeauty.edu',
+    address: '9889 Bellaire Blvd, Suite 218, Houston, TX 77036',
+    facebookUrl: 'https://facebook.com/couturebeautyacademy',
+    instagramUrl: 'https://instagram.com/couturebeautyacademy',
+    tiktokUrl: 'https://tiktok.com/@couturebeautyacademy',
+    copyrightText: '© 2026 Couture Beauty Academy. All rights reserved.',
+  };
 
   try {
     const data = await fetchGraphQL<{
       generalSettings?: {
         title?: string;
         description?: string;
+        url?: string;
       };
     }>(query);
 
-    return {
-      title: data?.generalSettings?.title || '',
-      description: data?.generalSettings?.description || '',
-    };
-  } catch {
-    return {
-      title: '',
-      description: '',
-    };
+    if (data?.generalSettings) {
+      if (data.generalSettings.title) settings.title = data.generalSettings.title;
+      if (data.generalSettings.description) settings.description = data.generalSettings.description;
+    }
+  } catch (err) {
+    console.warn('Lỗi lấy Site Settings qua GraphQL:', err);
   }
+
+  return settings;
 }
 
 /**

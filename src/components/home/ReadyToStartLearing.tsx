@@ -1,6 +1,11 @@
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import styles from '@/styles/home/ReadyToStartLearing.module.css';
+import { WPHomeFields } from '@/types/wordpress';
+
+interface ReadyToStartLearingProps {
+    data?: Partial<WPHomeFields>;
+}
 
 interface LearningItem {
     id: number;
@@ -11,14 +16,14 @@ interface LearningItem {
     linkUrl: string;
 }
 
-const learningItems: LearningItem[] = [
+const DEFAULT_LEARNING_ITEMS: LearningItem[] = [
     {
         id: 1,
         title: "Shop professional supplies",
         description: "Professional skincare, PMU and lash supplies - the same lines we train on.",
         image: "/images/home/shop-professional-supplies.jpg",
         linkText: "VISIT THE SHOP",
-        linkUrl: "#",
+        linkUrl: "/shop",
     },
     {
         id: 2,
@@ -26,11 +31,24 @@ const learningItems: LearningItem[] = [
         description: "Continuing education, group certifications, and advanced specialty workshops.",
         image: "/images/home/for-salons-and-professionals.jpg",
         linkText: "TALK TO Admissions",
-        linkUrl: "#",
+        linkUrl: "/contact",
     },
 ];
 
-export default function ReadyToStartLearing() {
+export default function ReadyToStartLearing({ data }: ReadyToStartLearingProps = {}) {
+    const eyebrow = data?.ready_eyebrow || "READY TO START LEARNING?";
+    const title = data?.ready_title || "Find the Beauty Course <br />That Fits Your Craft.";
+
+    const cards: LearningItem[] = (data?.ready_cards && data.ready_cards.length > 0)
+        ? data.ready_cards.map((c, idx) => ({
+            id: idx + 1,
+            title: c.title,
+            description: c.description,
+            image: typeof c.image === 'string' ? c.image : (c.image?.sourceUrl || DEFAULT_LEARNING_ITEMS[idx % DEFAULT_LEARNING_ITEMS.length].image),
+            linkText: c.link_text || DEFAULT_LEARNING_ITEMS[idx % DEFAULT_LEARNING_ITEMS.length].linkText,
+            linkUrl: c.link_url || DEFAULT_LEARNING_ITEMS[idx % DEFAULT_LEARNING_ITEMS.length].linkUrl,
+        }))
+        : DEFAULT_LEARNING_ITEMS;
     return (
         <section className={styles['ready-to-start-learning']}>
             <img
@@ -42,16 +60,16 @@ export default function ReadyToStartLearing() {
                 <div className={styles['ready-to-start-learning__container']}>
                     {/* Header: Eyebrow & Title */}
                     <div className={styles['ready-to-start-learning__header']}>
-                        <p className={styles['ready-to-start-learning__eyebrow']}>READY TO START LEARNING?</p>
-                        <h2 className={styles['ready-to-start-learning__title']}>
-                            Find the Beauty Course <br />
-                            That Fits Your Craft.
-                        </h2>
+                        <p className={styles['ready-to-start-learning__eyebrow']}>{eyebrow}</p>
+                        <h2
+                            className={styles['ready-to-start-learning__title']}
+                            dangerouslySetInnerHTML={{ __html: title }}
+                        />
                     </div>
 
                     {/* Cards Grid */}
                     <div className={styles['ready-to-start-learning__grid']}>
-                        {learningItems.map((item) => (
+                        {cards.map((item) => (
                             <article key={item.id} className={styles['ready-to-start-learning__card']}>
                                 <div className={styles['ready-to-start-learning__card-image-wrapper']}>
                                     <Image

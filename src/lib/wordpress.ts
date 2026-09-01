@@ -212,6 +212,10 @@ export async function fetchWpRest<T = any>(
 
       const res = await fetch(fullUrl, fetchOptions);
 
+      if (res.status === 404) {
+        return null;
+      }
+
       if (!res.ok) {
         throw new Error(`[fetchWpRest] HTTP error! Status: ${res.status} ${res.statusText}`);
       }
