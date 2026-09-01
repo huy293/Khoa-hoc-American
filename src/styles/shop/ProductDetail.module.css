@@ -4,6 +4,8 @@
 
 .product-detail {
     width: 100%;
+    container-type: inline-size;
+    container-name: product-details-main;
 }
 
 /* 1. BLOCK: Root Section (from ShopPageContent) */
@@ -281,8 +283,61 @@
     margin-bottom: 24px;
 }
 
-.product-detail-section__instructions-block:last-child {
-    margin-bottom: 0;
+/* ── Action Buttons (Add to Cart & Buy Now) ── */
+.product-detail-section__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.product-detail-section__btn-cart,
+.product-detail-section__btn-buy {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 120%;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    padding: 1.5em 1em;
+    width: 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.product-detail-section__btn-cart {
+    background: #FFFCF9;
+    border: 1px solid #AC5600;
+    color: #AC5600;
+}
+
+.product-detail-section__btn-cart:hover {
+    background: #AC5600;
+    color: #FFFFFF;
+}
+
+.product-detail-section__btn-buy {
+    background: #191713;
+    border: 1px solid #191713;
+    color: #FFFFFF;
+}
+
+.product-detail-section__btn-buy:hover {
+    background: #332C24;
+    border-color: #332C24;
+}
+
+.product-detail-section__btn-cart:active,
+.product-detail-section__btn-buy:active {
+    transform: scale(0.98);
 }
 
 /* ==========================================================================
@@ -342,13 +397,13 @@
    Responsive Breakpoints
    ========================================================================== */
 
-@media (max-width: 1600px) {
+@container product-details-main (max-width: 1600px) {
     .product-detail-section__main {
         gap: 60px;
     }
 }
 
-@media (max-width: 1366px) {
+@container product-details-main (max-width: 1366px) {
     .product-detail-section__gallery {
         flex: 0 0 380px;
     }
@@ -362,7 +417,7 @@
     }
 }
 
-@media (max-width: 1200px) {
+@container product-details-main (max-width: 1200px) {
     .shop-products {
         padding-left: 32px;
         padding-right: 32px;
@@ -387,7 +442,7 @@
     }
 }
 
-@media (max-width: 996px) {
+@container product-details-main (max-width: 996px) {
     .shop-products {
         padding-left: 24px;
         padding-right: 24px;
@@ -448,7 +503,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@container product-details-main (max-width: 768px) {
     .shop-products {
         padding-top: 45px;
         padding-bottom: 40px;
@@ -554,7 +609,7 @@
     }
 }
 
-@media (max-width: 576px) {
+@container product-details-main (max-width: 576px) {
     .shop-products {
         padding-top: 36px;
         padding-bottom: 36px;
@@ -698,5 +753,19 @@
     .suggested-products__grid {
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 28px 12px;
+    }
+
+    .product-detail-section__actions {
+        margin-top: 24px;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .product-detail-section__btn-cart,
+    .product-detail-section__btn-buy {
+        flex: 1;
+        width: 100%;
+        min-width: 120px;
+        padding: 1.3em 0.8em;
     }
 }

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "@/styles/dashboard/courses/LearningContent.module.css";
+import DashboardHeadings from "@/components/dashboard/DashboardHeadings";
 
 export interface LessonItem {
     id: string;
@@ -257,13 +258,7 @@ export default function LearningContent({
         <section className={styles["learning-content"]}>
             <div className={styles["learning-content__container"]}>
                 {/* 1. Section Header: Tag & Title */}
-                <div className={styles["learning-content__header"]}>
-                    <div className={styles["learning-content__tag-wrap"]}>
-                        <span className={styles["learning-content__tag"]}>{tag}</span>
-                    </div>
-                    <div className={styles["learning-content__tag-line"]} />
-                    <h2 className={styles["learning-content__title"]}>{title}</h2>
-                </div>
+                <DashboardHeadings tag={tag} title={title} />
 
                 {/* 2. Modules Accordion */}
                 <div className={styles["modules-accordion"]}>

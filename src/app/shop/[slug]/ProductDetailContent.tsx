@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import BannerSection from "@/components/shop/BannerSection";
 import ProductCard, { Product } from "@/components/shop/ProductCard";
 import QuickViewProduct from "@/components/shop/QuickViewProduct";
 import styles from "@/styles/shop/ProductDetail.module.css";
-
 import { WPProduct } from "@/types/wordpress";
 
 interface ProductDetailContentProps {
@@ -21,14 +21,11 @@ const DEFAULT_PRODUCT_IMAGES = [
     "/images/anh-san-pham.png",
 ];
 
-const StockBasketIcon = () => (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19.24 5.58H18.84L15.46 2.2C15.19 1.93 14.75 1.93 14.47 2.2C14.2 2.47 14.2 2.91 14.47 3.19L16.86 5.58H7.14L9.53 3.19C9.8 2.92 9.8 2.48 9.53 2.2C9.26 1.93 8.82 1.93 8.54 2.2L5.17 5.58H4.77C3.87 5.58 2 5.58 2 8.14C2 9.11 2.2 9.75 2.62 10.17C2.86 10.42 3.15 10.55 3.46 10.62C3.75 10.69 4.06 10.7 4.36 10.7H19.64C19.95 10.7 20.24 10.68 20.52 10.62C21.36 10.42 22 9.82 22 8.14C22 5.58 20.13 5.58 19.24 5.58Z" fill="#FF9C00" />
-        <path d="M19.0897 12H4.90971C4.28971 12 3.81971 12.55 3.91971 13.16L4.75971 18.3C5.03971 20.02 5.78971 22 9.11971 22H14.7297C18.0997 22 18.6997 20.31 19.0597 18.42L20.0697 13.19C20.1897 12.57 19.7197 12 19.0897 12ZM14.8797 16.05L11.6297 19.05C11.4897 19.18 11.3097 19.25 11.1197 19.25C10.9297 19.25 10.7397 19.18 10.5897 19.03L9.08971 17.53C8.79971 17.24 8.79971 16.76 9.08971 16.47C9.38971 16.18 9.85971 16.18 10.1597 16.47L11.1497 17.46L13.8697 14.95C14.1697 14.67 14.6497 14.69 14.9297 14.99C15.2097 15.3 15.1897 15.77 14.8797 16.05Z" fill="#FF9C00" />
-    </svg>
-);
-
 export default function ProductDetailContent({ slug, initialProduct, suggestedProducts }: ProductDetailContentProps) {
+    const pathname = usePathname();
+    const isDashboard = pathname?.startsWith("/dashboard");
+    const shopUrl = isDashboard ? "/dashboard/shop" : "/shop";
+
     const [activeTab, setActiveTab] = useState<TabType>("describe");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -85,34 +82,18 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
     };
 
     return (
-        <main className={styles["product-detail"]}>
-            <BannerSection />
+        <div className={styles["product-detail"]}>
+            <BannerSection noMarginTop={isDashboard} />
 
             {/* 1. Main Product Section */}
             <section className={styles["shop-products"]}>
                 <div className={styles["shop-products__wrapper"]}>
                     <div className={styles["shop-products__container"]}>
-                        {/* Top Header Row (Title & In Stock Badge) */}
+                        {/* Top Header Row (Product Title) */}
                         <div className={styles["shop-products__top-row"]}>
                             <div className={styles["shop-products__header"]}>
                                 <h2 className={styles["shop-products__title"]}>{currentProduct.name}</h2>
                             </div>
-
-                            {/* In Stock Badge Button */}
-                            <button
-                                type="button"
-                                className={styles["product-detail__stock-badge"]}
-                                onClick={() => setSelectedProduct(currentProduct)}
-                                aria-label="View In Stock product details"
-                            >
-                                <div className={styles["product-detail__stock-icon-wrap"]}>
-                                    <StockBasketIcon />
-                                </div>
-                                <div className={styles["product-detail__stock-text-wrap"]}>
-                                    <span className={styles["product-detail__stock-label"]}>In stock:</span>
-                                    <span className={styles["product-detail__stock-value"]}>26 product</span>
-                                </div>
-                            </button>
                         </div>
 
                         {/* Main Detail Content (2 Columns: Gallery & Tabbed Information) */}
@@ -302,6 +283,28 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                                         </div>
                                     )}
                                 </div>
+
+                                {/* Action Buttons: Add to cart & Buy Now */}
+                                <div className={styles["product-detail-section__actions"]}>
+                                    <button
+                                        type="button"
+                                        className={styles["product-detail-section__btn-cart"]}
+                                        onClick={() => {
+                                            alert(`Đã thêm "${currentProduct.name}" vào giỏ hàng!`);
+                                        }}
+                                    >
+                                        ADD TO CART
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles["product-detail-section__btn-buy"]}
+                                        onClick={() => {
+                                            alert(`Tiến hành thanh toán cho "${currentProduct.name}"!`);
+                                        }}
+                                    >
+                                        BUY NOW
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -313,7 +316,7 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                 <div className={styles["suggested-products__wrapper"]}>
                     <div className={styles["suggested-products__header"]}>
                         <h2 className={styles["suggested-products__title"]}>SUGGESTED PRODUCTS</h2>
-                        <Link href="/shop" className={styles["suggested-products__see-more"]}>
+                        <Link href={shopUrl} className={styles["suggested-products__see-more"]}>
                             See more
                         </Link>
                     </div>
@@ -335,6 +338,6 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                 product={selectedProduct}
                 onClose={() => setSelectedProduct(null)}
             />
-        </main>
+        </div>
     );
 }
