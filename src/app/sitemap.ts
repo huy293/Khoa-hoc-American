@@ -52,14 +52,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     }));
 
-    const posts = await getWpPosts(50);
-    const postRoutes: MetadataRoute.Sitemap = (posts || []).map((post) => ({
-      url: `${siteUrl}/resources/${post.slug}`,
-      lastModified: post.modified ? new Date(post.modified) : new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    }));
-
     const products = await getWpProducts(50);
     const productRoutes: MetadataRoute.Sitemap = (products || []).map((product) => ({
       url: `${siteUrl}/shop/${product.slug}`,
@@ -68,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.75,
     }));
 
-    return [...staticRoutes, ...courseRoutes, ...postRoutes, ...productRoutes];
+    return [...staticRoutes, ...courseRoutes, ...productRoutes];
   } catch {
     return staticRoutes;
   }

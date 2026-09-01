@@ -188,12 +188,21 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                                 <div className={styles["product-detail-section__tab-panel"]}>
                                     {activeTab === "describe" && (
                                         <div className={styles["product-detail-section__tab-pane"]}>
-                                            <p className={styles["product-detail-section__text"]}>
-                                                Primary Package: Reawakening, rich cream with potent peptides and phytoactives moisturizes for a redensified, lifted look and visibly reduces signs of skin aging.
-                                            </p>
-                                            <p className={styles["product-detail-section__text"]} style={{ marginTop: "16px" }}>
-                                                Carton: Transformative eye cream with potent peptides and phytoactives delivers a more lifted look. See an immediate lift and reduced signs of skin aging overtime. Quinoa Seed Extract helps to visibly reduce eyelid folds and refine skin&apos;s texture. A duo of powerful peptides visibly firms, boosts skin&apos;s resilience, and defends against free radicals. Adaptogenic Astragalus, Electric Daisy Flower and CoQ10 smooth and tighten for a lifted look. A moisturizing blend with Cassava extract smooths to reduce the appearance of fine lines and wrinkles. Matcha Butter, Squalane, Vitamin E, and Pro-Vitamin B5 hydrate &amp; soothe.
-                                            </p>
+                                            {initialProduct?.description ? (
+                                                <div
+                                                    className={styles["product-detail-section__text"]}
+                                                    dangerouslySetInnerHTML={{ __html: initialProduct.description }}
+                                                />
+                                            ) : (
+                                                <>
+                                                    <p className={styles["product-detail-section__text"]}>
+                                                        Primary Package: Reawakening, rich cream with potent peptides and phytoactives moisturizes for a redensified, lifted look and visibly reduces signs of skin aging.
+                                                    </p>
+                                                    <p className={styles["product-detail-section__text"]} style={{ marginTop: "16px" }}>
+                                                        Carton: Transformative eye cream with potent peptides and phytoactives delivers a more lifted look. See an immediate lift and reduced signs of skin aging overtime. Quinoa Seed Extract helps to visibly reduce eyelid folds and refine skin&apos;s texture. A duo of powerful peptides visibly firms, boosts skin&apos;s resilience, and defends against free radicals. Adaptogenic Astragalus, Electric Daisy Flower and CoQ10 smooth and tighten for a lifted look. A moisturizing blend with Cassava extract smooths to reduce the appearance of fine lines and wrinkles. Matcha Butter, Squalane, Vitamin E, and Pro-Vitamin B5 hydrate &amp; soothe.
+                                                    </p>
+                                                </>
+                                            )}
                                         </div>
                                     )}
 

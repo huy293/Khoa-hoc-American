@@ -234,6 +234,7 @@ export default function ResourceContent({ initialPosts, data }: ResourceContentP
                             {visiblePosts.map((post) => (
                                 <ResourceBlogCard
                                     key={post.id}
+                                    slug={post.slug}
                                     image={post.image}
                                     title={post.title}
                                     description={post.description}
