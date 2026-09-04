@@ -105,6 +105,13 @@ function parseWpCourse(c: any): WPCourse {
             .replace(/&#8217;/g, "'");
 
           const itemSlug = it.slug || toSlug(itemTitle) || String(it.id || lIdx + 1);
+          const lessonVideos =
+            it.lesson_videos ||
+            it.acf?.lesson_videos ||
+            it.scf?.lesson_videos ||
+            it.meta?.lesson_videos ||
+            it.video_url ||
+            it.meta?._lp_lesson_video_intro;
 
           return {
             ...it,
@@ -113,6 +120,9 @@ function parseWpCourse(c: any): WPCourse {
             slug: itemSlug,
             type: it.type || 'lp_lesson',
             duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 min',
+            lesson_videos: lessonVideos,
+            video_url: lessonVideos || it.video_url,
+            acf: it.acf || (lessonVideos ? { lesson_videos: lessonVideos } : undefined),
           };
         })
       : [];
@@ -348,7 +358,8 @@ export async function getWpLessonBySlug(
 ): Promise<WPLesson | null> {
   const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
 
-  // 1. Tìm từ course.sections nếu có
+  // 1. Tìm item từ course.sections nếu có
+  let foundLessonItem: any = null;
   if (course && Array.isArray(course.sections)) {
     for (const sec of course.sections) {
       if (Array.isArray(sec.items)) {
@@ -360,64 +371,31 @@ export async function getWpLessonBySlug(
             (it.title && it.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === cleanSlug)
         );
         if (found) {
-          return {
-            id: String(found.id || cleanSlug),
-            databaseId: typeof found.id === 'number' ? found.id : undefined,
-            title: found.title || 'Lesson',
-            slug: found.slug || toSlug(found.title || '') || cleanSlug,
-            duration: (typeof found.duration === 'string' && found.duration) ? found.duration : '45 min',
-            preview: found.preview,
-            locked: found.locked,
-            content: (typeof found.content === 'string') ? found.content : '',
-            video_url: (typeof found.video_url === 'string') ? found.video_url : undefined,
-          };
+          foundLessonItem = found;
+          break;
         }
       }
     }
   }
 
-  // 2. Fallback: Tìm qua tất cả các khóa học khác
-  try {
-    const allCourses = await getWpCourses(50);
-    for (const c of allCourses) {
-      if (Array.isArray(c.sections)) {
-        for (const sec of c.sections) {
-          if (Array.isArray(sec.items)) {
-            const found = sec.items.find(
-              (it) =>
-                String(it.id) === cleanSlug ||
-                it.slug === cleanSlug ||
-                toSlug(it.title || '') === cleanSlug ||
-                (it.title && it.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === cleanSlug)
-            );
-            if (found) {
-              return {
-                id: String(found.id || cleanSlug),
-                databaseId: typeof found.id === 'number' ? found.id : undefined,
-                title: found.title || 'Lesson',
-                slug: found.slug || toSlug(found.title || '') || cleanSlug,
-                duration: (typeof found.duration === 'string' && found.duration) ? found.duration : '45 min',
-                preview: found.preview,
-                locked: found.locked,
-                content: (typeof found.content === 'string') ? found.content : '',
-                video_url: (typeof found.video_url === 'string') ? found.video_url : undefined,
-              };
-            }
-          }
-        }
-      }
-    }
-  } catch {
-    // ignore
-  }
+  // Nếu trong section đã có sẵn lesson_videos đầy đủ thì có thể tạo fallback sẵn
+  const lessonItemId = foundLessonItem?.id;
 
-  // 3. Thử REST API endpoints của WordPress / LearnPress
+  // 2. Thử REST API endpoints của WordPress / LearnPress để lấy đầy đủ trường ACF (lesson_videos)
   const endpoints = [
-    `/wp-json/learnpress/v1/lessons/${cleanSlug}`,
+    `/wp-json/homenest/v1/lesson/${cleanSlug}`,
+    ...(lessonItemId ? [
+      `/wp-json/homenest/v1/lesson/${lessonItemId}`,
+      `/wp-json/wp/v2/lp_lesson/${lessonItemId}?_embed=1`,
+      `/wp-json/learnpress/v1/lessons/${lessonItemId}`,
+      `/wp-json/lp/v1/lessons/${lessonItemId}`,
+    ] : []),
     `/wp-json/wp/v2/lp_lesson?slug=${cleanSlug}&_embed=1`,
+    `/wp-json/wp/v2/lp_lesson/${cleanSlug}?_embed=1`,
+    `/wp-json/learnpress/v1/lessons/${cleanSlug}`,
     `/wp-json/lp/v1/lessons/${cleanSlug}`,
-    `/wp-json/wp/v2/lp_lesson/${cleanSlug}`,
     `/wp-json/wp/v2/lessons?slug=${cleanSlug}&_embed=1`,
+    `/wp-json/wp/v2/lesson?slug=${cleanSlug}&_embed=1`,
   ];
 
   for (const ep of endpoints) {
@@ -448,17 +426,33 @@ export async function getWpLessonBySlug(
           lessonRaw.featured_media_url ||
           lessonRaw.image;
 
+        const lessonVideos =
+          lessonRaw.acf?.lesson_videos ||
+          lessonRaw.acf?.lesson_video ||
+          lessonRaw.scf?.lesson_videos ||
+          lessonRaw.lesson_videos ||
+          lessonRaw.meta?.lesson_videos ||
+          lessonRaw.video_url ||
+          lessonRaw.meta?._lp_lesson_video_intro ||
+          foundLessonItem?.lesson_videos ||
+          '';
+
         return {
           id: String(lessonRaw.id),
           databaseId: lessonRaw.id,
-          title: cleanTitle || 'Lesson',
-          slug: lessonRaw.slug || cleanSlug,
-          content: cleanContent,
+          title: cleanTitle || foundLessonItem?.title || 'Lesson',
+          slug: lessonRaw.slug || foundLessonItem?.slug || cleanSlug,
+          content: cleanContent || (typeof foundLessonItem?.content === 'string' ? foundLessonItem.content : ''),
           excerpt: cleanExcerpt,
-          duration: lessonRaw.duration || '45 min',
-          preview: lessonRaw.preview,
-          locked: lessonRaw.locked,
-          video_url: lessonRaw.video_url || lessonRaw.meta?._lp_lesson_video_intro,
+          duration: lessonRaw.duration || foundLessonItem?.duration || '45 min',
+          preview: lessonRaw.preview !== undefined ? lessonRaw.preview : foundLessonItem?.preview,
+          locked: lessonRaw.locked !== undefined ? lessonRaw.locked : foundLessonItem?.locked,
+          video_url: lessonVideos || lessonRaw.video_url || lessonRaw.meta?._lp_lesson_video_intro,
+          lesson_videos: lessonVideos,
+          acf: {
+            ...lessonRaw.acf,
+            lesson_videos: lessonVideos,
+          },
           featuredImage: featuredImg ? { node: { sourceUrl: featuredImg } } : undefined,
           seo: lessonRaw.yoast_head_json || lessonRaw.rank_math_seo || lessonRaw.seo,
         };
@@ -466,6 +460,74 @@ export async function getWpLessonBySlug(
     } catch {
       // Thử endpoint tiếp theo
     }
+  }
+
+  // 3. Fallback: Nếu đã tìm thấy từ course.sections thì trả về
+  if (foundLessonItem) {
+    const lessonVideos =
+      foundLessonItem.lesson_videos ||
+      foundLessonItem.acf?.lesson_videos ||
+      (foundLessonItem as any).meta?.lesson_videos ||
+      foundLessonItem.video_url ||
+      '';
+
+    return {
+      id: String(foundLessonItem.id || cleanSlug),
+      databaseId: typeof foundLessonItem.id === 'number' ? foundLessonItem.id : undefined,
+      title: foundLessonItem.title || 'Lesson',
+      slug: foundLessonItem.slug || toSlug(foundLessonItem.title || '') || cleanSlug,
+      duration: (typeof foundLessonItem.duration === 'string' && foundLessonItem.duration) ? foundLessonItem.duration : '45 min',
+      preview: foundLessonItem.preview,
+      locked: foundLessonItem.locked,
+      content: (typeof foundLessonItem.content === 'string') ? foundLessonItem.content : '',
+      video_url: lessonVideos || ((typeof foundLessonItem.video_url === 'string') ? foundLessonItem.video_url : undefined),
+      lesson_videos: lessonVideos,
+      acf: foundLessonItem.acf || (lessonVideos ? { lesson_videos: lessonVideos } : undefined),
+    };
+  }
+
+  // 4. Fallback: Tìm qua tất cả các khóa học khác
+  try {
+    const allCourses = await getWpCourses(50);
+    for (const c of allCourses) {
+      if (Array.isArray(c.sections)) {
+        for (const sec of c.sections) {
+          if (Array.isArray(sec.items)) {
+            const found = sec.items.find(
+              (it) =>
+                String(it.id) === cleanSlug ||
+                it.slug === cleanSlug ||
+                toSlug(it.title || '') === cleanSlug ||
+                (it.title && it.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === cleanSlug)
+            );
+            if (found) {
+              const lessonVideos =
+                found.lesson_videos ||
+                found.acf?.lesson_videos ||
+                (found as any).meta?.lesson_videos ||
+                found.video_url ||
+                '';
+
+              return {
+                id: String(found.id || cleanSlug),
+                databaseId: typeof found.id === 'number' ? found.id : undefined,
+                title: found.title || 'Lesson',
+                slug: found.slug || toSlug(found.title || '') || cleanSlug,
+                duration: (typeof found.duration === 'string' && found.duration) ? found.duration : '45 min',
+                preview: found.preview,
+                locked: found.locked,
+                content: (typeof found.content === 'string') ? found.content : '',
+                video_url: lessonVideos || ((typeof found.video_url === 'string') ? found.video_url : undefined),
+                lesson_videos: lessonVideos,
+                acf: found.acf || (lessonVideos ? { lesson_videos: lessonVideos } : undefined),
+              };
+            }
+          }
+        }
+      }
+    }
+  } catch {
+    // ignore
   }
 
   return null;

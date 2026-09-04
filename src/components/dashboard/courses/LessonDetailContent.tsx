@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from '@/styles/dashboard/courses/LessonDetailContent.module.css';
 import { WPCourse, WPLesson, WPCourseSection, WPCourseLessonItem } from '@/types/wordpress';
-import { toSlug } from '@/lib/wordpress-format';
+import { toSlug, parseLessonVideo } from '@/lib/wordpress-format';
 
 interface LessonDetailContentProps {
     course?: WPCourse | null;
@@ -21,6 +21,7 @@ const defaultLessonsList: Array<{
     videos: number;
     exercises: number;
     duration: string;
+    lesson_videos?: string;
 }> = [
         {
             id: '1',
@@ -132,6 +133,7 @@ export default function LessonDetailContent({
                 videos: 2,
                 exercises: 1,
                 duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 min',
+                lesson_videos: it.lesson_videos || it.acf?.lesson_videos || (it as any).meta?.lesson_videos || it.video_url,
             };
         })
         : defaultLessonsList.map((d) => ({ ...d, slug: toSlug(d.title) || d.id }));
@@ -165,6 +167,25 @@ export default function LessonDetailContent({
     const videoThumb = lesson?.featuredImage?.node?.sourceUrl ||
         course?.featuredImage?.node?.sourceUrl ||
         '/images/courses/card-hydra.jpg';
+
+    // 🎯 Trích xuất video bài học từ trường ACF lesson_videos / video_url
+    const rawLessonVideo =
+        lesson?.lesson_videos ||
+        lesson?.acf?.lesson_videos ||
+        (lesson as any)?.acf?.lesson_video ||
+        (lesson as any)?.meta?.lesson_videos ||
+        lesson?.video_url ||
+        currentLessonItem?.lesson_videos ||
+        (currentLessonItem as any)?.acf?.lesson_videos ||
+        (currentLessonItem as any)?.video_url ||
+        '';
+
+    let parsedVideo = parseLessonVideo(rawLessonVideo);
+
+    // 🎯 Fallback: nếu ACF trống nhưng trong nội dung bài học (content) có chèn mã nhúng iframe video
+    if (!parsedVideo && rawContent) {
+        parsedVideo = parseLessonVideo(rawContent);
+    }
 
     // 🎯 Calculate Next Lesson & Next Module links
     const currentLessonIdx = lessonsList.findIndex(
@@ -253,27 +274,63 @@ export default function LessonDetailContent({
                     {/* Left Column: Video Player & Action Buttons */}
                     <div className={styles['lesson-main']}>
                         <div className={styles['video-container']}>
-                            <Image
-                                src={videoThumb}
-                                alt={displayTitle}
-                                fill
-                                className={styles['video-container__thumb']}
-                                priority
-                                unoptimized
-                            />
-                            <button
-                                type="button"
-                                className={styles['video-container__play-btn']}
-                                aria-label="Play Lesson Video"
-                            >
-                                <svg
-                                    className={styles['video-container__play-icon']}
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                >
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                            </button>
+                            {parsedVideo ? (
+                                parsedVideo.type === 'iframe' && parsedVideo.src ? (
+                                    <iframe
+                                        src={parsedVideo.src}
+                                        title={displayTitle}
+                                        className={styles['video-container__iframe']}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    />
+                                ) : parsedVideo.type === 'video' && parsedVideo.src ? (
+                                    <video
+                                        src={parsedVideo.src}
+                                        controls
+                                        playsInline
+                                        poster={videoThumb}
+                                        className={styles['video-container__video']}
+                                    />
+                                ) : parsedVideo.type === 'html' && parsedVideo.html ? (
+                                    <div
+                                        className={styles['video-container__embed']}
+                                        dangerouslySetInnerHTML={{ __html: parsedVideo.html }}
+                                    />
+                                ) : (
+                                    <Image
+                                        src={videoThumb}
+                                        alt={displayTitle}
+                                        fill
+                                        className={styles['video-container__thumb']}
+                                        priority
+                                        unoptimized
+                                    />
+                                )
+                            ) : (
+                                <>
+                                    <Image
+                                        src={videoThumb}
+                                        alt={displayTitle}
+                                        fill
+                                        className={styles['video-container__thumb']}
+                                        priority
+                                        unoptimized
+                                    />
+                                    <button
+                                        type="button"
+                                        className={styles['video-container__play-btn']}
+                                        aria-label="Play Lesson Video"
+                                    >
+                                        <svg
+                                            className={styles['video-container__play-icon']}
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                        >
+                                            <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                    </button>
+                                </>
+                            )}
                         </div>
 
                         <div className={styles['lesson-actions']}>

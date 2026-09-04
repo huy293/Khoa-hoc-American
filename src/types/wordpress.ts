@@ -328,6 +328,11 @@ export interface WPCourseLessonItem {
   locked?: boolean;
   content?: string;
   video_url?: string;
+  lesson_videos?: string;
+  acf?: {
+    lesson_videos?: string;
+    [key: string]: unknown;
+  };
   [key: string]: unknown;
 }
 
@@ -342,6 +347,11 @@ export interface WPLesson {
   preview?: boolean;
   locked?: boolean;
   video_url?: string;
+  lesson_videos?: string;
+  acf?: {
+    lesson_videos?: string;
+    [key: string]: unknown;
+  };
   featuredImage?: {
     node?: WPImage;
   };
