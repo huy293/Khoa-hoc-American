@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import SinglePostContent from '@/app/[slug]/SinglePostContent';
+import SinglePostContent from '@/app/(main)/[slug]/SinglePostContent';
 
 export async function generateMetadata({
     params,

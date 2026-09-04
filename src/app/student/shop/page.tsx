@@ -1,4 +1,4 @@
-import ShopPageContent from "@/app/shop/ShopPageContent";
+import ShopPageContent from "@/app/(main)/shop/ShopPageContent";
 
 export default function DashboardShopPage() {
     return (

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ProductDetailContent from "@/app/shop/[slug]/ProductDetailContent";
+import ProductDetailContent from "@/app/(main)/shop/[slug]/ProductDetailContent";
 import { getRestCustomPostType } from "@/lib/wordpress-queries";
 import { WPProduct } from "@/types/wordpress";
 
