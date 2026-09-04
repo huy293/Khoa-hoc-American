@@ -123,7 +123,8 @@ export interface CourseCardProps {
     module?: string;
     lessons: string;
     quizzes: string;
-    curriculum?: string[];
+    curriculum?: (string | { title?: string; name?: string; [key: string]: any })[];
+    sections?: Array<{ id?: string | number; title?: string; name?: string; [key: string]: any }>;
     trainer?: CourseTrainer;
     actionType?: 'register' | 'play';
     ctaText?: string;
@@ -154,6 +155,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     lessons,
     quizzes,
     curriculum = [],
+    sections = [],
     trainer,
     actionType = 'register',
     ctaText,
@@ -166,6 +168,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     studentsCount = 145,
     studentLabel = 'Students participated',
 }) => {
+    // Ưu tiên lấy danh sách Module (Section) từ mảng sections (LearnPress: sections[].title) hoặc curriculum
+    const timelineModules = (Array.isArray(sections) && sections.length > 0)
+        ? sections
+        : (Array.isArray(curriculum) && curriculum.length > 0 ? curriculum : []);
+
     return (
         <div className={`${styles['course-card']} ${className}`.trim()}>
             {/* Card Image */}
@@ -238,20 +245,30 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                         <>
                             <div className={styles['course-card__process-divider']} />
 
-                            {/* Vertical Timeline Stepper */}
-                            <div className={styles['course-card__timeline']}>
-                                <div className={styles['course-card__timeline-line']} />
-                                {curriculum.map((step, sIdx) => (
-                                    <div key={sIdx} className={styles['course-card__timeline-step']}>
-                                        <div className={styles['course-card__timeline-dot-wrap']}>
-                                            <TimelineDotIcon />
-                                        </div>
-                                        <span className={styles['course-card__timeline-text']}>
-                                            {step}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
+                            {/* Vertical Timeline Stepper - Render 4 tên Module (Section) từ WordPress LearnPress */}
+                            {timelineModules.length > 0 && (
+                                <div className={styles['course-card__timeline']}>
+                                    <div className={styles['course-card__timeline-line']} />
+                                    {timelineModules.map((step, sIdx) => {
+                                        const stepTitle = typeof step === 'string'
+                                            ? step
+                                            : (step.title || (step as any).name || `Module 0${sIdx + 1}`);
+                                        const stepKey = (typeof step === 'object' && step && (step as any).id)
+                                            ? `section-${(step as any).id}`
+                                            : `step-${sIdx}`;
+                                        return (
+                                            <div key={stepKey} className={styles['course-card__timeline-step']}>
+                                                <div className={styles['course-card__timeline-dot-wrap']}>
+                                                    <TimelineDotIcon />
+                                                </div>
+                                                <span className={styles['course-card__timeline-text']}>
+                                                    {stepTitle}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
 
                             {showPreviewLink && (
                                 <>

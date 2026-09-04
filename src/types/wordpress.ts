@@ -316,6 +316,29 @@ export interface WPPage<T = Record<string, unknown>> {
   [key: string]: unknown;
 }
 
+export interface WPCourseLessonItem {
+  id?: string | number;
+  title?: string;
+  type?: string;
+  preview?: boolean;
+  duration?: string;
+  graduation?: string;
+  status?: string;
+  locked?: boolean;
+  [key: string]: unknown;
+}
+
+export interface WPCourseSection {
+  id?: string | number;
+  title?: string;
+  name?: string;
+  course_id?: number | string;
+  description?: string;
+  order?: string | number;
+  items?: WPCourseLessonItem[];
+  [key: string]: unknown;
+}
+
 export interface WPCourseFields {
   duration?: string;
   level?: string;
@@ -336,10 +359,13 @@ export interface WPCourseFields {
     rating?: string;
     [key: string]: unknown;
   };
+  sections?: WPCourseSection[];
   curriculum?: Array<{
+    id?: string | number;
     title: string;
-    lessons: string[];
-  }>;
+    lessons?: string[];
+    items?: WPCourseLessonItem[];
+  } | string>;
   benefits?: string[];
   about_img_left?: string | WPImage;
   about_img_center?: string | WPImage;
@@ -359,6 +385,7 @@ export interface WPCourse {
   featuredImage?: {
     node?: WPImage;
   };
+  sections?: WPCourseSection[];
   courseFields?: WPCourseFields;
   seo?: WPSeo;
   [key: string]: unknown;

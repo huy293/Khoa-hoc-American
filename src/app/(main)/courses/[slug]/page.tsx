@@ -58,7 +58,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
     <main>
       <CourseDetailHero courseSlug={slug} course={course} />
       <AboutCourse course={course} />
-      <TrainingCurriculum />
+      <TrainingCurriculum course={course} />
       <CourseBenefits />
       <CtaVisit />
     </main>
