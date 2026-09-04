@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "@/styles/dashboard/courses/CourseDetailsIntro.module.css";
 
 export interface CourseModule {
@@ -82,6 +83,9 @@ export default function CourseDetailsIntro({
     // Badge circumference (radius = 23 -> 2 * PI * 23 ≈ 144.51)
     const badgeCircumference = 2 * Math.PI * 23;
 
+    const pathname = usePathname();
+    const coursesUrl = pathname?.startsWith('/teacher') ? '/teacher/courses' : '/student/courses';
+
     return (
         <section className={styles["course-intro"]}>
             <div className={styles["course-intro__container"]}>
@@ -91,11 +95,11 @@ export default function CourseDetailsIntro({
                         {/* Breadcrumb Navigation */}
                         <div className={styles["course-intro__breadcrumb-wrapper"]}>
                             <nav aria-label="Breadcrumb" className={styles["course-intro__breadcrumb"]}>
-                                <Link href="/dashboard/courses" className={styles["breadcrumb__item"]}>
+                                <Link href={coursesUrl} className={styles["breadcrumb__item"]}>
                                     COURSE
                                 </Link>
                                 <span className={styles["breadcrumb__separator"]}>&gt;</span>
-                                <Link href="/dashboard/courses" className={styles["breadcrumb__item"]}>
+                                <Link href={coursesUrl} className={styles["breadcrumb__item"]}>
                                     {category}
                                 </Link>
                                 <span className={styles["breadcrumb__separator"]}>&gt;</span>

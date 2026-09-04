@@ -98,21 +98,6 @@ export const Header = () => {
         };
     }, [isMobileMenuOpen]);
 
-    // Ẩn Header trên các trang /login, /signup và /dashboard
-    const isHiddenPage = Boolean(
-        pathname &&
-        (pathname === '/login' ||
-            pathname === '/signup' ||
-            pathname === '/dashboard' ||
-            pathname.startsWith('/login/') ||
-            pathname.startsWith('/signup/') ||
-            pathname.startsWith('/dashboard/'))
-    );
-
-    if (isHiddenPage) {
-        return null;
-    }
-
     return (
         <header
             className={`${styles['header']} ${isScrolled ? styles['header--scrolled'] : ''}`}
@@ -175,7 +160,7 @@ export const Header = () => {
                     </button>
 
                     <Link
-                        href="/dashboard"
+                        href="/student"
                         className={styles['header__action-btn']}
                         aria-label="User Account"
                     >

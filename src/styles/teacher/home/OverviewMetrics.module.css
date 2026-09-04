@@ -1,0 +1,75 @@
+.overviewMetricsBoxed {}
+
+.overviewMetrics {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 40px 80px;
+}
+
+.overviewMetricsContainer {
+    max-width: 1670px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.overviewMetricsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.overviewMetricsItem {
+    background: linear-gradient(82.46deg, #FFF8EF 5.82%, #FFFFFF 50.01%, #FFF8EF 94.2%);
+    border: 1px solid #E8DBC4;
+    border-radius: 12px;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 16px 12px;
+    box-sizing: border-box;
+}
+
+.overviewMetricsItemIcon {
+    width: 50px;
+    height: 50px;
+    background: #E2AD53;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.overviewMetricsItemIcon svg {
+    display: block;
+}
+
+.overviewMetricsItemNumber {
+    color: #D88A05;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 100%;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.overviewMetricsItemTitle {
+    grid-column: 1 / -1;
+    color: #4C4C4C;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+@container (max-width: 640px) {
+    .overviewMetricsBoxed {
+        background: red;
+
+    }
+}

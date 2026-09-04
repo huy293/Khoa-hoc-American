@@ -12,7 +12,7 @@ interface BannerSectionProps {
 
 export default function BannerSection({ noMarginTop, isDashboard, data }: BannerSectionProps = {}) {
     const pathname = usePathname();
-    const autoDashboard = pathname?.startsWith('/dashboard');
+    const autoDashboard = pathname?.startsWith('/dashboard') || pathname?.startsWith('/student') || pathname?.startsWith('/teacher');
     const isNoMargin = noMarginTop || isDashboard || autoDashboard;
 
     const title = data?.shop_banner_title || "Premium Skincare Professional Results";

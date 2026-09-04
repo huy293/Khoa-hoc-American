@@ -89,6 +89,21 @@ const PlayIcon = () => (
     <svg width="20" height="20" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m3.162 19.857 2.03-4.06c.56-1.132.56-2.45 0-3.582l-2.03-4.071C1.423 4.667 5.168.992 8.61 2.812l1.797.957c.256.128.455.338.56.595l6.638 14.758a1.255 1.255 0 0 1-.56 1.622l-8.447 4.445c-3.43 1.82-7.175-1.855-5.436-5.332M19.028 18.2l-4.351-9.66c-.49-1.084.676-2.181 1.726-1.621l6.732 3.547c2.858 1.505 2.858 5.588 0 7.093l-2.38 1.248a1.26 1.26 0 0 1-1.727-.606" fill="#c28200" /></svg>
 );
 
+/* ── Students Group SVG Icon ── */
+const StudentsGroupIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 14C14.2091 14 16 12.2091 16 10C16 7.79086 14.2091 6 12 6C9.79086 6 8 7.79086 8 10C8 12.2091 9.79086 14 12 14ZM21 15C22.6569 15 24 13.6569 24 12C24 10.3431 22.6569 9 21 9C19.3431 9 18 10.3431 18 12C18 13.6569 19.3431 15 21 15ZM12 17C8.68629 17 4 18.67 4 22V24C4 24.5523 4.44772 25 5 25H19C19.5523 25 20 24.5523 20 24V22C20 18.67 15.3137 17 12 17ZM21 18C20.66 18 20.29 18.02 19.91 18.06C21.19 19.14 22 20.48 22 22V24C22 24.36 21.94 24.7 21.84 25H27C27.5523 25 28 24.5523 28 24V22C28 19.33 23.97 18 21 18Z" fill="white" />
+    </svg>
+);
+
+/* ── Laptop Device SVG Icon ── */
+const LaptopDeviceIcon = () => (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M26.25 21H25.375V6.125C25.375 5.66087 25.1906 5.21575 24.8624 4.88756C24.5342 4.55937 24.0891 4.375 23.625 4.375H4.375C3.91087 4.375 3.46575 4.55937 3.13756 4.88756C2.80937 5.21575 2.625 5.66087 2.625 6.125V21H1.75C1.51794 21 1.29538 21.0922 1.13128 21.2563C0.967187 21.4204 0.875 21.6429 0.875 21.875C0.875 22.1071 0.967187 22.3296 1.13128 22.4937C1.29538 22.6578 1.51794 22.75 1.75 22.75H26.25C26.4821 22.75 26.7046 22.6578 26.8687 22.4937C27.0328 22.3296 27.125 22.1071 27.125 21.875C27.125 21.6429 27.0328 21.4204 26.8687 21.2563C26.7046 21.0922 26.4821 21 26.25 21ZM23.625 21H15.75V19.25C15.75 19.0179 15.8422 18.7954 16.0063 18.6313C16.1704 18.4672 16.3929 18.375 16.625 18.375H22.75C22.9821 18.375 23.2046 18.4672 23.3687 18.6313C23.5328 18.7954 23.625 19.0179 23.625 19.25V21ZM23.625 15.75C23.625 15.9821 23.5328 16.2046 23.3687 16.3687C23.2046 16.5328 22.9821 16.625 22.75 16.625C22.5179 16.625 22.2954 16.5328 22.1313 16.3687C21.9672 16.2046 21.875 15.9821 21.875 15.75V7.875H6.125V20.125C6.125 20.3571 6.03281 20.5796 5.86872 20.7437C5.70462 20.9078 5.48206 21 5.25 21C5.01794 21 4.79538 20.9078 4.63128 20.7437C4.46719 20.5796 4.375 20.3571 4.375 20.125V7C4.375 6.76794 4.46719 6.54538 4.63128 6.38128C4.79538 6.21719 5.01794 6.125 5.25 6.125H22.75C22.9821 6.125 23.2046 6.21719 23.3687 6.38128C23.5328 6.54538 23.625 6.76794 23.625 7V15.75Z" fill="#C28200" />
+    </svg>
+
+);
+
 export interface CourseTrainer {
     name: string;
     avatar: string;
@@ -108,8 +123,8 @@ export interface CourseCardProps {
     module?: string;
     lessons: string;
     quizzes: string;
-    curriculum: string[];
-    trainer: CourseTrainer;
+    curriculum?: string[];
+    trainer?: CourseTrainer;
     actionType?: 'register' | 'play';
     ctaText?: string;
     courseUrl?: string;
@@ -117,6 +132,11 @@ export interface CourseCardProps {
     showPreviewLink?: boolean;
     onPlay?: () => void;
     className?: string;
+    variant?: 'student' | 'teacher';
+    studentsCount?: number | string;
+    studentLabel?: string;
+    showProgress?: boolean;
+    showTrainingProcess?: boolean;
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({
@@ -128,10 +148,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     title,
     subtitle,
     progress,
+    showProgress = true,
+    showTrainingProcess = true,
     module,
     lessons,
     quizzes,
-    curriculum,
+    curriculum = [],
     trainer,
     actionType = 'register',
     ctaText,
@@ -140,6 +162,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     showPreviewLink = true,
     onPlay,
     className = '',
+    variant = 'student',
+    studentsCount = 145,
+    studentLabel = 'Students participated',
 }) => {
     return (
         <div className={`${styles['course-card']} ${className}`.trim()}>
@@ -170,7 +195,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             <p className={styles['course-card__subtitle']}>{subtitle}</p>
 
             {/* Optional Progress Bar */}
-            {progress !== undefined && (
+            {showProgress && progress !== undefined && (
                 <div className={styles['course-card__progress-wrap']}>
                     <div className={styles['course-card__progress-track']}>
                         <div
@@ -185,98 +210,133 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             )}
 
             {/* Content Box / Training Process */}
-            <div className={styles['course-card__process-box']}>
-                <div className={styles['course-card__process-header']}>
-                    <span className={styles['course-card__process-title']}>
-                        TRAINING PROCESS
-                    </span>
-                    <div className={styles['course-card__process-meta']}>
-                        {module && (
+            {showTrainingProcess && (
+                <div className={styles['course-card__process-box']}>
+                    <div className={styles['course-card__process-header']}>
+                        <span className={styles['course-card__process-title']}>
+                            TRAINING PROCESS
+                        </span>
+                        <div className={styles['course-card__process-meta']}>
+                            {module && (
+                                <div className={styles['course-card__meta-item']}>
+                                    <ModuleIcon />
+                                    <span>{module}</span>
+                                </div>
+                            )}
                             <div className={styles['course-card__meta-item']}>
-                                <ModuleIcon />
-                                <span>{module}</span>
+                                <BookIcon />
+                                <span>{lessons}</span>
                             </div>
-                        )}
-                        <div className={styles['course-card__meta-item']}>
-                            <BookIcon />
-                            <span>{lessons}</span>
-                        </div>
-                        <div className={styles['course-card__meta-item']}>
-                            <QuizIcon />
-                            <span>{quizzes}</span>
+                            <div className={styles['course-card__meta-item']}>
+                                <QuizIcon />
+                                <span>{quizzes}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className={styles['course-card__process-divider']} />
+                    {variant !== 'teacher' && (
+                        <>
+                            <div className={styles['course-card__process-divider']} />
 
-                {/* Vertical Timeline Stepper */}
-                <div className={styles['course-card__timeline']}>
-                    <div className={styles['course-card__timeline-line']} />
-                    {curriculum.map((step, sIdx) => (
-                        <div key={sIdx} className={styles['course-card__timeline-step']}>
-                            <div className={styles['course-card__timeline-dot-wrap']}>
-                                <TimelineDotIcon />
+                            {/* Vertical Timeline Stepper */}
+                            <div className={styles['course-card__timeline']}>
+                                <div className={styles['course-card__timeline-line']} />
+                                {curriculum.map((step, sIdx) => (
+                                    <div key={sIdx} className={styles['course-card__timeline-step']}>
+                                        <div className={styles['course-card__timeline-dot-wrap']}>
+                                            <TimelineDotIcon />
+                                        </div>
+                                        <span className={styles['course-card__timeline-text']}>
+                                            {step}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                            <span className={styles['course-card__timeline-text']}>
-                                {step}
+
+                            {showPreviewLink && (
+                                <>
+                                    <div className={styles['course-card__process-divider']} />
+
+                                    {/* Preview Class Link */}
+                                    <Link href={previewUrl} className={styles['course-card__preview-link']}>
+                                        <span>PREVIEW CLASS</span>
+                                        <ArrowSmallIcon />
+                                    </Link>
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+
+            {/* Bottom Card Footer: Teacher Variant vs Student Variant */}
+            {variant === 'teacher' ? (
+                <div className={styles['course-card__teacher-footer']}>
+                    <div className={styles['course-card__students-wrap']}>
+                        <div className={styles['course-card__students-icon-box']}>
+                            <StudentsGroupIcon />
+                        </div>
+                        <div className={styles['course-card__students-info']}>
+                            <span className={styles['course-card__students-label']}>
+                                {studentLabel}
+                            </span>
+                            <span className={styles['course-card__students-count']}>
+                                {studentsCount}
                             </span>
                         </div>
-                    ))}
-                </div>
-
-                {showPreviewLink && (
-                    <>
-                        <div className={styles['course-card__process-divider']} />
-
-                        {/* Preview Class Link */}
-                        <Link href={previewUrl} className={styles['course-card__preview-link']}>
-                            <span>PREVIEW CLASS</span>
-                            <ArrowSmallIcon />
-                        </Link>
-                    </>
-                )}
-            </div>
-
-            {/* Bottom Card Footer: Trainer & CTA / Play */}
-            <div className={styles['course-card__footer']}>
-                <div className={styles['course-card__trainer']}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        src={trainer.avatar}
-                        alt={trainer.name}
-                        className={styles['course-card__trainer-avatar']}
-                    />
-                    <div className={styles['course-card__trainer-info']}>
-                        <span className={styles['course-card__trainer-name']}>
-                            {trainer.name}
-                        </span>
-                        <div className={styles['course-card__trainer-rating']}>
-                            <StarIcon />
-                            <span>{trainer.rating}</span>
-                        </div>
                     </div>
-                </div>
 
-                {actionType === 'play' ? (
                     <Link
                         href={courseUrl}
-                        className={styles['course-card__play-btn']}
-                        aria-label={`Play ${title}`}
+                        className={styles['course-card__device-btn']}
+                        aria-label={`View ${title}`}
                         onClick={onPlay}
                     >
-                        <PlayIcon />
+                        <LaptopDeviceIcon />
                     </Link>
-                ) : (
-                    <Link
-                        href={courseUrl}
-                        className={styles['course-card__cta-btn']}
-                        style={{ textDecoration: 'none' }}
-                    >
-                        {ctaText || 'REGISTRATION NOW!'}
-                    </Link>
-                )}
-            </div>
+                </div>
+            ) : (
+                <div className={styles['course-card__footer']}>
+                    {trainer && (
+                        <div className={styles['course-card__trainer']}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={trainer.avatar}
+                                alt={trainer.name}
+                                className={styles['course-card__trainer-avatar']}
+                            />
+                            <div className={styles['course-card__trainer-info']}>
+                                <span className={styles['course-card__trainer-name']}>
+                                    {trainer.name}
+                                </span>
+                                <div className={styles['course-card__trainer-rating']}>
+                                    <StarIcon />
+                                    <span>{trainer.rating}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {actionType === 'play' ? (
+                        <Link
+                            href={courseUrl}
+                            className={styles['course-card__play-btn']}
+                            aria-label={`Play ${title}`}
+                            onClick={onPlay}
+                        >
+                            <PlayIcon />
+                        </Link>
+                    ) : (
+                        <Link
+                            href={courseUrl}
+                            className={styles['course-card__cta-btn']}
+                            style={{ textDecoration: 'none' }}
+                        >
+                            {ctaText || 'REGISTRATION NOW!'}
+                        </Link>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

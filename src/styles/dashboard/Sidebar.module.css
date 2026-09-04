@@ -175,6 +175,51 @@
     line-height: 1.2;
 }
 
+/* ── Sub Navigation Items (for nested links like Classroom, Students) ── */
+.sidebar__sub-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+    padding-left: 14px;
+    list-style: none;
+}
+
+.sidebar__sub-nav-item {
+    list-style: none;
+}
+
+.sidebar__nav-link--sub {
+    height: 44px;
+    padding: 6px 12px;
+    font-size: 15px;
+    color: #4A4A4A;
+    gap: 10px;
+}
+
+.sidebar__sub-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #8C8983;
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.sidebar__nav-link--sub:hover .sidebar__sub-chevron {
+    color: #201A14;
+}
+
+.sidebar--collapsed .sidebar__sub-group {
+    padding-left: 0;
+}
+
+.sidebar--collapsed .sidebar__sub-chevron {
+    display: none;
+}
+
 /* ── Tooltip for Collapsed State ── */
 .sidebar__tooltip {
     display: none;

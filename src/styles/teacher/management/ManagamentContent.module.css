@@ -1,0 +1,393 @@
+/* ==========================================================================
+   Teacher Management Content Stylesheet (BEM Methodology)
+   ========================================================================== */
+
+.management {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(82.46deg, #FFF8EF 5.82%, #FFFFFF 50.01%, #FFF8EF 94.2%);
+    min-height: 100vh;
+}
+
+.management__wrapper {
+    width: 100%;
+    padding: 40px 60px 80px;
+    box-sizing: border-box;
+}
+
+.management__container {
+    max-width: 1670px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.management__content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 40px;
+    box-sizing: border-box;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   1. TOP HEADER & CLASS CATEGORY TABS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.management__top {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.management__header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.management__tag-wrap {
+    display: inline-flex;
+    align-items: center;
+}
+
+.management__tag {
+    color: #8A7043;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 100%;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+}
+
+.management__divider {
+    background: linear-gradient(90deg, #996100 0%, rgba(250, 233, 211, 0) 100%);
+    height: 2px;
+    width: 160px;
+    border-radius: 2px;
+}
+
+.management__title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 120%;
+    letter-spacing: 0px;
+    color: #9D6900;
+    margin: 4px 0 0 0;
+}
+
+/* ── Class Type Tabs (ALL CLASS, ONLINE CLASS, ON-SITE CLASS) ── */
+.management__class-nav {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ECE5DA;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.management__class-tabs {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.management__class-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.management__class-tab {
+    background: transparent;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #595959;
+    cursor: pointer;
+    padding: 14px 4px;
+    position: relative;
+    white-space: nowrap;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.management__class-tab:hover {
+    color: #382C21;
+}
+
+.management__class-tab--active {
+    color: #9D6900;
+    font-weight: 700;
+}
+
+.management__class-tab--active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #AF8861;
+    border-radius: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   2. MIDDLE FILTER & SEARCH SECTION
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.management__middle {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.management__courses-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1A1A1A;
+    line-height: 120%;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.management__filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid #ECE5DA;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+.management__filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.management__filter-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.management__filter-tab {
+    background: transparent;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #595959;
+    cursor: pointer;
+    padding: 12px 4px;
+    position: relative;
+    white-space: nowrap;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.management__filter-tab:hover {
+    color: #382C21;
+}
+
+.management__filter-tab--active {
+    color: #9D6900;
+    font-weight: 700;
+}
+
+.management__filter-tab--active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #AF8861;
+    border-radius: 2px;
+}
+
+/* ── Search Input Box ── */
+.management__search-box {
+    display: flex;
+    align-items: center;
+    width: 280px;
+    height: 42px;
+    padding: 0 14px 0 16px;
+    border: 1px solid #DFC9AC;
+    border-radius: 6px;
+    background: #FFFFFF;
+    box-sizing: border-box;
+    gap: 8px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+}
+
+.management__search-box:focus-within {
+    border-color: #9D6900;
+    box-shadow: 0 0 0 3px rgba(157, 105, 0, 0.12);
+}
+
+.management__search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #2D2319;
+    min-width: 0;
+}
+
+.management__search-input::placeholder {
+    color: #A89580;
+}
+
+.management__search-icon {
+    flex-shrink: 0;
+    color: #8A7043;
+    cursor: pointer;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3. COURSE GRID & LOAD MORE SECTION
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.management__grid-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.management__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ── Empty State ── */
+.management__empty {
+    width: 100%;
+    padding: 60px 20px;
+    text-align: center;
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px dashed #DFC9AC;
+    color: #6E6255;
+    font-size: 16px;
+}
+
+/* ── Load More Button ── */
+.management__load-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #595959;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.management__load-more:hover {
+    color: #9D6900;
+    background-color: rgba(255, 248, 239, 0.8);
+    transform: translateY(1px);
+}
+
+.management__load-more svg {
+    transition: transform 0.2s ease;
+}
+
+.management__load-more:hover svg {
+    transform: translateY(2px);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1400px) {
+    .management__grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .management__wrapper {
+        padding: 32px 32px 60px;
+    }
+
+    .management__title {
+        font-size: 32px;
+    }
+
+    .management__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .management__wrapper {
+        padding: 24px 20px 48px;
+    }
+
+    .management__title {
+        font-size: 26px;
+    }
+
+    .management__courses-title {
+        font-size: 22px;
+    }
+
+    .management__class-tabs,
+    .management__filter-tabs {
+        gap: 20px;
+    }
+
+    .management__filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .management__search-box {
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 12px;
+    }
+
+    .management__grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

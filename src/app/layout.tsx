@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { CtaVisit } from '@/components/sections/CtaVisit';
 
 export const metadata: Metadata = {
   metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
@@ -18,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <Header />
         {children}
-        <CtaVisit />
-        <Footer />
       </body>
     </html>
   );
