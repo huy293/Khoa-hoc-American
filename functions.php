@@ -1,6 +1,7 @@
 <?php
 /**
- * HOMENEST HEADLESS CMS - FUNCTIONS.PHP
+ * HOMENEST HEADLESS CMS - MASTER FUNCTIONS.PHP
+ * Phiên bản chuẩn đồng bộ cho Next.js 15 App Router & WordPress
  */
 
 // 1. Mở khóa SSL nội bộ & Theme Editor loopback
@@ -62,13 +63,15 @@ add_action('admin_init', function () {
 });
 add_filter('comments_open', '__return_false', 20, 2);
 add_filter('pings_open', '__return_false', 20, 2);
-// Tắt trình soạn thảo Gutenberg (Block Editor)
-add_filter('use_block_editor_for_post_type', '__return_false');
 
-// Tắt trình quản lý widget dựa trên block
+// 7. Tắt trình soạn thảo Gutenberg Block Editor (giữ Classic/Headless nhẹ nhàng)
+add_filter('use_block_editor_for_post_type', '__return_false');
 add_filter('use_widgets_block_editor', '__return_false');
+
 /**
+ * =========================================================================
  * 🔑 BẢO MẬT API (REST API & WPGRAPHQL)
+ * =========================================================================
  */
 function hn_get_all_headers() {
     if (function_exists('getallheaders')) {
@@ -168,8 +171,6 @@ add_action('graphql_execute_http', function ($request) {
  * 📋 BẢNG HƯỚNG DẪN & TỰ ĐỘNG KIỂM TRA WP-CONFIG (CHO DEV / TEAM)
  * =========================================================================
  */
-
-// 1. Cảnh báo nổi bật trên đầu trang Admin nếu chưa cấu hình wp-config.php
 add_action('admin_notices', function () {
     $has_secret = defined('HN_API_SECRET') && !empty(HN_API_SECRET) && HN_API_SECRET !== 'xxx';
     if (!$has_secret) {
@@ -187,7 +188,6 @@ add_action('admin_notices', function () {
     }
 });
 
-// 2. Tạo Widget tài liệu & trạng thái ngay màn hình chính Dashboard (Tuyệt đối không in Key)
 add_action('wp_dashboard_setup', function () {
     wp_add_dashboard_widget(
         'hn_headless_guide_widget',
@@ -235,6 +235,7 @@ define('HN_API_SECRET', 'nhap_ma_bi_mat_rieng_cho_web_nay');</code></pre>
     </div>
     <?php
 }
+
 
 /**
  * =========================================================================
@@ -448,6 +449,7 @@ add_action('rest_api_init', function () {
             if (empty($email) || empty($password)) {
                 return new WP_Error('missing_data', 'Vui lòng cung cấp Email và Mật khẩu.', ['status' => 400]);
             }
+
             if (email_exists($email) || username_exists($username)) {
                 return new WP_Error('user_exists', 'Email hoặc Tên đăng nhập này đã tồn tại.', ['status' => 409]);
             }
@@ -461,6 +463,19 @@ add_action('rest_api_init', function () {
             $user->set_role('student');
             wp_update_user(['ID' => $user_id, 'display_name' => $fullName ?: $username, 'first_name' => $fullName]);
             update_user_meta($user_id, 'phone_number', $phone);
+
+            // Đồng thời lưu vào CRM Lead
+            wp_insert_post([
+                'post_type'   => 'crm_lead',
+                'post_title'  => $fullName ?: $username,
+                'post_status' => 'publish',
+                'meta_input'  => [
+                    '_lead_phone'   => $phone,
+                    '_lead_email'   => $email,
+                    '_lead_course'  => 'Đăng ký tài khoản học viên mới',
+                    '_lead_status'  => 'enrolled',
+                ]
+            ]);
 
             return rest_ensure_response([
                 'success' => true,
@@ -477,7 +492,7 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true'
     ]);
 
-    // E. ĐĂNG NHẬP & PHÂN QUYỀN (POST /wp-json/homenest/v1/auth/login) - CHỈ 1 LẦN DUY NHẤT
+    // E. ĐĂNG NHẬP & PHÂN QUYỀN (POST /wp-json/homenest/v1/auth/login)
     register_rest_route('homenest/v1', '/auth/login', [
         'methods' => 'POST',
         'callback' => function ($request) {
@@ -555,5 +570,85 @@ add_action('rest_api_init', function () {
         },
         'permission_callback' => '__return_true'
     ]);
-});
 
+    // G. TÍCH HỢP RANK MATH SEO CHO TOÀN BỘ REST API POST TYPES
+    $supported_types = ['post', 'page', 'lp_course', 'product', 'courses', 'course'];
+    foreach ($supported_types as $post_type) {
+        register_rest_field($post_type, 'rank_math_seo', [
+            'get_callback' => function ($object) {
+                $post_id = $object['id'] ?? 0;
+                if (!$post_id) return null;
+
+                $title = get_post_meta($post_id, 'rank_math_title', true);
+                if (empty($title)) {
+                    $title = get_the_title($post_id);
+                }
+
+                $description = get_post_meta($post_id, 'rank_math_description', true);
+                if (empty($description)) {
+                    $description = wp_strip_all_tags(get_the_excerpt($post_id));
+                }
+
+                $focus_keyword = get_post_meta($post_id, 'rank_math_focus_keyword', true);
+                $canonical = get_post_meta($post_id, 'rank_math_canonical_url', true);
+                if (empty($canonical)) {
+                    $canonical = get_permalink($post_id);
+                }
+
+                $og_title = get_post_meta($post_id, 'rank_math_facebook_title', true) ?: $title;
+                $og_desc  = get_post_meta($post_id, 'rank_math_facebook_description', true) ?: $description;
+                $og_image_url = get_post_meta($post_id, 'rank_math_facebook_image', true);
+                if (empty($og_image_url)) {
+                    $og_image_url = get_the_post_thumbnail_url($post_id, 'full') ?: '';
+                }
+
+                $twitter_title = get_post_meta($post_id, 'rank_math_twitter_title', true) ?: $og_title;
+                $twitter_desc  = get_post_meta($post_id, 'rank_math_twitter_description', true) ?: $og_desc;
+                $twitter_image_url = get_post_meta($post_id, 'rank_math_twitter_image', true);
+                if (empty($twitter_image_url)) {
+                    $twitter_image_url = $og_image_url;
+                }
+
+                $robots = get_post_meta($post_id, 'rank_math_robots', true);
+                $robots_array = is_array($robots) ? $robots : (is_string($robots) ? explode(',', $robots) : []);
+                $is_noindex = in_array('noindex', $robots_array);
+                $is_nofollow = in_array('nofollow', $robots_array);
+
+                // Trích xuất Schema từ Rank Math nếu có
+                $rich_snippet = get_post_meta($post_id, 'rank_math_rich_snippet', true);
+                $schema_data = null;
+                if (!empty($rich_snippet)) {
+                    $schema_data = get_post_meta($post_id, "rank_math_snippet_{$rich_snippet}", true);
+                    if (empty($schema_data)) {
+                        $custom_schema = get_post_meta($post_id, 'rank_math_schema_' . ucfirst($rich_snippet), true);
+                        if (!empty($custom_schema)) {
+                            $schema_data = $custom_schema;
+                        }
+                    }
+                }
+
+                return [
+                    'title'                => $title,
+                    'metaDesc'             => $description,
+                    'focusKeyword'         => $focus_keyword,
+                    'canonical'            => $canonical,
+                    'opengraphTitle'       => $og_title,
+                    'opengraphDescription' => $og_desc,
+                    'opengraphImage'       => [
+                        'sourceUrl' => $og_image_url,
+                    ],
+                    'twitterTitle'         => $twitter_title,
+                    'twitterDescription'   => $twitter_desc,
+                    'twitterImage'         => [
+                        'sourceUrl' => $twitter_image_url,
+                    ],
+                    'metaRobotsNoindex'    => $is_noindex ? 'noindex' : 'index',
+                    'metaRobotsNofollow'   => $is_nofollow ? 'nofollow' : 'follow',
+                    'schema'               => $schema_data,
+                    'schemaType'           => $rich_snippet ?: null,
+                ];
+            },
+            'schema' => null,
+        ]);
+    }
+});

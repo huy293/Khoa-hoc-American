@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import ProductDetailContent from "./ProductDetailContent";
 import { getWpProducts, getWpProductBySlug } from "@/lib/wordpress-queries";
+import { generateWpMetadata, buildProductSchema } from "@/lib/wordpress-seo";
+import WpJsonLd from "@/components/common/WpJsonLd";
 
 interface PageProps {
     params: Promise<{
@@ -23,24 +25,28 @@ export async function generateStaticParams() {
 }
 
 /**
- * 🔍 generateMetadata: Tự động sinh SEO metadata cho từng sản phẩm
+ * 🔍 generateMetadata: Tự động sinh SEO metadata cho từng sản phẩm từ Rank Math / WP
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const product = await getWpProductBySlug(slug);
-    return {
-        title: `${product?.name || slug} | Couture Beauty Academy`,
+    return generateWpMetadata(product?.seo, {
+        title: product?.name ? `${product.name} | Couture Beauty Academy` : 'Couture Beauty Academy',
         description: product?.shortDescription || product?.description || `Chi tiết sản phẩm ${product?.name || slug}`,
-    };
+        image: product?.image?.sourceUrl,
+        url: `/shop/${slug}`,
+    });
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
     const { slug } = await params;
     const product = await getWpProductBySlug(slug);
+    const productSchema = buildProductSchema(product);
     const suggestedProducts = await getWpProducts(10);
 
     return (
         <main>
+            <WpJsonLd schema={productSchema} />
             <ProductDetailContent
                 slug={slug}
                 initialProduct={product || undefined}

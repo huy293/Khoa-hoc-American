@@ -9,8 +9,9 @@ import Testimonial from "@/components/home/Testimonial";
 import Partner from "@/components/home/Partner";
 import ReadyToStartLearing from "@/components/home/ReadyToStartLearing";
 import { CtaVisit } from "@/components/sections/CtaVisit";
+import WpJsonLd from "@/components/common/WpJsonLd";
 import { getWpPageBySlug } from "@/lib/wordpress-queries";
-import { generateWpMetadata } from "@/lib/wordpress-seo";
+import { generateWpMetadata, buildOrganizationSchema } from "@/lib/wordpress-seo";
 import { WPHomeFields } from "@/types/wordpress";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const page = await getWpPageBySlug<WPHomeFields>('home');
+  const organizationSchema = buildOrganizationSchema();
   const scf = (page?.scf || page?.acf || {}) as any;
 
   // Xử lý counters cho OurImpact (3 thẻ trên Home)
@@ -46,6 +48,7 @@ export default async function HomePage() {
 
   return (
     <main>
+      <WpJsonLd schema={organizationSchema} />
       <HeroSection data={scf} />
       <WhoWeTeach data={scf} />
       <OurImpact

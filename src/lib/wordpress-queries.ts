@@ -555,9 +555,12 @@ export async function getWpPageBySlug<T = any>(slug: string): Promise<WPPage<T> 
     if (Array.isArray(restPages) && restPages.length > 0) {
       const restPage = restPages[0];
       const scfData = (restPage.acf || restPage.scf || {}) as T;
+      const seoData = restPage.rank_math_seo || restPage.yoast_head_json || restPage.seo;
+
       if (pageData) {
         pageData.scf = scfData;
         pageData.acf = scfData;
+        if (seoData) pageData.seo = seoData;
       } else {
         pageData = {
           id: String(restPage.id),
@@ -567,6 +570,7 @@ export async function getWpPageBySlug<T = any>(slug: string): Promise<WPPage<T> 
           content: restPage.content?.rendered || '',
           scf: scfData,
           acf: scfData,
+          seo: seoData,
         };
       }
     }
@@ -738,6 +742,7 @@ export async function getWpProducts(perPage = 50): Promise<WPProduct[]> {
             name: c.name,
             slug: c.slug,
           })),
+          seo: item.rank_math_seo || item.yoast_head_json || item.seo,
         };
       });
     }
