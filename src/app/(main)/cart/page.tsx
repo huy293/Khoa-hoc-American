@@ -1,4 +1,4 @@
-import CartPageContent from "./CartPageContent";
+import CartPageContent from "@/app/student/cart/CartPageContent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
