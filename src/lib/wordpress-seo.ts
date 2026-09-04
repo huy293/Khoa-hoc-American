@@ -94,3 +94,98 @@ export function buildWpPageMetadata(
     url: `${basePath}/${slug}`,
   });
 }
+
+/**
+ * ⚡ Tạo Schema JSON-LD cho Khóa học (Course Schema)
+ */
+export function buildCourseSchema(course: any) {
+  if (!course) return null;
+
+  // Nếu Rank Math đã cấu hình schema riêng thì ưu tiên dùng
+  if (course.seo?.schema) {
+    return course.seo.schema;
+  }
+
+  const rawPrice = String(course.courseFields?.price || '').replace(/[^0-9.]/g, '') || '1200';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: course.title,
+    description: course.excerpt || course.courseFields?.subtitle || course.title,
+    provider: {
+      '@type': 'EducationalOrganization',
+      name: 'Couture Beauty Academy',
+      sameAs: 'https://course.homenest.edu.vn',
+    },
+    offers: {
+      '@type': 'Offer',
+      category: 'Paid',
+      price: rawPrice,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'Blended',
+      instructor: {
+        '@type': 'Person',
+        name: course.courseFields?.trainer?.name || 'Kathleen trainer',
+      },
+    },
+  };
+}
+
+/**
+ * ⚡ Tạo Schema JSON-LD cho Sản phẩm (Product Schema)
+ */
+export function buildProductSchema(product: any) {
+  if (!product) return null;
+
+  if (product.seo?.schema) {
+    return product.seo.schema;
+  }
+
+  const rawPrice = String(product.price || '').replace(/[^0-9.]/g, '') || '0';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: product.image?.sourceUrl ? [product.image.sourceUrl] : undefined,
+    description: product.shortDescription || product.description || product.name,
+    offers: {
+      '@type': 'Offer',
+      price: rawPrice,
+      priceCurrency: 'USD',
+      availability: (product.stock ?? 1) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
+  };
+}
+
+/**
+ * ⚡ Tạo Schema JSON-LD cho Tổ chức (Organization / EducationalOrganization)
+ */
+export function buildOrganizationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: 'Couture Beauty Academy',
+    url: 'https://course.homenest.edu.vn',
+    logo: 'https://course.homenest.edu.vn/images/home/couture_logo.png',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '9889 Bellaire Blvd, Suite 218',
+      addressLocality: 'Houston',
+      addressRegion: 'TX',
+      postalCode: '77036',
+      addressCountry: 'US',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+1-713-555-0199',
+      contactType: 'admissions',
+    },
+  };
+}
+

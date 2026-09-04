@@ -6,7 +6,8 @@ import TrainingCurriculum from '@/components/course-detail/TrainingCurriculum';
 import CourseBenefits from '@/components/course-detail/CourseBenefits';
 import { CtaVisit } from '@/components/sections/CtaVisit';
 import { getWpCourses, getWpCourseBySlug } from '@/lib/wordpress-queries';
-import { generateWpMetadata } from '@/lib/wordpress-seo';
+import { generateWpMetadata, buildCourseSchema } from '@/lib/wordpress-seo';
+import WpJsonLd from '@/components/common/WpJsonLd';
 
 interface PageProps {
   params: Promise<{
@@ -53,9 +54,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const course = await getWpCourseBySlug(slug);
+  const courseSchema = buildCourseSchema(course);
   
   return (
     <main>
+      <WpJsonLd schema={courseSchema} />
       <CourseDetailHero courseSlug={slug} course={course} />
       <AboutCourse course={course} />
       <TrainingCurriculum course={course} />

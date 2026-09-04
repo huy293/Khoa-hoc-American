@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import ProductDetailContent from "./ProductDetailContent";
 import { getWpProducts, getWpProductBySlug } from "@/lib/wordpress-queries";
-import { generateWpMetadata } from "@/lib/wordpress-seo";
+import { generateWpMetadata, buildProductSchema } from "@/lib/wordpress-seo";
+import WpJsonLd from "@/components/common/WpJsonLd";
 
 interface PageProps {
     params: Promise<{
@@ -40,10 +41,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProductDetailPage({ params }: PageProps) {
     const { slug } = await params;
     const product = await getWpProductBySlug(slug);
+    const productSchema = buildProductSchema(product);
     const suggestedProducts = await getWpProducts(10);
 
     return (
         <main>
+            <WpJsonLd schema={productSchema} />
             <ProductDetailContent
                 slug={slug}
                 initialProduct={product || undefined}
