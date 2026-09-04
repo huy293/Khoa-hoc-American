@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/dashboard/home/LearningResources.module.css';
 import ResourceBlogCard from '@/components/cards/ResourceBlogCard';
 import DashboardHeadings from '@/components/dashboard/DashboardHeadings';
@@ -139,6 +140,8 @@ export default function LearningResources({
     seemore = true,
     limit = 4,
 }: LearningResourcesProps = {}) {
+    const pathname = usePathname();
+    const resourcesUrl = pathname?.startsWith('/teacher') ? '/teacher/resources' : '/student/resources';
     const [activeTab, setActiveTab] = useState('cert');
     const [likedIds, setLikedIds] = useState<string[]>([]);
 
@@ -183,7 +186,7 @@ export default function LearningResources({
                     )}
 
                     {seemore && (
-                        <Link href="/dashboard/resources" className={styles['learning-resources__see-more']}>
+                        <Link href={resourcesUrl} className={styles['learning-resources__see-more']}>
                             <span>See more</span>
                             <ChevronRightIcon />
                         </Link>

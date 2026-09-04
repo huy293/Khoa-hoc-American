@@ -66,6 +66,25 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/dashboard',
+        destination: '/student',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/:path*',
+        destination: '/student/:path*',
+        permanent: true,
+      },
+      {
+        source: '/student/certificates',
+        destination: '/student/certificate',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

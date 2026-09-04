@@ -393,6 +393,74 @@
     fill: #FFFFFF;
 }
 
+/* ── Teacher Variant Footer ── */
+.course-card__teacher-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.course-card__students-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.course-card__students-icon-box {
+    width: 44px;
+    height: 44px;
+    background: #E2AD53;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.course-card__students-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.course-card__students-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4C4C4C;
+    line-height: 120%;
+}
+
+.course-card__students-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #D88A05;
+    line-height: 110%;
+}
+
+.course-card__device-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid #C28200;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.course-card__device-btn:hover {
+    background-color: #FFF8EF;
+    transform: scale(1.05);
+}
+
 /* ══════════════════════════════════════════
    Responsive Breakpoints for Card (6 Breakpoints)
    ══════════════════════════════════════════ */

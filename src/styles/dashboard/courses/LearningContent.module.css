@@ -315,6 +315,30 @@
     transform: scale(1.08);
 }
 
+/* ── Progress Circle Ring (column-end="progress") ── */
+.lesson-progress {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.lesson-progress svg {
+    display: block;
+}
+
+.lesson-progress__text {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4C4C4C;
+    line-height: 1;
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
 /* ==========================================================================
    Container Queries & Responsive Breakpoints
    ========================================================================== */

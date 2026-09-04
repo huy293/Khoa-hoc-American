@@ -289,6 +289,17 @@
     color: #8A7043;
 }
 
+/* Status cell styling (e.g. for student submission tables) */
+.payment-history__status-passed {
+    color: #44833D;
+    font-weight: 500;
+}
+
+.payment-history__status-unfinished {
+    color: #8A7043;
+    font-weight: 400;
+}
+
 .payment-history__eye-btn {
     background: transparent;
     border: none;

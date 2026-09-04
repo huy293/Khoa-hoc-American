@@ -7,14 +7,14 @@ import { usePathname } from 'next/navigation';
 import styles from '@/styles/dashboard/Sidebar.module.css';
 
 /* ── SVG Icons ── */
-const DashboardIcon = () => (
+export const DashboardIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 10.5L12 3l9 7.5V20a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 20v-9.5z" />
         <path d="M9 21V12h6v9" />
     </svg>
 );
 
-const CoursesIcon = () => (
+export const CoursesIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="4" y="3" width="16" height="18" rx="2" />
         <path d="M8 3v6l3-2 3 2V3" />
@@ -22,7 +22,7 @@ const CoursesIcon = () => (
     </svg>
 );
 
-const ShopIcon = () => (
+export const ShopIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="20" r="1.5" />
         <circle cx="18" cy="20" r="1.5" />
@@ -30,7 +30,7 @@ const ShopIcon = () => (
     </svg>
 );
 
-const ScheduleIcon = () => (
+export const ScheduleIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="18" height="17" rx="2.5" />
         <line x1="16" y1="2" x2="16" y2="5" />
@@ -40,14 +40,14 @@ const ScheduleIcon = () => (
     </svg>
 );
 
-const ResultIcon = () => (
+export const ResultIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
         <text x="12" y="15.5" textAnchor="middle" fontSize="9" fontWeight="700" fill="currentColor" stroke="none" fontFamily="inherit">A+</text>
     </svg>
 );
 
-const CertificateIcon = () => (
+export const CertificateIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="13" height="16" rx="2" />
         <circle cx="16.5" cy="15.5" r="3.5" />
@@ -57,7 +57,7 @@ const CertificateIcon = () => (
     </svg>
 );
 
-const ResourcesIcon = () => (
+export const ResourcesIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
         <rect x="2.5" y="3" width="19" height="5" rx="1.5" />
@@ -65,7 +65,7 @@ const ResourcesIcon = () => (
     </svg>
 );
 
-const PaymentHistoryIcon = () => (
+export const PaymentHistoryIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="5" width="18" height="14" rx="2.5" />
         <line x1="3" y1="9.5" x2="21" y2="9.5" />
@@ -73,13 +73,44 @@ const PaymentHistoryIcon = () => (
     </svg>
 );
 
-const SupportIcon = () => (
+export const ManagementIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <circle cx="12" cy="10" r="3" />
+        <path d="M7 18c0-2 2-3.5 5-3.5s5 1.5 5 3.5" />
+    </svg>
+);
+
+export const ClassroomIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="18" height="13" rx="2" />
+        <path d="M8 21h8" />
+        <path d="M12 16v5" />
+    </svg>
+);
+
+export const StudentsIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+        <path d="M6 12v5c3 3 9 3 12 0v-5" />
+    </svg>
+);
+
+export const SupportIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
     </svg>
 );
 
-const SettingsIcon = () => (
+export const MainSiteIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="2" y1="12" x2="22" y2="12" />
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+);
+
+export const SettingsIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3" />
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -87,7 +118,15 @@ const SettingsIcon = () => (
 );
 
 const ExternalIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 9.75a.75.75 0 1 1-1.5 0V5.561l-6.218 6.22a.75.75 0 1 1-1.062-1.062L18.44 4.5h-4.19a.75.75 0 1 1 0-1.5h6a.75.75 0 0 1 .75.75zM17.25 12a.75.75 0 0 0-.75.75v6.75h-12v-12h6.75a.75.75 0 1 0 0-1.5H4.5A1.5 1.5 0 0 0 3 7.5v12A1.5 1.5 0 0 0 4.5 21h12a1.5 1.5 0 0 0 1.5-1.5v-6.75a.75.75 0 0 0-.75-.75" fill="#8c8983" /></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 9.75a.75.75 0 1 1-1.5 0V5.561l-6.218 6.22a.75.75 0 1 1-1.062-1.062L18.44 4.5h-4.19a.75.75 0 1 1 0-1.5h6a.75.75 0 0 1 .75.75zM17.25 12a.75.75 0 0 0-.75.75v6.75h-12v-12h6.75a.75.75 0 1 0 0-1.5H4.5A1.5 1.5 0 0 0 3 7.5v12A1.5 1.5 0 0 0 4.5 21h12a1.5 1.5 0 0 0 1.5-1.5v-6.75a.75.75 0 0 0-.75-.75" fill="#8c8983" />
+    </svg>
+);
+
+const ChevronRightIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="9 18 15 12 9 6" />
+    </svg>
 );
 
 const ToggleIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
@@ -121,58 +160,96 @@ const ToggleIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
 };
 
 /* ── Types & Navigation Config ── */
-interface NavItem {
+export interface NavItem {
     label: string;
     href: string;
-    icon: React.ComponentType;
+    icon: React.ComponentType<any>;
+    children?: NavItem[];
 }
 
-interface NavSection {
+export interface NavSection {
     id: string;
     items: NavItem[];
 }
 
-const NAV_SECTIONS: NavSection[] = [
+/* ── Default Teacher Navigation (Khớp 100% hình thiết kế của Teacher) ── */
+export const DEFAULT_TEACHER_NAV_SECTIONS: NavSection[] = [
     {
         id: 'main',
         items: [
-            { label: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
-            { label: 'Courses', href: '/dashboard/courses', icon: CoursesIcon },
-        ],
-    },
-    {
-        id: 'shop',
-        items: [
-            { label: 'Shop', href: '/dashboard/shop', icon: ShopIcon },
+            { label: 'Dashboard', href: '/teacher', icon: DashboardIcon },
+            {
+                label: 'Management',
+                href: '/teacher/management/classroom',
+                icon: ManagementIcon,
+                children: [
+                    { label: 'Classroom', href: '/teacher/management/classroom', icon: ClassroomIcon },
+                    { label: 'Students', href: '/teacher/management/students', icon: StudentsIcon },
+                ],
+            },
         ],
     },
     {
         id: 'academic',
         items: [
-            { label: 'My Schedule', href: '/dashboard/schedule', icon: ScheduleIcon },
-            { label: 'Result', href: '/dashboard/results', icon: ResultIcon },
-            { label: 'My Certificate', href: '/dashboard/certificates', icon: CertificateIcon },
+            { label: 'My Schedule', href: '/teacher/schedule', icon: ScheduleIcon },
         ],
     },
     {
         id: 'resources',
         items: [
-            { label: 'Resources', href: '/dashboard/resources', icon: ResourcesIcon },
-            { label: 'Payment History', href: '/dashboard/payment-history', icon: PaymentHistoryIcon },
+            { label: 'Resources', href: '/teacher/resources', icon: ResourcesIcon },
+            { label: 'Payment History', href: '/teacher/payment-history', icon: PaymentHistoryIcon },
         ],
     },
 ];
 
-const BOTTOM_NAV_ITEMS: NavItem[] = [
-    { label: 'Support', href: '/dashboard/support', icon: SupportIcon },
-    { label: 'Settings', href: '/dashboard/settings', icon: SettingsIcon },
+/* ── Default Student Navigation ── */
+export const DEFAULT_STUDENT_NAV_SECTIONS: NavSection[] = [
+    {
+        id: 'main',
+        items: [
+            { label: 'Dashboard', href: '/student', icon: DashboardIcon },
+            { label: 'Courses', href: '/student/courses', icon: CoursesIcon },
+        ],
+    },
+    {
+        id: 'shop',
+        items: [
+            { label: 'Shop', href: '/student/shop', icon: ShopIcon },
+        ],
+    },
+    {
+        id: 'academic',
+        items: [
+            { label: 'My Schedule', href: '/student/schedule', icon: ScheduleIcon },
+            { label: 'Result', href: '/student/results', icon: ResultIcon },
+            { label: 'My Certificate', href: '/student/certificate', icon: CertificateIcon },
+        ],
+    },
+    {
+        id: 'resources',
+        items: [
+            { label: 'Resources', href: '/student/resources', icon: ResourcesIcon },
+            { label: 'Payment History', href: '/student/payment-history', icon: PaymentHistoryIcon },
+        ],
+    },
 ];
 
-interface SidebarProps {
+/* ── Default Bottom Navigation Items ── */
+export const DEFAULT_BOTTOM_NAV_ITEMS: NavItem[] = [
+    { label: 'Support', href: '/support', icon: SupportIcon },
+    { label: 'Back to Main Site', href: '/', icon: MainSiteIcon },
+    { label: 'Settings', href: '/settings', icon: SettingsIcon },
+];
+
+export interface SidebarProps {
     isCollapsed: boolean;
     setIsCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
     isMobileOpen?: boolean;
     setIsMobileOpen?: (open: boolean | ((prev: boolean) => boolean)) => void;
+    navSections?: NavSection[];
+    bottomNavItems?: NavItem[];
 }
 
 export default function Sidebar({
@@ -180,9 +257,27 @@ export default function Sidebar({
     setIsCollapsed,
     isMobileOpen = false,
     setIsMobileOpen,
+    navSections: propNavSections,
+    bottomNavItems: propBottomNavItems,
 }: SidebarProps) {
     const pathname = usePathname();
     const [isMobile, setIsMobile] = useState(false);
+
+    const isTeacher = pathname?.startsWith('/teacher');
+    const basePath = isTeacher ? '/teacher' : '/student';
+
+    // Resolved Nav Sections
+    const navSections =
+        propNavSections ||
+        (isTeacher ? DEFAULT_TEACHER_NAV_SECTIONS : DEFAULT_STUDENT_NAV_SECTIONS);
+
+    // Resolved Bottom Items
+    const bottomNavItems =
+        propBottomNavItems || [
+            { label: 'Support', href: `${basePath}/support`, icon: SupportIcon },
+            { label: 'Back to Main Site', href: '/', icon: MainSiteIcon },
+            { label: 'Settings', href: `${basePath}/settings`, icon: SettingsIcon },
+        ];
 
     useEffect(() => {
         const handleResize = () => {
@@ -194,10 +289,11 @@ export default function Sidebar({
     }, []);
 
     const isItemActive = (href: string) => {
-        if (href === '/dashboard') {
-            return pathname === '/dashboard';
+        if (!pathname) return false;
+        if (href === '/teacher' || href === '/student' || href === '/dashboard') {
+            return pathname === href || pathname === `${href}/`;
         }
-        return pathname === href || pathname?.startsWith(`${href}/`);
+        return pathname === href || pathname.startsWith(`${href}/`);
     };
 
     const handleToggleClick = () => {
@@ -221,8 +317,9 @@ export default function Sidebar({
 
     return (
         <aside
-            className={`${styles['sidebar']} ${showCollapsed ? styles['sidebar--collapsed'] : ''} ${isMobileOpen ? styles['sidebar--mobile-open'] : ''
-                }`}
+            className={`${styles['sidebar']} ${showCollapsed ? styles['sidebar--collapsed'] : ''} ${
+                isMobileOpen ? styles['sidebar--mobile-open'] : ''
+            }`}
             aria-label="Dashboard Sidebar Navigation"
         >
             <div className={styles['sidebar__container']}>
@@ -260,19 +357,21 @@ export default function Sidebar({
 
                 {/* 2. Main Navigation with Dividers */}
                 <nav className={styles['sidebar__nav']}>
-                    {NAV_SECTIONS.map((section, sectionIdx) => (
+                    {navSections.map((section, sectionIdx) => (
                         <React.Fragment key={section.id}>
                             <ul className={styles['sidebar__group']}>
                                 {section.items.map((item) => {
                                     const Icon = item.icon;
+                                    const hasChildren = Boolean(item.children && item.children.length > 0);
                                     const active = isItemActive(item.href);
 
                                     return (
                                         <li key={item.href} className={styles['sidebar__nav-item']}>
                                             <Link
                                                 href={item.href}
-                                                className={`${styles['sidebar__nav-link']} ${active ? styles['sidebar__nav-link--active'] : ''
-                                                    }`}
+                                                className={`${styles['sidebar__nav-link']} ${
+                                                    active && !hasChildren ? styles['sidebar__nav-link--active'] : ''
+                                                }`}
                                                 title={showCollapsed ? item.label : undefined}
                                                 onClick={handleNavClick}
                                             >
@@ -285,11 +384,48 @@ export default function Sidebar({
                                                     </span>
                                                 )}
                                             </Link>
+
+                                            {/* Submenu for children (e.g. Classroom, Students) */}
+                                            {hasChildren && (
+                                                <ul className={styles['sidebar__sub-group']}>
+                                                    {item.children!.map((child) => {
+                                                        const ChildIcon = child.icon;
+                                                        const childActive = isItemActive(child.href);
+
+                                                        return (
+                                                            <li key={child.href} className={styles['sidebar__sub-nav-item']}>
+                                                                <Link
+                                                                    href={child.href}
+                                                                    className={`${styles['sidebar__nav-link']} ${styles['sidebar__nav-link--sub']} ${
+                                                                        childActive ? styles['sidebar__nav-link--active'] : ''
+                                                                    }`}
+                                                                    title={showCollapsed ? child.label : undefined}
+                                                                    onClick={handleNavClick}
+                                                                >
+                                                                    {!showCollapsed && (
+                                                                        <span className={styles['sidebar__sub-chevron']}>
+                                                                            <ChevronRightIcon />
+                                                                        </span>
+                                                                    )}
+                                                                    <span className={styles['sidebar__nav-icon']}>
+                                                                        <ChildIcon />
+                                                                    </span>
+                                                                    {!showCollapsed && (
+                                                                        <span className={styles['sidebar__nav-text']}>
+                                                                            {child.label}
+                                                                        </span>
+                                                                    )}
+                                                                </Link>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            )}
                                         </li>
                                     );
                                 })}
                             </ul>
-                            {sectionIdx < NAV_SECTIONS.length - 1 && (
+                            {sectionIdx < navSections.length - 1 && (
                                 <hr className={styles['sidebar__divider']} />
                             )}
                         </React.Fragment>
@@ -300,7 +436,7 @@ export default function Sidebar({
                 <div className={styles['sidebar__footer']}>
                     {/* User Profile Card */}
                     <Link
-                        href="/dashboard/profile"
+                        href={`${basePath}/profile`}
                         className={styles['sidebar__profile']}
                         title={showCollapsed ? 'Lalisa Moban (lalisa382931@gmail.com)' : undefined}
                         onClick={handleNavClick}
@@ -331,7 +467,7 @@ export default function Sidebar({
 
                     {/* Support & Settings */}
                     <ul className={styles['sidebar__group']}>
-                        {BOTTOM_NAV_ITEMS.map((item) => {
+                        {bottomNavItems.map((item) => {
                             const Icon = item.icon;
                             const active = isItemActive(item.href);
 
@@ -339,8 +475,9 @@ export default function Sidebar({
                                 <li key={item.href} className={styles['sidebar__nav-item']}>
                                     <Link
                                         href={item.href}
-                                        className={`${styles['sidebar__nav-link']} ${active ? styles['sidebar__nav-link--active'] : ''
-                                            }`}
+                                        className={`${styles['sidebar__nav-link']} ${
+                                            active ? styles['sidebar__nav-link--active'] : ''
+                                        }`}
                                         title={showCollapsed ? item.label : undefined}
                                         onClick={handleNavClick}
                                     >

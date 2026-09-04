@@ -95,10 +95,19 @@ interface HeaderProps {
 
 export default function Header({ onToggleSidebar, title, description }: HeaderProps = {}) {
     const pathname = usePathname();
-    const isDashboardHome = pathname === '/dashboard' || pathname === '/dashboard/';
+    const isDashboardHome =
+        pathname === '/dashboard' ||
+        pathname === '/dashboard/' ||
+        pathname === '/student' ||
+        pathname === '/student/' ||
+        pathname === '/teacher' ||
+        pathname === '/teacher/';
 
-    // Resolve custom or default page info for sub-routes
-    const matchedPageInfo = DASHBOARD_PAGE_INFO[pathname || ''] || {
+    const basePath = pathname?.startsWith('/teacher') ? '/teacher' : '/student';
+
+    // Resolve custom or default page info for sub-routes (supports /student, /teacher, and /dashboard)
+    const normalizedPath = pathname?.replace(/^\/(student|teacher)/, '/dashboard') || '';
+    const matchedPageInfo = DASHBOARD_PAGE_INFO[normalizedPath] || DASHBOARD_PAGE_INFO[pathname || ''] || {
         title: title || 'Dashboard',
         description: description || 'Tools & Products for Your Professional Training',
     };
@@ -177,7 +186,7 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
 
                 {/* Quick Account Pill */}
                 <Link
-                    href="/dashboard/profile"
+                    href={`${basePath}/profile`}
                     className={styles['header__profile']}
                     aria-label="User Account Profile"
                 >

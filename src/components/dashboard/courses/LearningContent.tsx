@@ -12,7 +12,64 @@ export interface LessonItem {
     exercisesCount: number;
     duration: string;
     status: "completed" | "in_progress" | "pending";
+    progress?: number;
 }
+
+/* ── Circular Progress Ring Component (column-end="progress") ── */
+interface LessonProgressRingProps {
+    value?: number;
+    size?: number;
+    strokeWidth?: number;
+}
+
+const LessonProgressRing: React.FC<LessonProgressRingProps> = ({
+    value = 100,
+    size = 42,
+    strokeWidth = 4.5,
+}) => {
+    const clamped = Math.min(100, Math.max(0, value));
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (clamped / 100) * circumference;
+
+    return (
+        <div
+            className={styles["lesson-progress"]}
+            style={{ width: size, height: size }}
+            role="progressbar"
+            aria-valuenow={clamped}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${clamped}%`}
+        >
+            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+                {/* Background track */}
+                <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke="#F2E4D0"
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                />
+                {/* Active progress ring */}
+                <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke="#EEB358"
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    transform={`rotate(-90 ${size / 2} ${size / 2})`}
+                />
+            </svg>
+            <span className={styles["lesson-progress__text"]}>{clamped}%</span>
+        </div>
+    );
+};
 
 export interface CourseModuleData {
     id: string;
@@ -232,13 +289,18 @@ export interface LearningContentProps {
     tag?: string;
     title?: string;
     modules?: CourseModuleData[];
+    columnEnd?: "status-icon" | "progress";
+    "column-end"?: "status-icon" | "progress";
 }
 
 export default function LearningContent({
     tag = "LESSONS LIST",
     title = "Let's explore the course together!",
     modules = defaultCourseModules,
+    columnEnd = "status-icon",
+    "column-end": columnEndKebab,
 }: LearningContentProps) {
+    const activeColumnEnd = columnEndKebab || columnEnd;
     // Default open modules 1, 2, 3 as shown in Figma screenshot
     const [openModules, setOpenModules] = useState<string[]>([
         "mod-1",
@@ -365,9 +427,21 @@ export default function LearningContent({
                                                         </div>
                                                     </div>
 
-                                                    {/* Right Action / Status Icon */}
+                                                    {/* Right Action / Status Icon or Progress Ring */}
                                                     <div className={styles["lesson-item__right"]}>
-                                                        {isCompleted ? (
+                                                        {activeColumnEnd === "progress" ? (
+                                                            <LessonProgressRing
+                                                                value={
+                                                                    lesson.progress !== undefined
+                                                                        ? lesson.progress
+                                                                        : isCompleted
+                                                                        ? 100
+                                                                        : lesson.status === "in_progress"
+                                                                        ? 50
+                                                                        : 0
+                                                                }
+                                                            />
+                                                        ) : isCompleted ? (
                                                             <div
                                                                 className={styles["lesson-icon--checked"]}
                                                                 aria-label="Completed"

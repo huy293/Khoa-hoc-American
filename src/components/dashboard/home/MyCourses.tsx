@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/dashboard/home/MyCourses.module.css';
 import CourseCard from '@/components/cards/CourseCard';
 import DashboardHeadings from '@/components/dashboard/DashboardHeadings';
@@ -39,6 +40,7 @@ interface CourseItem {
         avatar: string;
         rating: string;
     };
+    studentsCount?: number | string;
 }
 
 const TABS = [
@@ -279,13 +281,15 @@ const COURSES: CourseItem[] = [
     },
 ];
 
-interface MyCoursesProps {
+export interface MyCoursesProps {
     tag?: string;
     title?: string;
     search?: boolean;
     seemore?: boolean;
     limit?: number;
     loadmore?: boolean;
+    cardVariant?: 'student' | 'teacher';
+    courses?: CourseItem[];
 }
 
 export default function MyCourses({
@@ -295,10 +299,15 @@ export default function MyCourses({
     seemore = true,
     limit = 4,
     loadmore = false,
+    cardVariant = 'student',
+    courses,
 }: MyCoursesProps = {}) {
+    const courseList = courses || COURSES;
+    const pathname = usePathname();
+    const coursesUrl = pathname?.startsWith('/teacher') ? '/teacher/courses' : '/student/courses';
     const [activeTab, setActiveTab] = useState('cert');
     const [searchTerm, setSearchTerm] = useState('');
-    const [visibleCount, setVisibleCount] = useState<number>(limit ?? (loadmore ? 4 : COURSES.length));
+    const [visibleCount, setVisibleCount] = useState<number>(limit ?? (loadmore ? 4 : courseList.length));
 
     const tabsRef = React.useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -334,7 +343,7 @@ export default function MyCourses({
         setVisibleCount((prev) => prev + (limit ?? 4));
     };
 
-    const filteredCourses = COURSES.filter((course) => {
+    const filteredCourses = courseList.filter((course) => {
         const matchesSearch =
             course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             course.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -396,7 +405,7 @@ export default function MyCourses({
                         )}
 
                         {seemore && (
-                            <Link href="/dashboard/courses" className={styles['my-courses__see-more']}>
+                            <Link href={coursesUrl} className={styles['my-courses__see-more']}>
                                 <span>See more</span>
                                 <ChevronRightIcon />
                             </Link>
@@ -416,7 +425,7 @@ export default function MyCourses({
                             .replace(/[^a-z0-9]+/g, '-')
                             .replace(/(^-|-$)/g, '') ||
                         'hydra-facial';
-                    const courseUrl = `/dashboard/courses/${slug}`;
+                    const courseUrl = `${coursesUrl}/${slug}`;
 
                     return (
                         <CourseCard
@@ -436,6 +445,8 @@ export default function MyCourses({
                             actionType="play"
                             courseUrl={courseUrl}
                             previewUrl={courseUrl}
+                            variant={cardVariant}
+                            studentsCount={course.studentsCount || 145}
                             onPlay={() => console.log('Continue course:', course.id)}
                         />
                     );

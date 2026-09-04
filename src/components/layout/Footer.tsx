@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import styles from '@/styles/layout/Footer.module.css';
 
 const FOOTER_SECTIONS = [
@@ -77,24 +76,7 @@ const InstagramIcon = () => (
 );
 
 export const Footer = ({ forceShow = false }: { forceShow?: boolean }) => {
-    const pathname = usePathname();
     const [email, setEmail] = useState('');
-
-    // Ẩn Footer ở root layout trên các trang /login, /signup và /dashboard (trừ khi có prop forceShow)
-    const isHiddenPage = Boolean(
-        !forceShow &&
-        pathname &&
-        (pathname === '/login' ||
-            pathname === '/signup' ||
-            pathname === '/dashboard' ||
-            pathname.startsWith('/login/') ||
-            pathname.startsWith('/signup/') ||
-            pathname.startsWith('/dashboard/'))
-    );
-
-    if (isHiddenPage) {
-        return null;
-    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

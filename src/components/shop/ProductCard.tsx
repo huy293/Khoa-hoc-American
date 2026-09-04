@@ -25,8 +25,9 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onQuickView, className, basePath }: ProductCardProps) {
     const pathname = usePathname();
+    const isStudent = pathname?.startsWith("/student");
     const isDashboard = pathname?.startsWith("/dashboard");
-    const resolvedBasePath = basePath || (isDashboard ? "/dashboard/shop" : "/shop");
+    const resolvedBasePath = basePath || (isStudent ? "/student/shop" : isDashboard ? "/dashboard/shop" : "/shop");
     const productUrl = `${resolvedBasePath}/${product.slug || product.id}`;
 
     return (
