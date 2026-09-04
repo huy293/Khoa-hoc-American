@@ -319,12 +319,33 @@ export interface WPPage<T = Record<string, unknown>> {
 export interface WPCourseLessonItem {
   id?: string | number;
   title?: string;
+  slug?: string;
   type?: string;
   preview?: boolean;
   duration?: string;
   graduation?: string;
   status?: string;
   locked?: boolean;
+  content?: string;
+  video_url?: string;
+  [key: string]: unknown;
+}
+
+export interface WPLesson {
+  id: string | number;
+  databaseId?: number;
+  title: string;
+  slug: string;
+  content?: string;
+  excerpt?: string;
+  duration?: string;
+  preview?: boolean;
+  locked?: boolean;
+  video_url?: string;
+  featuredImage?: {
+    node?: WPImage;
+  };
+  seo?: WPSeo;
   [key: string]: unknown;
 }
 

@@ -1,1 +1,11 @@
-export { default, generateStaticParams, generateMetadata } from '@/app/(main)/courses/[slug]/page';
+import { redirect } from 'next/navigation';
+
+export default async function CourseSlugAliasPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  redirect(`/courses/${slug}`);
+}
+

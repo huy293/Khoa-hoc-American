@@ -1,5 +1,6 @@
 import {
   WPCourse,
+  WPLesson,
   WPPost,
   WPPage,
   WPProduct,
@@ -7,6 +8,7 @@ import {
   WPMenuItem,
 } from '@/types/wordpress';
 import { fetchGraphQL, fetchWpRest } from './wordpress';
+import { toSlug } from './wordpress-format';
 
 /**
  * Helper: Parse dữ liệu từ WordPress/LearnPress (lp_course) thành đối tượng chuẩn WPCourse
@@ -85,7 +87,44 @@ function parseWpCourse(c: any): WPCourse {
     (c.meta?._lp_students ? `(${c.meta._lp_students}+ trainee)` : (c.count_students ? `(${c.count_students}+ trainee)` : '(2.700+ trainee)'));
 
   // Module Sections & Giáo trình (Curriculum)
-  const sections = Array.isArray(c.sections) ? c.sections : [];
+  const rawSections = Array.isArray(c.sections) ? c.sections : [];
+
+  const sections = rawSections.map((sec: any, sIdx: number) => {
+    const secTitle = (sec.title || sec.name || `Module ${sIdx + 1}`)
+      .replace(/&#038;/g, '&')
+      .replace(/&amp;/g, '&')
+      .replace(/&#8211;/g, '-')
+      .replace(/&#8217;/g, "'");
+
+    const items = Array.isArray(sec.items)
+      ? sec.items.map((it: any, lIdx: number) => {
+          const itemTitle = (it.title?.rendered || it.title || it.name || `Lesson ${lIdx + 1}`)
+            .replace(/&#038;/g, '&')
+            .replace(/&amp;/g, '&')
+            .replace(/&#8211;/g, '-')
+            .replace(/&#8217;/g, "'");
+
+          const itemSlug = it.slug || toSlug(itemTitle) || String(it.id || lIdx + 1);
+
+          return {
+            ...it,
+            id: it.id,
+            title: itemTitle,
+            slug: itemSlug,
+            type: it.type || 'lp_lesson',
+            duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 min',
+          };
+        })
+      : [];
+
+    return {
+      ...sec,
+      id: sec.id || sIdx + 1,
+      title: secTitle,
+      name: secTitle,
+      items,
+    };
+  });
 
   let totalLessonsCount = 0;
   let totalQuizzesCount = 0;
@@ -195,47 +234,7 @@ function parseWpCourse(c: any): WPCourse {
  * Lấy danh sách khóa học LearnPress (post_type: 'lp_course') hoặc CPT 'courses' / 'course'
  */
 export async function getWpCourses(first = 20): Promise<WPCourse[]> {
-  // 1. Thử GraphQL query cho lpCourses
-  const gqlQuery = `
-    query GetLpCourses($first: Int!) {
-      lpCourses(first: $first) {
-        nodes {
-          id
-          databaseId
-          title
-          slug
-          excerpt
-          content
-          date
-          modified
-          featuredImage {
-            node {
-              sourceUrl
-            }
-          }
-          author {
-            node {
-              name
-              avatar {
-                url
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  try {
-    const gqlData = await fetchGraphQL<{ lpCourses?: { nodes: any[] } }>(gqlQuery, { first });
-    if (gqlData?.lpCourses?.nodes && gqlData.lpCourses.nodes.length > 0) {
-      return gqlData.lpCourses.nodes.map(parseWpCourse);
-    }
-  } catch {
-    // Chuyển sang REST API fallback
-  }
-
-  // 2. Thử REST API endpoints của LearnPress và WordPress CPT
+  // 1. Thử REST API endpoints của LearnPress và WordPress CPT (Ưu tiên REST vì LearnPress chuẩn REST)
   const endpoints = [
     `/wp-json/learnpress/v1/courses?per_page=${first}`,
     `/wp-json/wp/v2/lp_course?per_page=${first}&_embed=1`,
@@ -255,7 +254,7 @@ export async function getWpCourses(first = 20): Promise<WPCourse[]> {
           : (Array.isArray(res?.courses) ? res.courses : []));
 
       if (Array.isArray(rawCourses) && rawCourses.length > 0) {
-        // Làm giàu dữ liệu chi tiết cho từng khóa học (lấy sections từ /wp-json/learnpress/v1/courses/{id})
+        // Làm giàu dữ liệu chi tiết cho từng khóa học (lấy 4 sections từ /wp-json/learnpress/v1/courses/{id})
         const enrichedCourses = await Promise.all(
           rawCourses.map(async (c: any) => {
             if (c.sections && Array.isArray(c.sections) && c.sections.length > 0) {
@@ -291,57 +290,7 @@ export async function getWpCourses(first = 20): Promise<WPCourse[]> {
 export async function getWpCourseBySlug(slug: string): Promise<WPCourse | null> {
   const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
 
-  // 1. Thử GraphQL query
-  const gqlQuery = `
-    query GetLpCourseBySlug($slug: ID!) {
-      lpCourse(id: $slug, idType: SLUG) {
-        id
-        databaseId
-        title
-        slug
-        excerpt
-        content
-        date
-        modified
-        featuredImage {
-          node {
-            sourceUrl
-          }
-        }
-        author {
-          node {
-            name
-            avatar {
-              url
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  try {
-    const gqlData = await fetchGraphQL<{ lpCourse?: any }>(gqlQuery, { slug: cleanSlug });
-    if (gqlData?.lpCourse) {
-      const course = parseWpCourse(gqlData.lpCourse);
-      // Nếu chưa có sections, thử lấy từ LearnPress REST
-      if (!course.sections || course.sections.length === 0) {
-        try {
-          const detail = await fetchWpRest<any>(`/wp-json/learnpress/v1/courses/${course.databaseId || cleanSlug}`);
-          if (detail && detail.sections) {
-            return parseWpCourse({ ...gqlData.lpCourse, ...detail });
-          }
-        } catch {
-          // ignore
-        }
-      }
-      return course;
-    }
-  } catch {
-    // Chuyển sang REST fallback
-  }
-
-  // 2. Thử REST API endpoints
+  // 1. Thử REST API endpoints
   const endpoints = [
     `/wp-json/learnpress/v1/courses/${cleanSlug}`,
     `/wp-json/wp/v2/lp_course?slug=${cleanSlug}&_embed=1`,
@@ -378,13 +327,145 @@ export async function getWpCourseBySlug(slug: string): Promise<WPCourse | null> 
     }
   }
 
-  // 3. Fallback: Lấy tất cả courses và tìm theo slug
+  // 2. Fallback: Lấy tất cả courses và tìm theo slug
   try {
     const allCourses = await getWpCourses(50);
     const found = allCourses.find((c) => c.slug === cleanSlug);
     if (found) return found;
   } catch {
     // ignore
+  }
+
+  return null;
+}
+
+/**
+ * Lấy chi tiết bài học (post_type: 'lp_lesson') của LearnPress theo slug/id
+ */
+export async function getWpLessonBySlug(
+  slug: string,
+  course?: WPCourse | null
+): Promise<WPLesson | null> {
+  const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
+
+  // 1. Tìm từ course.sections nếu có
+  if (course && Array.isArray(course.sections)) {
+    for (const sec of course.sections) {
+      if (Array.isArray(sec.items)) {
+        const found = sec.items.find(
+          (it) =>
+            String(it.id) === cleanSlug ||
+            it.slug === cleanSlug ||
+            toSlug(it.title || '') === cleanSlug ||
+            (it.title && it.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === cleanSlug)
+        );
+        if (found) {
+          return {
+            id: String(found.id || cleanSlug),
+            databaseId: typeof found.id === 'number' ? found.id : undefined,
+            title: found.title || 'Lesson',
+            slug: found.slug || toSlug(found.title || '') || cleanSlug,
+            duration: (typeof found.duration === 'string' && found.duration) ? found.duration : '45 min',
+            preview: found.preview,
+            locked: found.locked,
+            content: (typeof found.content === 'string') ? found.content : '',
+            video_url: (typeof found.video_url === 'string') ? found.video_url : undefined,
+          };
+        }
+      }
+    }
+  }
+
+  // 2. Fallback: Tìm qua tất cả các khóa học khác
+  try {
+    const allCourses = await getWpCourses(50);
+    for (const c of allCourses) {
+      if (Array.isArray(c.sections)) {
+        for (const sec of c.sections) {
+          if (Array.isArray(sec.items)) {
+            const found = sec.items.find(
+              (it) =>
+                String(it.id) === cleanSlug ||
+                it.slug === cleanSlug ||
+                toSlug(it.title || '') === cleanSlug ||
+                (it.title && it.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === cleanSlug)
+            );
+            if (found) {
+              return {
+                id: String(found.id || cleanSlug),
+                databaseId: typeof found.id === 'number' ? found.id : undefined,
+                title: found.title || 'Lesson',
+                slug: found.slug || toSlug(found.title || '') || cleanSlug,
+                duration: (typeof found.duration === 'string' && found.duration) ? found.duration : '45 min',
+                preview: found.preview,
+                locked: found.locked,
+                content: (typeof found.content === 'string') ? found.content : '',
+                video_url: (typeof found.video_url === 'string') ? found.video_url : undefined,
+              };
+            }
+          }
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  // 3. Thử REST API endpoints của WordPress / LearnPress
+  const endpoints = [
+    `/wp-json/learnpress/v1/lessons/${cleanSlug}`,
+    `/wp-json/wp/v2/lp_lesson?slug=${cleanSlug}&_embed=1`,
+    `/wp-json/lp/v1/lessons/${cleanSlug}`,
+    `/wp-json/wp/v2/lp_lesson/${cleanSlug}`,
+    `/wp-json/wp/v2/lessons?slug=${cleanSlug}&_embed=1`,
+  ];
+
+  for (const ep of endpoints) {
+    try {
+      const res = await fetchWpRest<any>(ep);
+      let lessonRaw: any = null;
+      if (Array.isArray(res) && res.length > 0) {
+        lessonRaw = res[0];
+      } else if (res && typeof res === 'object' && res.id) {
+        lessonRaw = res;
+      }
+
+      if (lessonRaw) {
+        const cleanTitle = (lessonRaw.title?.rendered || lessonRaw.name || lessonRaw.title || '')
+          .replace(/&#038;/g, '&')
+          .replace(/&amp;/g, '&')
+          .replace(/&#8211;/g, '-')
+          .replace(/&#8217;/g, "'");
+
+        const cleanContent = lessonRaw.content?.rendered || lessonRaw.content || '';
+        const cleanExcerpt = (lessonRaw.excerpt?.rendered || lessonRaw.excerpt || '')
+          .replace(/<[^>]*>/g, '')
+          .trim();
+
+        const featuredImg =
+          lessonRaw._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
+          lessonRaw.featured_image_url ||
+          lessonRaw.featured_media_url ||
+          lessonRaw.image;
+
+        return {
+          id: String(lessonRaw.id),
+          databaseId: lessonRaw.id,
+          title: cleanTitle || 'Lesson',
+          slug: lessonRaw.slug || cleanSlug,
+          content: cleanContent,
+          excerpt: cleanExcerpt,
+          duration: lessonRaw.duration || '45 min',
+          preview: lessonRaw.preview,
+          locked: lessonRaw.locked,
+          video_url: lessonRaw.video_url || lessonRaw.meta?._lp_lesson_video_intro,
+          featuredImage: featuredImg ? { node: { sourceUrl: featuredImg } } : undefined,
+          seo: lessonRaw.yoast_head_json || lessonRaw.rank_math_seo || lessonRaw.seo,
+        };
+      }
+    } catch {
+      // Thử endpoint tiếp theo
+    }
   }
 
   return null;

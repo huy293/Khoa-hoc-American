@@ -132,3 +132,18 @@ export function replaceH1WithH2(html?: string | null): string {
 export function cleanWpContent(html?: string | null): string {
   return replaceH1WithH2(html);
 }
+
+/**
+ * Chuyển đổi chuỗi thành slug URL chuẩn (ví dụ: 'Evidence-Based Protocols' -> 'evidence-based-protocols')
+ */
+export function toSlug(str?: string | null): string {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
