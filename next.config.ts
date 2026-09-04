@@ -22,7 +22,6 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    workerThreads: false,
     cpus: 1, // Sử dụng 1 CPU core khi build để nhường tài nguyên cho MySQL/aaPanel
     staticGenerationMaxConcurrency: 1, // Giới hạn sinh tối đa 1 trang cùng lúc để tránh quá tải WordPress
   },
@@ -32,37 +31,13 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
     remotePatterns: [
-      ...(wpHostname
-        ? [
-            {
-              protocol: 'https' as const,
-              hostname: wpHostname,
-            },
-            {
-              protocol: 'http' as const,
-              hostname: wpHostname,
-            },
-          ]
-        : []),
       {
         protocol: 'https',
-        hostname: '**.edu.vn',
+        hostname: '**',
       },
       {
-        protocol: 'https',
-        hostname: '**.homenest.vn',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.homenest.com.vn',
-      },
-      {
-        protocol: 'https',
-        hostname: 'secure.gravatar.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'c.animaapp.com',
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },

@@ -6,6 +6,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "@/styles/dashboard/courses/CourseDetailsIntro.module.css";
 
+import { WPCourse } from "@/types/wordpress";
+import { toSlug } from "@/lib/wordpress-format";
+
 export interface CourseModule {
     id: string;
     title: string;
@@ -28,6 +31,7 @@ export interface CourseDetailsIntroProps {
     currentModuleTitle?: string;
     currentLessonTitle?: string;
     modules?: CourseModule[];
+    course?: WPCourse | null;
 }
 
 const defaultModules: CourseModule[] = [
@@ -72,10 +76,50 @@ export default function CourseDetailsIntro({
         rating: "4.9/5.0",
     },
     overallProgress = 85,
-    currentModuleTitle = "Module 02: Professional Practice",
-    currentLessonTitle = "Lesson 4: Understanding HydraFacial Tips",
-    modules = defaultModules,
+    currentModuleTitle,
+    currentLessonTitle,
+    modules,
+    course,
 }: CourseDetailsIntroProps) {
+    // 🎯 Map dynamic WordPress / LearnPress course data
+    const displayCategory = course?.courseFields?.category || category;
+    const displayCourseName = course?.title || courseName;
+    const displayTitle = course?.title ? `INTRODUCTION TO ${course.title.toUpperCase()}` : title;
+    const displayDescription = course?.excerpt || course?.courseFields?.subtitle || description;
+
+    // Trainer info
+    const trainerObj = course?.courseFields?.trainer;
+    const displayInstructorName = trainerObj?.name || (typeof course?.courseFields?.instructor === 'string' ? course.courseFields.instructor : '') || instructor.name;
+    const displayInstructorAvatar = trainerObj?.avatar || instructor.avatar;
+    const displayInstructorRating = trainerObj?.rating || course?.courseFields?.rating || instructor.rating;
+
+    // Sections / Modules
+    const wpSections = course?.sections || course?.courseFields?.sections;
+    let displayModules: CourseModule[] = modules || defaultModules;
+
+    if (Array.isArray(wpSections) && wpSections.length > 0) {
+        displayModules = wpSections.map((sec, idx) => {
+            const items = Array.isArray(sec.items) ? sec.items : [];
+            const secTitle = sec.title || sec.name || `Module 0${idx + 1}`;
+            return {
+                id: String(sec.id || `mod-${idx + 1}`),
+                title: secTitle.startsWith('Module') ? secTitle : `Module 0${idx + 1}: ${secTitle}`,
+                lessonsCount: items.length,
+                duration: "1 lesson/45 min",
+                progress: idx === 0 ? 100 : (idx === 1 ? 85 : 0),
+            };
+        });
+    }
+
+    const firstSection = Array.isArray(wpSections) && wpSections.length > 0 ? wpSections[0] : null;
+    const firstLesson = firstSection && Array.isArray(firstSection.items) && firstSection.items.length > 0 ? firstSection.items[0] : null;
+
+    const activeModuleTitle = currentModuleTitle || (firstSection ? (firstSection.title?.startsWith('Module') ? firstSection.title : `Module 01: ${firstSection.title || firstSection.name || 'Theory'}`) : "Module 02: Professional Practice");
+    const activeLessonTitle = currentLessonTitle || (firstLesson ? (firstLesson.title || "Lesson 1: Introduction") : "Lesson 4: Understanding HydraFacial Tips");
+
+    const continueTitle = course?.title ? `${course.title}\nProfessional Training` : "Hydra Facial\nProfessional Training";
+    const continueDesc = course?.excerpt || "Master professional techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";
+
     // Circumference calculation for SVG gauge (radius = 48 -> 2 * PI * 48 ≈ 301.59)
     const gaugeCircumference = 2 * Math.PI * 48;
     const gaugeOffset = gaugeCircumference * (1 - overallProgress / 100);
@@ -85,6 +129,9 @@ export default function CourseDetailsIntro({
 
     const pathname = usePathname();
     const coursesUrl = pathname?.startsWith('/teacher') ? '/teacher/courses' : '/student/courses';
+
+    const firstLessonSlug = firstLesson?.slug || (firstLesson?.title ? toSlug(firstLesson.title) : String(firstLesson?.id || 'lesson-1'));
+    const resumeLessonHref = `${coursesUrl}/${course?.slug || 'hydra-facial'}/lessons/${firstLessonSlug}`;
 
     return (
         <section className={styles["course-intro"]}>
@@ -100,24 +147,24 @@ export default function CourseDetailsIntro({
                                 </Link>
                                 <span className={styles["breadcrumb__separator"]}>&gt;</span>
                                 <Link href={coursesUrl} className={styles["breadcrumb__item"]}>
-                                    {category}
+                                    {displayCategory}
                                 </Link>
                                 <span className={styles["breadcrumb__separator"]}>&gt;</span>
-                                <span className={styles["breadcrumb__item--active"]}>{courseName}</span>
+                                <span className={styles["breadcrumb__item--active"]}>{displayCourseName}</span>
                             </nav>
                             {/* Top Gradient Divider Line */}
                             <div className={styles["course-intro__divider-line"]} />
                         </div>
 
-                        <h1 className={styles["course-intro__title"]}>{title}</h1>
-                        <p className={styles["course-intro__desc"]}>{description}</p>
+                        <h1 className={styles["course-intro__title"]}>{displayTitle}</h1>
+                        <p className={styles["course-intro__desc"]}>{displayDescription}</p>
                     </div>
 
                     <div className={styles["course-intro__instructor"]}>
                         <div className={styles["instructor__avatar-wrap"]}>
                             <Image
-                                src={instructor.avatar}
-                                alt={instructor.name}
+                                src={displayInstructorAvatar}
+                                alt={displayInstructorName}
                                 width={48}
                                 height={48}
                                 className={styles["instructor__avatar"]}
@@ -125,12 +172,12 @@ export default function CourseDetailsIntro({
                         </div>
                         <div className={styles["instructor__info"]}>
                             <span className={styles["instructor__name"]}>
-                                {instructor.name}
+                                {displayInstructorName}
                             </span>
                             <div className={styles["instructor__rating"]}>
                                 <span className={styles["instructor__star"]}>★</span>
                                 <span className={styles["instructor__score"]}>
-                                    {instructor.rating}
+                                    {displayInstructorRating}
                                 </span>
                             </div>
                         </div>
@@ -150,11 +197,10 @@ export default function CourseDetailsIntro({
                                 </div>
                                 <div className={styles["continue-card__divider-line"]} />
                                 <h2 className={styles["continue-card__title"]}>
-                                    Hydra Facial<br />
-                                    Professional Training
+                                    {continueTitle}
                                 </h2>
                                 <p className={styles["continue-card__desc"]}>
-                                    Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.
+                                    {continueDesc}
                                 </p>
                             </div>
 
@@ -213,16 +259,16 @@ export default function CourseDetailsIntro({
                                 </div>
                                 <div className={styles["resume-banner__text"]}>
                                     <h4 className={styles["resume-banner__module-title"]}>
-                                        {currentModuleTitle}
+                                        {activeModuleTitle}
                                     </h4>
                                     <p className={styles["resume-banner__lesson-title"]}>
-                                        {currentLessonTitle}
+                                        {activeLessonTitle}
                                     </p>
                                 </div>
                             </div>
 
-                            <button
-                                type="button"
+                            <Link
+                                href={resumeLessonHref}
                                 className={styles["resume-banner__play-btn"]}
                                 aria-label="Play Lesson"
                             >
@@ -242,13 +288,13 @@ export default function CourseDetailsIntro({
                                         fill="#F09E1C"
                                     />
                                 </svg>
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
                     {/* Right Column: Module Progress Cards */}
                     <div className={styles["modules-list"]}>
-                        {modules.map((mod) => {
+                        {displayModules.map((mod) => {
                             const badgeOffset = badgeCircumference * (1 - mod.progress / 100);
                             return (
                                 <div key={mod.id} className={styles["module-card"]}>

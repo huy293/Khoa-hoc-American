@@ -1,7 +1,12 @@
 import MyCourses from "@/components/dashboard/home/MyCourses";
 import LearningResources from "@/components/dashboard/home/LearningResources";
+import { getWpCourses } from "@/lib/wordpress-queries";
 
-export default function DashboardShopPage() {
+export const revalidate = 3600;
+
+export default async function StudentCoursesPage() {
+    const courses = await getWpCourses(50);
+
     return (
         <>
             <MyCourses
@@ -11,6 +16,7 @@ export default function DashboardShopPage() {
                 seemore={false}
                 limit={8}
                 loadmore={true}
+                courses={courses}
             />
             <LearningResources
                 tag='RESOURCES'
@@ -22,3 +28,4 @@ export default function DashboardShopPage() {
         </>
     );
 }
+

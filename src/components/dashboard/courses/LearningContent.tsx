@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "@/styles/dashboard/courses/LearningContent.module.css";
 import DashboardHeadings from "@/components/dashboard/DashboardHeadings";
 
+import { WPCourse } from "@/types/wordpress";
+import { toSlug } from "@/lib/wordpress-format";
+
 export interface LessonItem {
     id: string;
+    slug?: string;
     number: number;
     title: string;
     videosCount: number;
@@ -82,12 +88,13 @@ export interface CourseModuleData {
 const defaultCourseModules: CourseModuleData[] = [
     {
         id: "mod-1",
-        title: "Module 01: Theory",
+        title: "Module 01: Theory of Everything",
         lessonsCount: 5,
         duration: "1 lesson/45 min",
         lessons: [
             {
                 id: "m1-l1",
+                slug: "introduction-to-hydrafacial-technology",
                 number: 1,
                 title: "Introduction to HydraFacial Technology",
                 videosCount: 2,
@@ -97,6 +104,7 @@ const defaultCourseModules: CourseModuleData[] = [
             },
             {
                 id: "m1-l2",
+                slug: "skin-anatomy-skin-types",
                 number: 2,
                 title: "Skin Anatomy & Skin Types",
                 videosCount: 2,
@@ -106,6 +114,7 @@ const defaultCourseModules: CourseModuleData[] = [
             },
             {
                 id: "m1-l3",
+                slug: "how-the-hydrafacial-system-works",
                 number: 3,
                 title: "How the HydraFacial System Works",
                 videosCount: 2,
@@ -115,6 +124,7 @@ const defaultCourseModules: CourseModuleData[] = [
             },
             {
                 id: "m1-l4",
+                slug: "understanding-hydrafacial-tips",
                 number: 4,
                 title: "Understanding HydraFacial Tips",
                 videosCount: 2,
@@ -124,6 +134,7 @@ const defaultCourseModules: CourseModuleData[] = [
             },
             {
                 id: "m1-l5",
+                slug: "serums-active-ingredients",
                 number: 5,
                 title: "Serums & Active Ingredients",
                 videosCount: 2,
@@ -141,8 +152,9 @@ const defaultCourseModules: CourseModuleData[] = [
         lessons: [
             {
                 id: "m2-l1",
+                slug: "sterilization-protocols-setup",
                 number: 1,
-                title: "Introduction to HydraFacial Technology",
+                title: "Sterilization Protocols & Setup",
                 videosCount: 2,
                 exercisesCount: 1,
                 duration: "45 min",
@@ -150,35 +162,9 @@ const defaultCourseModules: CourseModuleData[] = [
             },
             {
                 id: "m2-l2",
+                slug: "live-model-step-by-step-execution",
                 number: 2,
-                title: "Skin Anatomy & Skin Types",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m2-l3",
-                number: 3,
-                title: "How the HydraFacial System Works",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m2-l4",
-                number: 4,
-                title: "Understanding HydraFacial Tips",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m2-l5",
-                number: 5,
-                title: "Serums & Active Ingredients",
+                title: "Live Model Step-by-Step Execution",
                 videosCount: 2,
                 exercisesCount: 1,
                 duration: "45 min",
@@ -189,49 +175,14 @@ const defaultCourseModules: CourseModuleData[] = [
     {
         id: "mod-3",
         title: "Module 03: Advanced Applications",
-        lessonsCount: 4,
+        lessonsCount: 3,
         duration: "1 lesson/45 min",
         lessons: [
             {
                 id: "m3-l1",
+                slug: "customized-treatment-for-sensitive-skin",
                 number: 1,
-                title: "Introduction to HydraFacial Technology",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m3-l2",
-                number: 2,
-                title: "Skin Anatomy & Skin Types",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m3-l3",
-                number: 3,
-                title: "How the HydraFacial System Works",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m3-l4",
-                number: 4,
-                title: "Understanding HydraFacial Tips",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m3-l5",
-                number: 5,
-                title: "Serums & Active Ingredients",
+                title: "Customized Treatment for Sensitive Skin",
                 videosCount: 2,
                 exercisesCount: 1,
                 duration: "45 min",
@@ -247,35 +198,9 @@ const defaultCourseModules: CourseModuleData[] = [
         lessons: [
             {
                 id: "m4-l1",
+                slug: "treatment-pricing-package-design",
                 number: 1,
                 title: "Treatment Pricing & Package Design",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m4-l2",
-                number: 2,
-                title: "Client Retention Strategies",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m4-l3",
-                number: 3,
-                title: "Marketing Your HydraFacial Services",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-            {
-                id: "m4-l4",
-                number: 4,
-                title: "Hygiene & Equipment Maintenance",
                 videosCount: 2,
                 exercisesCount: 1,
                 duration: "45 min",
@@ -289,6 +214,7 @@ export interface LearningContentProps {
     tag?: string;
     title?: string;
     modules?: CourseModuleData[];
+    course?: WPCourse | null;
     columnEnd?: "status-icon" | "progress";
     "column-end"?: "status-icon" | "progress";
 }
@@ -296,16 +222,66 @@ export interface LearningContentProps {
 export default function LearningContent({
     tag = "LESSONS LIST",
     title = "Let's explore the course together!",
-    modules = defaultCourseModules,
+    modules,
+    course,
     columnEnd = "status-icon",
     "column-end": columnEndKebab,
 }: LearningContentProps) {
     const activeColumnEnd = columnEndKebab || columnEnd;
-    // Default open modules 1, 2, 3 as shown in Figma screenshot
+
+    // 🎯 Tự động chuyển đổi mảng sections của LearnPress thành CourseModuleData
+    const wpSections = course?.sections || course?.courseFields?.sections;
+
+    let displayModules: CourseModuleData[] = defaultCourseModules;
+
+    if (Array.isArray(wpSections) && wpSections.length > 0) {
+        displayModules = wpSections.map((sec, sIdx) => {
+            const modId = `mod-${sec.id || sIdx + 1}`;
+            const modTitle = sec.title || sec.name || `Module 0${sIdx + 1}`;
+            const items = Array.isArray(sec.items) ? sec.items : [];
+            const lessonsCount = items.length;
+            const duration = "1 lesson/45 min";
+            const lessons: LessonItem[] = items.map((it, lIdx) => {
+                const isCompleted = sIdx === 0 && lIdx < items.length - 1;
+                const isInProgress = (sIdx === 0 && lIdx === items.length - 1) || (sIdx === 1 && lIdx === 0);
+                const itemTitle = it.title || `Lesson 0${lIdx + 1}`;
+                const itemSlug = it.slug || toSlug(itemTitle) || String(it.id || `${modId}-l${lIdx + 1}`);
+                return {
+                    id: String(it.id || `${modId}-l${lIdx + 1}`),
+                    slug: itemSlug,
+                    number: lIdx + 1,
+                    title: itemTitle,
+                    videosCount: 2,
+                    exercisesCount: 1,
+                    duration: (typeof it.duration === 'string' && it.duration) ? it.duration : "45 min",
+                    status: it.locked ? "pending" : (isCompleted ? "completed" : (isInProgress ? "in_progress" : "pending")),
+                    progress: isCompleted ? 100 : (isInProgress ? 50 : 0),
+                };
+            });
+
+            return {
+                id: modId,
+                title: modTitle.startsWith('Module') ? modTitle : `Module 0${sIdx + 1}: ${modTitle}`,
+                lessonsCount,
+                duration,
+                lessons,
+            };
+        });
+    } else if (modules && modules.length > 0) {
+        displayModules = modules;
+    }
+
+    const pathname = usePathname();
+    const isTeacher = pathname?.startsWith('/teacher');
+    const courseSlug = course?.slug || 'hydra-facial';
+    const baseCourseUrl = isTeacher
+        ? `/teacher/management/classroom/${courseSlug}`
+        : `/student/courses/${courseSlug}`;
+
     const [openModules, setOpenModules] = useState<string[]>([
-        "mod-1",
-        "mod-2",
-        "mod-3",
+        displayModules[0]?.id || "mod-1",
+        displayModules[1]?.id || "mod-2",
+        displayModules[2]?.id || "mod-3",
     ]);
 
     const toggleModule = (moduleId: string) => {
@@ -324,7 +300,7 @@ export default function LearningContent({
 
                 {/* 2. Modules Accordion */}
                 <div className={styles["modules-accordion"]}>
-                    {modules.map((mod) => {
+                    {displayModules.map((mod) => {
                         const isOpen = openModules.includes(mod.id);
                         return (
                             <div key={mod.id} className={styles["accordion-item"]}>
@@ -397,6 +373,7 @@ export default function LearningContent({
                                     <div className={styles["lessons-list"]}>
                                         {mod.lessons.map((lesson) => {
                                             const isCompleted = lesson.status === "completed";
+                                            const lessonHref = `${baseCourseUrl}/lessons/${lesson.slug || lesson.id}`;
                                             return (
                                                 <div
                                                     key={lesson.id}
@@ -415,7 +392,12 @@ export default function LearningContent({
                                                         </span>
                                                         <div className={styles["lesson-item__info"]}>
                                                             <h4 className={styles["lesson-item__title"]}>
-                                                                {lesson.title}
+                                                                <Link
+                                                                    href={lessonHref}
+                                                                    style={{ color: "inherit", textDecoration: "none" }}
+                                                                >
+                                                                    {lesson.title}
+                                                                </Link>
                                                             </h4>
                                                             <p className={styles["lesson-item__meta"]}>
                                                                 {lesson.videosCount} videos{" "}
@@ -442,9 +424,10 @@ export default function LearningContent({
                                                                 }
                                                             />
                                                         ) : isCompleted ? (
-                                                            <div
+                                                            <Link
+                                                                href={lessonHref}
                                                                 className={styles["lesson-icon--checked"]}
-                                                                aria-label="Completed"
+                                                                aria-label={`Completed lesson: ${lesson.title}`}
                                                             >
                                                                 <svg
                                                                     width="42"
@@ -462,11 +445,12 @@ export default function LearningContent({
                                                                         fill="#CFC3AF"
                                                                     />
                                                                 </svg>
-                                                            </div>
+                                                            </Link>
                                                         ) : (
-                                                            <div
+                                                            <Link
+                                                                href={lessonHref}
                                                                 className={styles["lesson-icon--play"]}
-                                                                aria-label="Play Lesson"
+                                                                aria-label={`Play lesson: ${lesson.title}`}
                                                             >
                                                                 <svg
                                                                     width="42"
@@ -491,7 +475,7 @@ export default function LearningContent({
                                                                         </clipPath>
                                                                     </defs>
                                                                 </svg>
-                                                            </div>
+                                                            </Link>
                                                         )}
                                                     </div>
                                                 </div>

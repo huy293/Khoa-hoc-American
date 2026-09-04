@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from '@/styles/dashboard/home/MyCourses.module.css';
 import CourseCard from '@/components/cards/CourseCard';
 import DashboardHeadings from '@/components/dashboard/DashboardHeadings';
+
+import { WPCourse, WPCourseSection } from '@/types/wordpress';
 
 /* ── SVG Icons ── */
 const SearchIcon = () => (
@@ -20,10 +22,10 @@ const ChevronRightIcon = () => (
     </svg>
 );
 
-/* ── Types & Mock Data ── */
-interface CourseItem {
+/* ── Formatted Course Item for Card Grid ── */
+export interface FormattedCourseCardItem {
     id: string;
-    slug?: string;
+    slug: string;
     image: string;
     category: string;
     rating: string;
@@ -31,10 +33,11 @@ interface CourseItem {
     title: string;
     subtitle: string;
     progress: number;
-    modulesCount: number;
-    lessonsCount: number;
-    quizzesCount: number;
-    steps: string[];
+    module: string;
+    lessons: string;
+    quizzes: string;
+    curriculum: string[];
+    sections?: WPCourseSection[];
     trainer: {
         name: string;
         avatar: string;
@@ -43,243 +46,80 @@ interface CourseItem {
     studentsCount?: number | string;
 }
 
-const TABS = [
-    { id: 'all', label: 'ALL COURSE (20)' },
-    { id: 'cert', label: 'CERTIFICATE TRAINING (12)' },
-    { id: 'laser', label: 'LASER TRAINING COURSES (5)' },
-    { id: 'pmu', label: 'P.M.U TRAINING COURSES (3)' },
-];
+/**
+ * Helper: Chuyển đổi dữ liệu từ WPCourse (post_type: 'lp_course') sang FormattedCourseCardItem
+ */
+function formatCourse(c: WPCourse | any): FormattedCourseCardItem {
+    const cf = (c.courseFields || {}) as any;
+    const featuredImg =
+        c.featuredImage?.node?.sourceUrl ||
+        c.image ||
+        '/images/courses/card-hydra.jpg';
 
-const COURSES: CourseItem[] = [
-    {
-        id: '1',
-        image: '/images/courses/card-hydra.jpg',
-        category: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'HYDRA FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        progress: 85,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        steps: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
+    // 🎯 Lấy danh sách 4 Module (Section) từ mảng sections của LearnPress
+    const sectionsData = (Array.isArray(c.sections) && c.sections.length > 0)
+        ? c.sections
+        : ((Array.isArray(cf.sections) && cf.sections.length > 0)
+            ? cf.sections
+            : (cf.curriculum || c.steps));
+
+    let currList: string[] = [];
+    if (Array.isArray(sectionsData) && sectionsData.length > 0) {
+        currList = sectionsData.map((item: any) =>
+            typeof item === 'string' ? item : (item?.title || item?.name || 'Module')
+        );
+    } else {
+        currList = ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'];
+    }
+
+    const title = c.title?.rendered || c.title || c.name || 'Hydra Facial';
+    const cleanTitle = typeof title === 'string'
+        ? title.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/&#8211;/g, '-').replace(/&#8217;/g, "'")
+        : String(title);
+
+    const subtitle =
+        (typeof cf.subtitle === 'string' ? cf.subtitle : (c.subtitle || (c.excerpt ? c.excerpt.replace(/<[^>]*>/g, '').trim() : ''))) ||
+        'Professional HydraFacial Training';
+
+    const category =
+        (typeof cf.category === 'string' ? cf.category : '') ||
+        (typeof c.category === 'string' ? c.category : '') ||
+        (typeof cf.tag === 'string' ? cf.tag : '') ||
+        (typeof c.tag === 'string' ? c.tag : '') ||
+        'CERTIFICATE TRAINING';
+
+    const slug =
+        c.slug ||
+        cleanTitle
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '') ||
+        'hydra-facial';
+
+    return {
+        id: String(c.id || slug),
+        slug,
+        image: featuredImg,
+        category,
+        rating: (typeof cf.rating === 'string' ? cf.rating : (typeof c.rating === 'string' ? c.rating : '')) || '4.9/5.0',
+        traineeCount: (typeof cf.traineeCount === 'string' ? cf.traineeCount : (typeof c.traineeCount === 'string' ? c.traineeCount : '')) || '(2.700+ trainee)',
+        title: cleanTitle,
+        subtitle,
+        progress: typeof c.progress === 'number' ? c.progress : 0,
+        module: (typeof cf.module === 'string' ? cf.module : (typeof c.module === 'string' ? c.module : '')) || `${currList.length || 4} modules`,
+        lessons: (typeof cf.lessons === 'string' ? cf.lessons : (typeof c.lessons === 'string' ? c.lessons : '')) || '12 lessons',
+        quizzes: (typeof cf.quizzes === 'string' ? cf.quizzes : (typeof c.quizzes === 'string' ? c.quizzes : '')) || '3 quizzes',
+        curriculum: currList,
+        sections: (Array.isArray(c.sections) && c.sections.length > 0) ? c.sections : cf.sections,
         trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
+            name: cf.trainer?.name || c.trainer?.name || 'Kathleen trainer',
+            avatar: cf.trainer?.avatar || c.trainer?.avatar || '/images/home/kathleen.png',
+            rating: cf.trainer?.rating || c.trainer?.rating || '4.9/5.0',
         },
-    },
-    {
-        id: '2',
-        image: '/images/courses/card-advance.jpg',
-        category: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'ADVENCE FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        steps: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '3',
-        image: '/images/courses/card-derma.jpg',
-        category: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        steps: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '4',
-        image: '/images/courses/card-towel.jpg',
-        category: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        steps: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '5',
-        image: '/images/courses/card-hydra.jpg',
-        category: 'Laser class',
-        rating: '4.8/5.0',
-        traineeCount: '(1.900+ trainee)',
-        title: 'LASER RESURFACING',
-        subtitle: 'Advanced Laser Skin Therapy',
-        progress: 40,
-        modulesCount: 6,
-        lessonsCount: 28,
-        quizzesCount: 5,
-        steps: ['Theory', 'Clinical Safety', 'Practical Application', 'Post-Treatment Care'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '6',
-        image: '/images/courses/card-advance.jpg',
-        category: 'P.M.U class',
-        rating: '4.9/5.0',
-        traineeCount: '(3.200+ trainee)',
-        title: 'MICROBLADING PRO',
-        subtitle: 'Semi-Permanent Makeup Mastery',
-        progress: 10,
-        modulesCount: 4,
-        lessonsCount: 18,
-        quizzesCount: 3,
-        steps: ['Color Theory', 'Brow Mapping', 'Blade Technique', 'Hygiene'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '7',
-        image: '/images/courses/card-derma.jpg',
-        category: 'Facial class',
-        rating: '5.0/5.0',
-        traineeCount: '(1.400+ trainee)',
-        title: 'CHEMICAL PEEL MASTER',
-        subtitle: 'Acid Formulations & Peeling Procedures',
-        progress: 60,
-        modulesCount: 5,
-        lessonsCount: 22,
-        quizzesCount: 4,
-        steps: ['Skin Chemistry', 'Superficial Peels', 'Medium Depth', 'Recovery'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '8',
-        image: '/images/courses/card-towel.jpg',
-        category: 'Facial class',
-        rating: '4.8/5.0',
-        traineeCount: '(950+ trainee)',
-        title: 'SKIN ANATOMY & PHYSIOLOGY',
-        subtitle: 'Fundamental Science for Estheticians',
-        progress: 100,
-        modulesCount: 4,
-        lessonsCount: 16,
-        quizzesCount: 4,
-        steps: ['Epidermis & Dermis', 'Cellular Turnover', 'Skin Types', 'Consultation'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '9',
-        image: '/images/courses/card-towel.jpg',
-        category: 'Facial class',
-        rating: '4.8/5.0',
-        traineeCount: '(950+ trainee)',
-        title: 'SKIN ANATOMY & PHYSIOLOGY',
-        subtitle: 'Fundamental Science for Estheticians',
-        progress: 100,
-        modulesCount: 4,
-        lessonsCount: 16,
-        quizzesCount: 4,
-        steps: ['Epidermis & Dermis', 'Cellular Turnover', 'Skin Types', 'Consultation'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '10',
-        image: '/images/courses/card-towel.jpg',
-        category: 'Facial class',
-        rating: '4.8/5.0',
-        traineeCount: '(950+ trainee)',
-        title: 'SKIN ANATOMY & PHYSIOLOGY',
-        subtitle: 'Fundamental Science for Estheticians',
-        progress: 100,
-        modulesCount: 4,
-        lessonsCount: 16,
-        quizzesCount: 4,
-        steps: ['Epidermis & Dermis', 'Cellular Turnover', 'Skin Types', 'Consultation'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '11',
-        image: '/images/courses/card-towel.jpg',
-        category: 'Facial class',
-        rating: '4.8/5.0',
-        traineeCount: '(950+ trainee)',
-        title: 'SKIN ANATOMY & PHYSIOLOGY',
-        subtitle: 'Fundamental Science for Estheticians',
-        progress: 100,
-        modulesCount: 4,
-        lessonsCount: 16,
-        quizzesCount: 4,
-        steps: ['Epidermis & Dermis', 'Cellular Turnover', 'Skin Types', 'Consultation'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-    {
-        id: '12',
-        image: '/images/courses/card-towel.jpg',
-        category: 'Facial class',
-        rating: '4.8/5.0',
-        traineeCount: '(950+ trainee)',
-        title: 'SKIN ANATOMY & PHYSIOLOGY',
-        subtitle: 'Fundamental Science for Estheticians',
-        progress: 100,
-        modulesCount: 4,
-        lessonsCount: 16,
-        quizzesCount: 4,
-        steps: ['Epidermis & Dermis', 'Cellular Turnover', 'Skin Types', 'Consultation'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-    },
-];
+        studentsCount: c.studentsCount || 145,
+    };
+}
 
 export interface MyCoursesProps {
     tag?: string;
@@ -289,7 +129,7 @@ export interface MyCoursesProps {
     limit?: number;
     loadmore?: boolean;
     cardVariant?: 'student' | 'teacher';
-    courses?: CourseItem[];
+    courses?: (WPCourse | any)[];
 }
 
 export default function MyCourses({
@@ -302,12 +142,42 @@ export default function MyCourses({
     cardVariant = 'student',
     courses,
 }: MyCoursesProps = {}) {
-    const courseList = courses || COURSES;
+    const [loadedCourses, setLoadedCourses] = useState<(WPCourse | any)[]>(courses || []);
+    const [loading, setLoading] = useState<boolean>(!courses || courses.length === 0);
+
+    // ⚡ Tự động fetch từ /api/courses nếu không có props courses truyền vào
+    useEffect(() => {
+        if (courses && courses.length > 0) {
+            setLoadedCourses(courses);
+            setLoading(false);
+            return;
+        }
+
+        let isMounted = true;
+        fetch('/api/courses')
+            .then((res) => res.json())
+            .then((data) => {
+                if (isMounted && data.success && Array.isArray(data.courses)) {
+                    setLoadedCourses(data.courses);
+                }
+            })
+            .catch((err) => {
+                console.error('Error loading courses in MyCourses:', err);
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [courses]);
+
     const pathname = usePathname();
     const coursesUrl = pathname?.startsWith('/teacher') ? '/teacher/courses' : '/student/courses';
-    const [activeTab, setActiveTab] = useState('cert');
+    const [activeTab, setActiveTab] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [visibleCount, setVisibleCount] = useState<number>(limit ?? (loadmore ? 4 : courseList.length));
+    const [visibleCount, setVisibleCount] = useState<number>(limit ?? 4);
 
     const tabsRef = React.useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -343,15 +213,54 @@ export default function MyCourses({
         setVisibleCount((prev) => prev + (limit ?? 4));
     };
 
-    const filteredCourses = courseList.filter((course) => {
+    // 🎯 Format dữ liệu chuẩn LearnPress cho từng thẻ
+    const formattedCourses = React.useMemo(() => {
+        return loadedCourses.map(formatCourse);
+    }, [loadedCourses]);
+
+    // 🎯 Tự động sinh danh sách Tabs từ Category thực tế của LearnPress
+    const dynamicTabs = React.useMemo(() => {
+        const counts: Record<string, number> = {};
+        formattedCourses.forEach((c) => {
+            const cat = c.category.trim();
+            if (cat) {
+                counts[cat] = (counts[cat] || 0) + 1;
+            }
+        });
+
+        const tabs = [
+            { id: 'all', label: `ALL COURSE (${formattedCourses.length})` },
+        ];
+
+        Object.entries(counts).forEach(([cat, count]) => {
+            tabs.push({
+                id: cat.toLowerCase(),
+                label: `${cat.toUpperCase()} (${count})`,
+            });
+        });
+
+        return tabs;
+    }, [formattedCourses]);
+
+    const filteredCourses = formattedCourses.filter((course) => {
         const matchesSearch =
+            !searchTerm ||
             course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             course.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
             course.category.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesSearch;
+
+        const matchesTab =
+            activeTab === 'all' ||
+            course.category.toLowerCase() === activeTab.toLowerCase() ||
+            course.category.toLowerCase().includes(activeTab.toLowerCase()) ||
+            activeTab.toLowerCase().includes(course.category.toLowerCase());
+
+        return matchesSearch && matchesTab;
     });
 
-    const displayedCourses = limit || loadmore ? filteredCourses.slice(0, visibleCount) : filteredCourses;
+    const displayedCourses = (limit || loadmore)
+        ? filteredCourses.slice(0, visibleCount)
+        : filteredCourses;
 
     return (
         <section className={styles['my-courses']} aria-label="My Courses Section">
@@ -374,7 +283,7 @@ export default function MyCourses({
                     onMouseUp={handleTabsMouseUpOrLeave}
                     onMouseLeave={handleTabsMouseUpOrLeave}
                 >
-                    {TABS.map((tab) => (
+                    {dynamicTabs.map((tab) => (
                         <button
                             key={tab.id}
                             type="button"
@@ -416,41 +325,44 @@ export default function MyCourses({
 
             {/* 3. 4-Column Course Cards Grid */}
             <div className={styles['my-courses__grid']}>
-                {displayedCourses.map((course) => {
-                    const slug =
-                        course.slug ||
-                        course.title
-                            .toLowerCase()
-                            .trim()
-                            .replace(/[^a-z0-9]+/g, '-')
-                            .replace(/(^-|-$)/g, '') ||
-                        'hydra-facial';
-                    const courseUrl = `${coursesUrl}/${slug}`;
+                {displayedCourses.length > 0 ? (
+                    displayedCourses.map((course) => {
+                        const courseUrl = `${coursesUrl}/${course.slug}`;
 
-                    return (
-                        <CourseCard
-                            key={course.id}
-                            image={course.image}
-                            tag={course.category}
-                            rating={course.rating}
-                            traineeCount={course.traineeCount}
-                            title={course.title}
-                            subtitle={course.subtitle}
-                            progress={course.progress}
-                            module={`${course.modulesCount} module`}
-                            lessons={`${course.lessonsCount} lessons`}
-                            quizzes={`${course.quizzesCount} quizzes`}
-                            curriculum={course.steps}
-                            trainer={course.trainer}
-                            actionType="play"
-                            courseUrl={courseUrl}
-                            previewUrl={courseUrl}
-                            variant={cardVariant}
-                            studentsCount={course.studentsCount || 145}
-                            onPlay={() => console.log('Continue course:', course.id)}
-                        />
-                    );
-                })}
+                        return (
+                            <CourseCard
+                                key={course.id}
+                                image={course.image}
+                                tag={course.category}
+                                rating={course.rating}
+                                traineeCount={course.traineeCount}
+                                title={course.title}
+                                subtitle={course.subtitle}
+                                progress={course.progress}
+                                module={course.module}
+                                lessons={course.lessons}
+                                quizzes={course.quizzes}
+                                curriculum={course.curriculum}
+                                sections={course.sections}
+                                trainer={course.trainer}
+                                actionType="play"
+                                courseUrl={courseUrl}
+                                previewUrl={courseUrl}
+                                variant={cardVariant}
+                                studentsCount={course.studentsCount || 145}
+                                onPlay={() => console.log('Continue course:', course.id)}
+                            />
+                        );
+                    })
+                ) : (
+                    !loading && (
+                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0', color: '#8A7043' }}>
+                            <p style={{ fontSize: '1rem', fontStyle: 'italic', margin: 0 }}>
+                                Không tìm thấy khóa học nào phù hợp.
+                            </p>
+                        </div>
+                    )
+                )}
             </div>
 
             {/* 4. Load More Button */}

@@ -217,7 +217,12 @@ export async function fetchWpRest<T = any>(
       }
 
       if (!res.ok) {
-        throw new Error(`[fetchWpRest] HTTP error! Status: ${res.status} ${res.statusText}`);
+        return null;
+      }
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('json')) {
+        return null;
       }
 
       const data = await res.json();
@@ -227,10 +232,6 @@ export async function fetchWpRest<T = any>(
         const delay = attempt * 1000;
         await new Promise((r) => setTimeout(r, delay));
         continue;
-      }
-      console.error(`[fetchWpRest] Lỗi gọi endpoint ${endpoint}:`, err.message || err);
-      if (isBuild) {
-        return null;
       }
       return null;
     }

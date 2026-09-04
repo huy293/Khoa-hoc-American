@@ -1,11 +1,18 @@
 import CourseDetailsIntro from "@/components/dashboard/courses/CourseDetailsIntro";
 import LearningContent from "@/components/dashboard/courses/LearningContent";
+import { WPCourse } from "@/types/wordpress";
 
-export default function CourseDetailsContent() {
+interface CourseDetailsContentProps {
+    course?: WPCourse | null;
+    slug?: string;
+}
+
+export default function CourseDetailsContent({ course, slug }: CourseDetailsContentProps) {
     return (
         <>
-            <CourseDetailsIntro />
-            <LearningContent />
+            <CourseDetailsIntro course={course} />
+            <LearningContent course={course} />
         </>
     );
 }
+
