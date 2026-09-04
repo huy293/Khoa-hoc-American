@@ -555,5 +555,72 @@ add_action('rest_api_init', function () {
         },
         'permission_callback' => '__return_true'
     ]);
+
+    // G. TÍCH HỢP RANK MATH SEO CHO TOÀN BỘ REST API POST TYPES
+    $supported_types = ['post', 'page', 'lp_course', 'product', 'courses', 'course'];
+    foreach ($supported_types as $post_type) {
+        register_rest_field($post_type, 'rank_math_seo', [
+            'get_callback' => function ($object) {
+                $post_id = $object['id'] ?? 0;
+                if (!$post_id) return null;
+
+                $title = get_post_meta($post_id, 'rank_math_title', true);
+                if (empty($title)) {
+                    $title = get_the_title($post_id);
+                }
+
+                $description = get_post_meta($post_id, 'rank_math_description', true);
+                if (empty($description)) {
+                    $description = wp_strip_all_tags(get_the_excerpt($post_id));
+                }
+
+                $focus_keyword = get_post_meta($post_id, 'rank_math_focus_keyword', true);
+                $canonical = get_post_meta($post_id, 'rank_math_canonical_url', true);
+                if (empty($canonical)) {
+                    $canonical = get_permalink($post_id);
+                }
+
+                $og_title = get_post_meta($post_id, 'rank_math_facebook_title', true) ?: $title;
+                $og_desc  = get_post_meta($post_id, 'rank_math_facebook_description', true) ?: $description;
+                $og_image_url = get_post_meta($post_id, 'rank_math_facebook_image', true);
+                if (empty($og_image_url)) {
+                    $og_image_url = get_the_post_thumbnail_url($post_id, 'full') ?: '';
+                }
+
+                $twitter_title = get_post_meta($post_id, 'rank_math_twitter_title', true) ?: $og_title;
+                $twitter_desc  = get_post_meta($post_id, 'rank_math_twitter_description', true) ?: $og_desc;
+                $twitter_image_url = get_post_meta($post_id, 'rank_math_twitter_image', true);
+                if (empty($twitter_image_url)) {
+                    $twitter_image_url = $og_image_url;
+                }
+
+                $robots = get_post_meta($post_id, 'rank_math_robots', true);
+                $robots_array = is_array($robots) ? $robots : (is_string($robots) ? explode(',', $robots) : []);
+                $is_noindex = in_array('noindex', $robots_array);
+                $is_nofollow = in_array('nofollow', $robots_array);
+
+                return [
+                    'title'                => $title,
+                    'metaDesc'             => $description,
+                    'focusKeyword'         => $focus_keyword,
+                    'canonical'            => $canonical,
+                    'opengraphTitle'       => $og_title,
+                    'opengraphDescription' => $og_desc,
+                    'opengraphImage'       => [
+                        'sourceUrl' => $og_image_url,
+                    ],
+                    'twitterTitle'         => $twitter_title,
+                    'twitterDescription'   => $twitter_desc,
+                    'twitterImage'         => [
+                        'sourceUrl' => $twitter_image_url,
+                    ],
+                    'metaRobotsNoindex'    => $is_noindex ? 'noindex' : 'index',
+                    'metaRobotsNofollow'   => $is_nofollow ? 'nofollow' : 'follow',
+                ];
+            },
+            'schema' => null,
+        ]);
+    }
 });
+
 

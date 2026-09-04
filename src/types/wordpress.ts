@@ -414,6 +414,7 @@ export interface WPProduct {
     name: string;
     slug: string;
   }>;
+  seo?: WPSeo;
   [key: string]: unknown;
 }
 
