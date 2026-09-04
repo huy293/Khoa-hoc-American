@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/course-detail/TrainingCurriculum.module.css';
 
+import { WPCourse } from '@/types/wordpress';
+
 /* ── SVGs ── */
 const TimelineNodeActive = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={styles['timeline-node-icon']}>
@@ -207,8 +209,43 @@ const MODULES_DATA: CurriculumModule[] = [
     },
 ];
 
-export default function TrainingCurriculum() {
-    const [openModuleId, setOpenModuleId] = useState<string>('module-01');
+export interface TrainingCurriculumProps {
+    course?: WPCourse | null;
+}
+
+export default function TrainingCurriculum({ course }: TrainingCurriculumProps = {}) {
+    // 🎯 Ưu tiên lấy trực tiếp danh sách Module (Section) từ mảng sections của LearnPress (GET /wp-json/learnpress/v1/courses/{id})
+    const wpSections = course?.sections || course?.courseFields?.sections;
+
+    let dynamicModules: CurriculumModule[] = MODULES_DATA;
+    if (Array.isArray(wpSections) && wpSections.length > 0) {
+        dynamicModules = wpSections.map((sec, sIdx) => {
+            const modId = `module-${sec.id || sIdx + 1}`;
+            const modTitle = sec.title || sec.name || `Module 0${sIdx + 1}`;
+            const modNum = `Module 0${sIdx + 1}: ${modTitle}`;
+            const items = Array.isArray(sec.items) ? sec.items : [];
+            const lessonsCount = `${items.length} lessons`;
+            const lessons: ModuleLesson[] = items.map((it, lIdx) => ({
+                id: String(it.id || `${modId}-l${lIdx + 1}`),
+                number: lIdx + 1 < 10 ? `0${lIdx + 1}` : `${lIdx + 1}`,
+                title: it.title || 'Lesson',
+                videos: 2,
+                exercises: 1,
+                duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 min',
+                isLocked: it.locked !== undefined ? Boolean(it.locked) : lIdx > 0,
+            }));
+
+            return {
+                id: modId,
+                moduleNumber: modNum,
+                title: modTitle,
+                lessonsCount,
+                lessons,
+            };
+        });
+    }
+
+    const [openModuleId, setOpenModuleId] = useState<string>(dynamicModules[0]?.id || 'module-01');
 
     const toggleModule = (id: string) => {
         setOpenModuleId(prev => (prev === id ? '' : id));
@@ -222,60 +259,34 @@ export default function TrainingCurriculum() {
                     <h3 className={styles['training-left__heading']}>TRAINING PROCESS</h3>
 
                     <div className={styles['timeline']}>
-                        {/* 1. Theory */}
-                        <div className={styles['timeline__item']}>
-                            <div className={styles['timeline__indicator']}>
-                                <TimelineNodeActive />
-                                <div className={styles['timeline__line']} />
-                            </div>
-                            <div className={styles['timeline__content']}>
-                                <h4 className={styles['timeline__title']}>Theory</h4>
-                                <ul className={styles['timeline__bullets']}>
-                                    <li>An overview of HydraFacial technology and its history.</li>
-                                    <li>The structure and working principles of the HydraFacial machine.</li>
-                                    <li>A detailed analysis of HydraFacial&apos;s exclusive serums and specialized tips.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        {/* 2. Professional Practice */}
-                        <div className={styles['timeline__item']}>
-                            <div className={styles['timeline__indicator']}>
-                                <TimelineNodeActive />
-                                <div className={styles['timeline__line']} />
-                            </div>
-                            <div className={styles['timeline__content']}>
-                                <h4 className={styles['timeline__title']}>Professional Practice</h4>
-                            </div>
-                        </div>
-
-                        {/* 3. Advanced Applications */}
-                        <div className={styles['timeline__item']}>
-                            <div className={styles['timeline__indicator']}>
-                                <TimelineNodeActive />
-                                <div className={styles['timeline__line']} />
-                            </div>
-                            <div className={styles['timeline__content']}>
-                                <h4 className={styles['timeline__title']}>Advanced Applications</h4>
-                            </div>
-                        </div>
-
-                        {/* 4. Business */}
-                        <div className={styles['timeline__item']}>
-                            <div className={styles['timeline__indicator']}>
-                                <TimelineNodeActive />
-                            </div>
-                            <div className={styles['timeline__content']}>
-                                <h4 className={styles['timeline__title']}>Business</h4>
-                            </div>
-                        </div>
+                        {dynamicModules.map((mod, idx) => {
+                            const isLast = idx === dynamicModules.length - 1;
+                            return (
+                                <div key={mod.id || idx} className={styles['timeline__item']}>
+                                    <div className={styles['timeline__indicator']}>
+                                        <TimelineNodeActive />
+                                        {!isLast && <div className={styles['timeline__line']} />}
+                                    </div>
+                                    <div className={styles['timeline__content']}>
+                                        <h4 className={styles['timeline__title']}>{mod.title}</h4>
+                                        {mod.lessons.length > 0 && idx === 0 && (
+                                            <ul className={styles['timeline__bullets']}>
+                                                {mod.lessons.slice(0, 3).map((l) => (
+                                                    <li key={l.id}>{l.title}</li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
                 {/* ── RIGHT BOX: Module Dropdown Accordions & Action Buttons ── */}
                 <div className={styles['training-right']}>
                     <div className={styles['modules-list']}>
-                        {MODULES_DATA.map(moduleItem => {
+                        {dynamicModules.map(moduleItem => {
                             const isOpen = openModuleId === moduleItem.id;
 
                             return (
@@ -304,33 +315,39 @@ export default function TrainingCurriculum() {
                                     {/* Module Lessons Dropdown Content */}
                                     {isOpen && (
                                         <div className={styles['module-card__body']}>
-                                            {moduleItem.lessons.map(lesson => (
-                                                <div key={lesson.id} className={styles['lesson-item']}>
-                                                    <div className={styles['lesson-item__left']}>
-                                                        <NumberCircle01 />
-                                                        <div className={styles['lesson-item__info']}>
-                                                            <h5 className={styles['lesson-item__title']}>
-                                                                {lesson.title}
-                                                            </h5>
-                                                            <div className={styles['lesson-item__meta']}>
-                                                                <span>{lesson.videos} videos</span>
-                                                                <DotDividerIcon />
-                                                                <span>{lesson.exercises} exercise</span>
-                                                                <DotDividerIcon />
-                                                                <span>{lesson.duration}</span>
+                                            {moduleItem.lessons.length > 0 ? (
+                                                moduleItem.lessons.map(lesson => (
+                                                    <div key={lesson.id} className={styles['lesson-item']}>
+                                                        <div className={styles['lesson-item__left']}>
+                                                            <NumberCircle01 />
+                                                            <div className={styles['lesson-item__info']}>
+                                                                <h5 className={styles['lesson-item__title']}>
+                                                                    {lesson.title}
+                                                                </h5>
+                                                                <div className={styles['lesson-item__meta']}>
+                                                                    <span>{lesson.videos} videos</span>
+                                                                    <DotDividerIcon />
+                                                                    <span>{lesson.exercises} exercise</span>
+                                                                    <DotDividerIcon />
+                                                                    <span>{lesson.duration}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div className={styles['lesson-item__right']}>
-                                                        {lesson.isLocked ? (
-                                                            <LockIconRed />
-                                                        ) : (
-                                                            <PlayIconOrange />
-                                                        )}
+                                                        <div className={styles['lesson-item__right']}>
+                                                            {lesson.isLocked ? (
+                                                                <LockIconRed />
+                                                            ) : (
+                                                                <PlayIconOrange />
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))
+                                            ) : (
+                                                <p style={{ padding: '16px 20px', color: '#888', fontStyle: 'italic', margin: 0 }}>
+                                                    Coming soon...
+                                                </p>
+                                            )}
                                         </div>
                                     )}
                                 </div>
