@@ -84,7 +84,7 @@ export default function CourseDetailsIntro({
     // 🎯 Map dynamic WordPress / LearnPress course data
     const displayCategory = course?.courseFields?.category || category;
     const displayCourseName = course?.title || courseName;
-    const displayTitle = course?.title ? `INTRODUCTION TO ${course.title.toUpperCase()}` : title;
+    const displayTitle = course?.title ? `${course.title.toUpperCase()}` : title;
     const displayDescription = course?.excerpt || course?.courseFields?.subtitle || description;
 
     // Trainer info
@@ -117,7 +117,7 @@ export default function CourseDetailsIntro({
     const activeModuleTitle = currentModuleTitle || (firstSection ? (firstSection.title?.startsWith('Module') ? firstSection.title : `Module 01: ${firstSection.title || firstSection.name || 'Theory'}`) : "Module 02: Professional Practice");
     const activeLessonTitle = currentLessonTitle || (firstLesson ? (firstLesson.title || "Lesson 1: Introduction") : "Lesson 4: Understanding HydraFacial Tips");
 
-    const continueTitle = course?.title ? `${course.title}\nProfessional Training` : "Hydra Facial\nProfessional Training";
+    const continueTitle = course?.title ? `${course.title}` : "Hydra Facial\nProfessional Training";
     const continueDesc = course?.excerpt || "Master professional techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";
 
     // Circumference calculation for SVG gauge (radius = 48 -> 2 * PI * 48 ≈ 301.59)

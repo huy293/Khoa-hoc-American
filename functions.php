@@ -572,7 +572,7 @@ add_action('rest_api_init', function () {
     ]);
 
     // G. TÍCH HỢP RANK MATH SEO CHO TOÀN BỘ REST API POST TYPES
-    $supported_types = ['post', 'page', 'lp_course', 'product', 'courses', 'course'];
+    $supported_types = ['post', 'page', 'lp_course', 'lp_lesson', 'product', 'courses', 'course', 'lesson'];
     foreach ($supported_types as $post_type) {
         register_rest_field($post_type, 'rank_math_seo', [
             'get_callback' => function ($object) {
@@ -651,4 +651,124 @@ add_action('rest_api_init', function () {
             'schema' => null,
         ]);
     }
+
+    // H. EXPOSE TRƯỜNG ACF 'lesson_videos', 'attached_quiz', 'acf' CHO LP_LESSON (WP REST API)
+    $lesson_post_types = ['lp_lesson', 'lesson', 'lp_course'];
+    foreach ($lesson_post_types as $l_type) {
+        // 1. Expose toàn bộ object acf
+        register_rest_field($l_type, 'acf', [
+            'get_callback' => function ($object) {
+                $post_id = $object['id'] ?? 0;
+                if (!$post_id || !function_exists('get_fields')) return null;
+                $fields = get_fields($post_id);
+                return is_array($fields) ? $fields : null;
+            },
+            'schema' => null,
+        ]);
+
+        // 2. Expose trực tiếp trường lesson_videos
+        register_rest_field($l_type, 'lesson_videos', [
+            'get_callback' => function ($object) {
+                $post_id = $object['id'] ?? 0;
+                if (!$post_id) return '';
+                if (function_exists('get_field')) {
+                    $val = get_field('lesson_videos', $post_id);
+                    if (!empty($val)) return $val;
+                }
+                $meta_val = get_post_meta($post_id, 'lesson_videos', true);
+                if (!empty($meta_val)) return $meta_val;
+
+                $lp_intro = get_post_meta($post_id, '_lp_lesson_video_intro', true);
+                if (!empty($lp_intro)) return $lp_intro;
+
+                return '';
+            },
+            'schema' => [
+                'description' => 'Lesson video embed code or URL from ACF/LearnPress',
+                'type'        => 'string',
+                'context'     => ['view', 'edit'],
+            ],
+        ]);
+
+        // 3. Expose trực tiếp trường attached_quiz
+        register_rest_field($l_type, 'attached_quiz', [
+            'get_callback' => function ($object) {
+                $post_id = $object['id'] ?? 0;
+                if (!$post_id) return null;
+                if (function_exists('get_field')) {
+                    $val = get_field('attached_quiz', $post_id);
+                    if (!empty($val)) return $val;
+                }
+                return get_post_meta($post_id, 'attached_quiz', true) ?: null;
+            },
+            'schema' => null,
+        ]);
+    }
+
+    // I. CHI TIẾT BÀI HỌC LEARNPRESS (GET /wp-json/homenest/v1/lesson/{slug})
+    register_rest_route('homenest/v1', '/lesson/(?P<slug>[a-zA-Z0-9-]+)', [
+        'methods' => 'GET',
+        'callback' => function ($data) {
+            $slug = $data['slug'];
+            $post = get_page_by_path($slug, OBJECT, 'lp_lesson');
+            if (!$post && is_numeric($slug)) {
+                $post = get_post((int)$slug);
+            }
+            if (!$post) {
+                $query = new WP_Query([
+                    'post_type'      => ['lp_lesson', 'lesson'],
+                    'name'           => $slug,
+                    'posts_per_page' => 1,
+                    'post_status'    => 'publish',
+                ]);
+                $post = $query->posts[0] ?? null;
+            }
+            if (!$post) {
+                return new WP_Error('not_found', 'Bài học không tồn tại', ['status' => 404]);
+            }
+
+            $post_id = $post->ID;
+            $video = '';
+            if (function_exists('get_field')) {
+                $video = get_field('lesson_videos', $post_id);
+            }
+            if (empty($video)) {
+                $video = get_post_meta($post_id, 'lesson_videos', true);
+            }
+            if (empty($video)) {
+                $video = get_post_meta($post_id, '_lp_lesson_video_intro', true);
+            }
+
+            $quiz = function_exists('get_field') ? get_field('attached_quiz', $post_id) : get_post_meta($post_id, 'attached_quiz', true);
+            $acf_data = function_exists('get_fields') ? get_fields($post_id) : [];
+
+            return rest_ensure_response([
+                'id'            => (string)$post_id,
+                'title'         => $post->post_title,
+                'slug'          => $post->post_name,
+                'content'       => apply_filters('the_content', $post->post_content),
+                'excerpt'       => wp_strip_all_tags($post->post_excerpt),
+                'duration'      => get_post_meta($post_id, '_lp_duration', true) ?: '45 min',
+                'lesson_videos' => $video ?: '',
+                'video_url'     => $video ?: '',
+                'attached_quiz' => $quiz ?: null,
+                'acf'           => is_array($acf_data) ? $acf_data : ['lesson_videos' => $video],
+                'featuredImage' => ['node' => ['sourceUrl' => get_the_post_thumbnail_url($post_id, 'full') ?: '']],
+                'seo'           => [
+                    'title'       => get_post_meta($post_id, 'rank_math_title', true) ?: $post->post_title,
+                    'description' => get_post_meta($post_id, 'rank_math_description', true) ?: $post->post_excerpt,
+                ]
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
 });
+
+// 3. ĐẢM BẢO LEARNPRESS POST TYPES LUÔN ĐƯỢC MỞ TRONG REST API
+add_filter('register_post_type_args', function ($args, $post_type) {
+    if (in_array($post_type, ['lp_course', 'lp_lesson', 'lp_quiz', 'lp_question'])) {
+        $args['show_in_rest'] = true;
+    }
+    return $args;
+}, 10, 2);
+

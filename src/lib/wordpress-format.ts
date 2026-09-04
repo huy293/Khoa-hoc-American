@@ -147,3 +147,79 @@ export function toSlug(str?: string | null): string {
     .replace(/^-+|-+$/g, '');
 }
 
+export interface ParsedVideo {
+  type: 'iframe' | 'video' | 'html';
+  src?: string;
+  html?: string;
+}
+
+/**
+ * Phân tích và trích xuất video từ trường ACF `lesson_videos` hoặc `video_url`
+ * Hỗ trợ linh hoạt: Mã nhúng <iframe> HTML (Spotlightr, YouTube iframe, Vimeo iframe),
+ * URL trực tiếp (Spotlightr, YouTube, Vimeo), file video trực tiếp (.mp4, .webm), hoặc mã HTML tùy biến.
+ */
+export function parseLessonVideo(rawInput?: string | null): ParsedVideo | null {
+  if (!rawInput || typeof rawInput !== 'string') return null;
+  const trimmed = rawInput.trim();
+  if (!trimmed) return null;
+
+  // 1. Trích xuất iframe src từ mã nhúng HTML (Spotlightr div+iframe, Youtube iframe, etc.)
+  const iframeSrcMatch = trimmed.match(/<iframe[^>]+src=["']([^"']+)["'][^>]*>/i);
+  if (iframeSrcMatch && iframeSrcMatch[1]) {
+    const src = iframeSrcMatch[1].replace(/&amp;/g, '&');
+    return {
+      type: 'iframe',
+      src,
+    };
+  }
+
+  // 2. Định dạng file video trực tiếp (.mp4, .webm, .ogg, .mov)
+  if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(trimmed)) {
+    return {
+      type: 'video',
+      src: trimmed,
+    };
+  }
+
+  // 3. Link YouTube (watch, youtu.be, embed, shorts)
+  const ytMatch = trimmed.match(
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i
+  );
+  if (ytMatch && ytMatch[1]) {
+    return {
+      type: 'iframe',
+      src: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`,
+    };
+  }
+
+  // 4. Link Vimeo (vimeo.com/123456789)
+  const vimeoMatch = trimmed.match(
+    /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]*\/videos\/|album\/(?:\d+\/)?video\/|video\/|)(\d+)/i
+  );
+  if (vimeoMatch && vimeoMatch[1]) {
+    return {
+      type: 'iframe',
+      src: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
+    };
+  }
+
+  // 5. Đường dẫn URL thông thường (Spotlightr URL, CDN link, web link...)
+  if (/^https?:\/\//i.test(trimmed)) {
+    return {
+      type: 'iframe',
+      src: trimmed,
+    };
+  }
+
+  // 6. Mã nhúng HTML khác
+  if (trimmed.startsWith('<') && trimmed.endsWith('>')) {
+    return {
+      type: 'html',
+      html: trimmed,
+    };
+  }
+
+  return null;
+}
+
+
