@@ -705,34 +705,41 @@ export async function getWpProducts(perPage = 50): Promise<WPProduct[]> {
   try {
     const storeProducts = await fetchWpRest<any[]>(`/wp-json/wc/store/v1/products?per_page=${perPage}`);
     if (Array.isArray(storeProducts) && storeProducts.length > 0) {
-      return storeProducts.map((item) => ({
-        id: String(item.id),
-        databaseId: item.id,
-        name: item.name ? item.name.replace(/&#038;/g, '&').replace(/&amp;/g, '&') : '',
-        slug: item.slug,
-        description: item.description,
-        shortDescription: item.short_description,
-        price: item.prices?.price ? `$ ${(Number(item.prices.price) / 1).toFixed(2)}` : '$ 0.00',
-        regularPrice: item.prices?.regular_price ? `$ ${(Number(item.prices.regular_price) / 1).toFixed(2)}` : '',
-        salePrice: item.prices?.sale_price ? `$ ${(Number(item.prices.sale_price) / 1).toFixed(2)}` : '',
-        onSale: item.prices?.regular_price !== item.prices?.sale_price,
-        stock: item.is_in_stock ? (item.low_stock_amount || 26) : 0,
-        image: {
-          sourceUrl: item.images?.[0]?.src || '/images/anh-san-pham.png',
-          altText: item.images?.[0]?.alt || item.name,
-        },
-        galleryImages: {
-          nodes: (item.images || []).map((img: any) => ({
-            sourceUrl: img.src,
-            altText: img.alt || item.name,
+      return storeProducts.map((item) => {
+        const regularNum = Number(item.prices?.regular_price);
+        const saleNum = Number(item.prices?.sale_price || item.prices?.price);
+        const priceNum = Number(item.prices?.price);
+        const isOnSale = Boolean(item.on_sale) || (regularNum > 0 && priceNum > 0 && regularNum > priceNum);
+
+        return {
+          id: String(item.id),
+          databaseId: item.id,
+          name: item.name ? item.name.replace(/&#038;/g, '&').replace(/&amp;/g, '&') : '',
+          slug: item.slug,
+          description: item.description,
+          shortDescription: item.short_description,
+          price: priceNum > 0 ? `$ ${priceNum.toFixed(2)}` : '$ 0.00',
+          regularPrice: isOnSale && regularNum > 0 ? `$ ${regularNum.toFixed(2)}` : '',
+          salePrice: isOnSale && saleNum > 0 ? `$ ${saleNum.toFixed(2)}` : '',
+          onSale: isOnSale,
+          stock: item.is_in_stock ? (item.low_stock_amount || 26) : 0,
+          image: {
+            sourceUrl: item.images?.[0]?.src || '/images/anh-san-pham.png',
+            altText: item.images?.[0]?.alt || item.name,
+          },
+          galleryImages: {
+            nodes: (item.images || []).map((img: any) => ({
+              sourceUrl: img.src,
+              altText: img.alt || item.name,
+            })),
+          },
+          categories: (item.categories || []).map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            slug: c.slug,
           })),
-        },
-        categories: (item.categories || []).map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          slug: c.slug,
-        })),
-      }));
+        };
+      });
     }
   } catch (error) {
     console.warn('Lỗi lấy products qua WC Store API:', error);
