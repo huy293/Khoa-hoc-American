@@ -70,11 +70,13 @@ const NAV_ITEMS: NavItem[] = [
 
 export const Header = () => {
     const pathname = usePathname();
+    const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [userHref, setUserHref] = useState('/login');
 
     useEffect(() => {
+        setMounted(true);
         try {
             const match = document.cookie.match(/hn_user_session=([^;]+)/);
             if (match) {
@@ -179,9 +181,10 @@ export const Header = () => {
                     </button>
 
                     <Link
-                        href={userHref}
+                        href={mounted ? userHref : '/login'}
                         className={styles['header__action-btn']}
                         aria-label="User Account"
+                        suppressHydrationWarning
                     >
                         <UserIcon />
                     </Link>

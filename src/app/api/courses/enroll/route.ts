@@ -51,8 +51,33 @@ export async function POST(req: NextRequest) {
     const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://course-amc.homenest.edu.vn';
     const secret = process.env.HN_API_SECRET || '';
 
+    // Đảm bảo học viên có đầy đủ ID và Email từ WordPress trước khi tạo bản ghi enroll
+    if ((!user.id || !user.email) && (user.username || user.email)) {
+      try {
+        const queryParam = user.email ? `userEmail=${encodeURIComponent(user.email)}` : `username=${encodeURIComponent(user.username)}`;
+        const syncRes = await fetch(`${wpUrl}/wp-json/homenest/v1/auth/me?${queryParam}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-secret-key': secret,
+            'x-api-key': secret,
+            'Authorization': `Bearer ${secret}`,
+          },
+          cache: 'no-store',
+        });
+        if (syncRes.ok) {
+          const syncData = await syncRes.json();
+          if (syncData?.success && syncData?.user) {
+            user = { ...user, ...syncData.user };
+          }
+        }
+      } catch (e) {
+        console.warn('Could not pre-sync user for enroll:', e);
+      }
+    }
+
     // 2. Gửi request Enroll sang WordPress LearnPress Headless API
     const enrollEndpoints = [
+      '/wp-json/homenest/v1/courses/enroll',
       '/wp-json/lp/v1/courses/enroll-course',
       '/wp-json/learnpress/v1/courses/enroll',
     ];
@@ -73,8 +98,14 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             id: courseId,
             course_id: courseId,
+            courseId: courseId,
+            courseSlug: courseSlug,
             user_id: user.id || user.userId,
+            userId: user.id || user.userId,
             user_email: user.email,
+            userEmail: user.email,
+            username: user.username,
+            fullName: user.displayName || user.name,
           }),
           cache: 'no-store',
         });
