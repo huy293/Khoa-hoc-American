@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from '@/styles/login/Login.module.css';
 
 /* ── Google Multi-Color SVG Icon ── */
@@ -40,6 +40,7 @@ const FacebookIcon = () => (
 
 export default function SignupContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [showEmailForm, setShowEmailForm] = useState(false);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -50,6 +51,17 @@ export default function SignupContent() {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
+
+    useEffect(() => {
+        const err = searchParams?.get('error');
+        if (err === 'google_failed' || err === 'token_exchange_failed') {
+            setErrorMsg('Đăng ký / Đăng nhập bằng Google không thành công. Vui lòng thử lại.');
+        } else if (err === 'facebook_failed') {
+            setErrorMsg('Đăng ký / Đăng nhập bằng Facebook không thành công. Vui lòng thử lại.');
+        } else if (err === 'config_missing') {
+            setErrorMsg('Hệ thống xác thực chưa được cấu hình đầy đủ.');
+        }
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -221,23 +233,27 @@ export default function SignupContent() {
                         <button
                             type="button"
                             className={`${styles['login__btn']} ${styles['login__btn--google']}`}
-                            onClick={() => setShowEmailForm(true)}
+                            onClick={() => {
+                                window.location.href = '/api/auth/google';
+                            }}
                         >
                             <span className={styles['login__btn-icon']}>
                                 <GoogleIcon />
                             </span>
-                            <span>Log in with Google</span>
+                            <span>Sign up with Google</span>
                         </button>
 
                         <button
                             type="button"
                             className={`${styles['login__btn']} ${styles['login__btn--facebook']}`}
-                            onClick={() => setShowEmailForm(true)}
+                            onClick={() => {
+                                window.location.href = '/api/auth/facebook';
+                            }}
                         >
                             <span className={styles['login__btn-icon']}>
                                 <FacebookIcon />
                             </span>
-                            <span>Log in with Facebook</span>
+                            <span>Sign up with Facebook</span>
                         </button>
 
                         <div className={styles['login__divider']} role="separator">
