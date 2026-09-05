@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import BannerSection from "@/components/shop/BannerSection";
 import ProductCard, { Product } from "@/components/shop/ProductCard";
 import QuickViewProduct from "@/components/shop/QuickViewProduct";
+import { useCart } from "@/context/CartContext";
 import styles from "@/styles/shop/ProductDetail.module.css";
 import { WPProduct } from "@/types/wordpress";
 
@@ -32,6 +33,8 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
     const [activeTab, setActiveTab] = useState<TabType>("describe");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [addedNotice, setAddedNotice] = useState(false);
+    const { addToCart } = useCart();
 
     // Images from gallery or fallback
     const images: string[] = (initialProduct?.galleryImages?.nodes && initialProduct.galleryImages.nodes.length > 0)
@@ -293,15 +296,18 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                                         type="button"
                                         className={styles["product-detail-section__btn-cart"]}
                                         onClick={() => {
-                                            router.push(cartUrl);
+                                            addToCart(currentProduct, { quantity: 1 });
+                                            setAddedNotice(true);
+                                            setTimeout(() => setAddedNotice(false), 2000);
                                         }}
                                     >
-                                        ADD TO CART
+                                        {addedNotice ? "ADDED TO CART ✓" : "ADD TO CART"}
                                     </button>
                                     <button
                                         type="button"
                                         className={styles["product-detail-section__btn-buy"]}
                                         onClick={() => {
+                                            addToCart(currentProduct, { quantity: 1 });
                                             router.push(cartUrl);
                                         }}
                                     >

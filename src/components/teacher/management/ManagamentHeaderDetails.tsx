@@ -99,12 +99,12 @@ export default function ManagamentHeaderDetails({
             ? description
             : desc !== undefined
             ? desc
-            : 'Learn the essential techniques behind professional deep cleansing and exfoliation. This lesson covers proper skin preparation, product application, handpiece control, and key safety considerations to help you perform the treatment with confidence and precision.';
+            : '';
 
     // Resolve trainer information
-    const resolvedTrainerName = trainerName || trainer?.name || 'Kathleen trainer';
+    const resolvedTrainerName = trainerName || trainer?.name || '';
     const resolvedTrainerAvatar = trainerAvatar || trainer?.avatar || '/images/kathleen.png';
-    const resolvedTrainerRating = trainerRating !== undefined ? trainerRating : trainer?.rating || '4.9/5.0';
+    const resolvedTrainerRating = trainerRating !== undefined ? trainerRating : trainer?.rating || '';
 
     // Render back button
     const renderBackButton = () => {

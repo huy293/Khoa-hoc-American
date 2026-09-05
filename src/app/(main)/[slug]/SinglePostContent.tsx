@@ -149,52 +149,19 @@ interface CommentItem {
     timeAgo: string;
 }
 
-const INITIAL_COMMENTS: CommentItem[] = [
-    {
-        id: 'c1',
-        author: 'Dorothy Taylor',
-        avatarColor: '#E29B38',
-        content:
-            'This article was really helpful and easy to understand. I especially liked the practical tips and clear explanations. Looking forward to reading more beauty and skincare insights from Couture Beauty Academy!',
-        timeAgo: '2 days',
-    },
-    {
-        id: 'c2',
-        author: 'Dorothy Taylor',
-        avatarColor: '#E29B38',
-        content:
-            'This article was really helpful and easy to understand. I especially liked the practical tips and clear explanations. Looking forward to reading more beauty and skincare insights from Couture Beauty Academy!',
-        timeAgo: '2 days',
-    },
-];
+import { WPPost } from '@/types/wordpress';
+import WpContent from '@/components/common/WpContent';
 
-const HASHTAGS_LIST = [
-    '#estheticianstudent',
-    '#beautystudent',
-    '#skinstudent',
-    '#estheticiantraining',
-    '#estheticianschool',
-    '#beautyeducation',
-    '#futureesthetician',
-    '#learnesthetics',
-    '#skincarestudent',
-    '#beautycareerpath',
-    '#facialtrainingschool',
-    '#chemicalpeeltraining',
-    '#picolaser',
-    '#lashlicensetraining',
-    '#texaseyelash',
-    '#facial',
-    '#facialtrainingschool',
-    '#estheticianstudent',
-];
+export interface SinglePostContentProps {
+    post?: WPPost | null;
+}
 
-export default function SinglePostContent() {
+export default function SinglePostContent({ post }: SinglePostContentProps = {}) {
     const pathname = usePathname();
     const isDashboard = pathname?.startsWith('/dashboard') || pathname?.startsWith('/student') || pathname?.startsWith('/teacher');
 
     const [isLiked, setIsLiked] = useState(false);
-    const [comments, setComments] = useState<CommentItem[]>(INITIAL_COMMENTS);
+    const [comments, setComments] = useState<CommentItem[]>([]);
     const [newComment, setNewComment] = useState('');
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -220,8 +187,8 @@ export default function SinglePostContent() {
 
         const comment: CommentItem = {
             id: `c-${Date.now()}`,
-            author: 'Dorothy Taylor',
-            avatarColor: '#E29B38',
+            author: 'Reader',
+            avatarColor: '#C5A670',
             content: newComment.trim(),
             timeAgo: 'Just now',
         };
@@ -231,6 +198,12 @@ export default function SinglePostContent() {
         setToastMessage('Comment posted successfully!');
         setTimeout(() => setToastMessage(null), 3000);
     };
+
+    const authorName = post?.author?.node?.name || 'Thy Anh Pham Nguyen';
+    const authorAvatar = post?.author?.node?.avatar?.url || '/images/home/jasmine_lee.jpg';
+    const postDate = post?.date ? new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Dec 28, 2026';
+    const postTitle = post?.title || '🎉 NEW YEAR – GRAND OPENING COURSES 2026 🎉';
+    const postImage = post?.featuredImage?.node?.sourceUrl || '/images/grand_opening_banner.jpg';
 
     return (
         <div
@@ -249,20 +222,20 @@ export default function SinglePostContent() {
                         <div className={styles['single-post__author-info']}>
                             {/* Author Avatar */}
                             <Image
-                                src="/images/home/jasmine_lee.jpg"
-                                alt="Thy Anh Pham Nguyen"
+                                src={authorAvatar}
+                                alt={authorName}
                                 width={38}
                                 height={38}
                                 className={styles['single-post__author-avatar']}
                             />
                             <div className={styles['single-post__author-text']}>
                                 <span className={styles['single-post__author-name']}>
-                                    Thy Anh Pham Nguyen
+                                    {authorName}
                                 </span>
                                 <span className={styles['single-post__meta-dot-desktop']}>•</span>
                                 <div className={styles['single-post__meta-details']}>
-                                    <time dateTime="2026-12-28" className={styles['single-post__meta-text']}>
-                                        Dec 28,2026
+                                    <time dateTime={post?.date || "2026-12-28"} className={styles['single-post__meta-text']}>
+                                        {postDate}
                                     </time>
                                     <span className={styles['single-post__meta-dot']}>•</span>
                                     <span className={styles['single-post__meta-text']}>
@@ -301,10 +274,19 @@ export default function SinglePostContent() {
                     <div className={`${styles['single-post__body']} ${styles['chimotbailog']}`}>
                         {/* Title */}
                         <h1 className={styles['single-post__title']}>
-                            🎉 NEW YEAR – GRAND OPENING COURSES 2026 🎉
+                            {postTitle}
                         </h1>
 
-                        {/* Subtitle / Lead Paragraphs */}
+                        {/* If dynamic WordPress content is present, render it */}
+                        {post?.content && (
+                            <div className={styles['single-post__content-rendered']}>
+                                <WpContent html={post.content} />
+                            </div>
+                        )}
+
+                        {/* Subtitle / Lead Paragraphs (rendered when no content or as supplementary) */}
+                        {!post?.content && (
+                            <>
                         <p className={styles['single-post__subtitle']}>
                             ✨ Couture Beauty Academy – Launch Your Beauty Career! ✨
                         </p>
@@ -451,18 +433,22 @@ export default function SinglePostContent() {
                                 </div>
                             </div>
                         </div>
+                        </>
+                        )}
 
                         {/* Hashtags Section */}
-                        <div className={styles['single-post__hashtags-wrapper']}>
-                            {HASHTAGS_LIST.map((tag, idx) => (
-                                <span key={idx} className={styles['single-post__hashtag']}>
-                                    {tag}
-                                </span>
-                            ))}
-                            <span className={styles['single-post__hashtag-text']}>
-                                Kathleen Aesthetic Kathleen MinhChau Couture Beauty Academy
-                            </span>
-                        </div>
+                        {Array.isArray(post?.tags) && post.tags.length > 0 && (
+                            <div className={styles['single-post__hashtags-wrapper']}>
+                                {(post.tags as any[]).map((tag: any, idx: number) => {
+                                    const tagText = typeof tag === 'string' ? tag : tag?.name || '';
+                                    return (
+                                        <span key={idx} className={styles['single-post__hashtag']}>
+                                            {tagText.startsWith('#') ? tagText : `#${tagText}`}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        )}
 
                         {/* Bottom Divider Line */}
                         <div className={styles['single-post__footer-divider']} />

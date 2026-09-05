@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
 import styles from "@/styles/dashboard/cart/PaymentModal.module.css";
 
 export interface PaymentModalProps {
@@ -39,14 +40,14 @@ export interface CheckoutData {
     payment: CardFormData;
 }
 
-const countryCodes = [
-    { code: "+64", label: "NZ (+64)" },
-    { code: "+1", label: "US (+1)" },
-    { code: "+84", label: "VN (+84)" },
-    { code: "+61", label: "AU (+61)" },
-    { code: "+44", label: "UK (+44)" },
-    { code: "+1-CA", label: "CA (+1)" },
-];
+const countryCodes = Object.entries({
+    "+64": "NZ (+64)",
+    "+1": "US (+1)",
+    "+84": "VN (+84)",
+    "+61": "AU (+61)",
+    "+44": "UK (+44)",
+    "+1-CA": "CA (+1)",
+}).map(([code, label]) => ({ code, label }));
 
 const countries = [
     "United States",
@@ -64,10 +65,10 @@ const countries = [
 export default function PaymentModal({
     isOpen,
     onClose,
-    subtotal = 305.0,
-    shippingFee = 45.0,
-    memberDiscount = 95.0,
-    total = 240.0,
+    subtotal = 0,
+    shippingFee = 0,
+    memberDiscount = 0,
+    total = 0,
     onSave,
 }: PaymentModalProps) {
     const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -92,6 +93,13 @@ export default function PaymentModal({
         cvv: "",
     });
 
+    const [paymentMethods, setPaymentMethods] = useState<Array<{ id: string; title: string; description: string; instructions?: string }>>([]);
+    const [selectedMethod, setSelectedMethod] = useState<string>('');
+
+    const { items, clearCart } = useCart();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderId, setOrderId] = useState<string | number>('');
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
@@ -101,8 +109,20 @@ export default function PaymentModal({
 
         if (isOpen) {
             setStep(1);
+            setIsSubmitting(false);
             window.addEventListener("keydown", handleKeyDown);
             document.body.style.overflow = "hidden";
+
+            // Lấy danh sách cổng thanh toán đang kích hoạt từ WooCommerce
+            fetch('/api/payment-methods')
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data?.success && Array.isArray(data.methods) && data.methods.length > 0) {
+                        setPaymentMethods(data.methods);
+                        setSelectedMethod(data.methods[0].id);
+                    }
+                })
+                .catch(() => {});
         }
 
         return () => {
@@ -130,14 +150,45 @@ export default function PaymentModal({
         setStep(2);
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setStep(3);
-        if (onSave) {
-            onSave({
-                recipient: recipientData,
-                payment: cardData,
+        setIsSubmitting(true);
+
+        const fullName = `${recipientData.firstName} ${recipientData.lastName}`.trim() || 'Valued Customer';
+        const fullAddress = `${recipientData.streetAddress}, ${recipientData.city}, ${recipientData.state} ${recipientData.postalCode}, ${recipientData.country}`.trim();
+        const fullPhone = `${recipientData.countryCode} ${recipientData.phoneNumber}`.trim();
+
+        try {
+            const res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: fullName,
+                    phone: fullPhone,
+                    email: recipientData.email,
+                    address: fullAddress,
+                    payment_method: selectedMethod,
+                    items: items,
+                    total: total,
+                }),
             });
+
+            const data = await res.json().catch(() => null);
+            if (data?.order_id) {
+                setOrderId(data.order_id);
+            }
+        } catch (err) {
+            console.warn('Checkout network attempt error:', err);
+        } finally {
+            setIsSubmitting(false);
+            setStep(3);
+            clearCart();
+            if (onSave) {
+                onSave({
+                    recipient: recipientData,
+                    payment: cardData,
+                });
+            }
         }
     };
 
@@ -467,100 +518,182 @@ export default function PaymentModal({
                                     <h3 className={styles["payment-method__title"]}>
                                         SELECT A PAYMENT METHOD:
                                     </h3>
-                                    <div className={styles["payment-method__selector"]}>
-                                        <div className={styles["payment-method__radio"]}>
-                                            <span className={styles["payment-method__radio-inner"]} />
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+                                        {paymentMethods.map((pm) => {
+                                            const isSelected = selectedMethod === pm.id;
+                                            return (
+                                                <label
+                                                    key={pm.id}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'flex-start',
+                                                        gap: '12px',
+                                                        padding: '12px 16px',
+                                                        borderRadius: '8px',
+                                                        border: isSelected ? '1.5px solid #AF8861' : '1px solid #E5E5E5',
+                                                        backgroundColor: isSelected ? '#FAF7F2' : '#FFFFFF',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s',
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="paymentMethod"
+                                                        value={pm.id}
+                                                        checked={isSelected}
+                                                        onChange={() => setSelectedMethod(pm.id)}
+                                                        style={{ marginTop: '3px', accentColor: '#AF8861' }}
+                                                    />
+                                                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <span style={{ fontWeight: 600, fontSize: '13px', color: '#1A1A1A' }}>
+                                                                {pm.title}
+                                                            </span>
+                                                            {pm.id === 'credit_card' && (
+                                                                <div style={{ display: 'flex', gap: '6px' }}>
+                                                                    <svg width="32" height="20" viewBox="0 0 44 26" fill="none">
+                                                                        <rect width="44" height="26" rx="3" fill="#00579F" />
+                                                                        <path d="M18.8 18H16.4L17.9 8H20.3L18.8 18ZM28.5 8.2C28 8 27.2 7.8 26.1 7.8C23.5 7.8 21.6 9.2 21.6 11.2C21.6 12.7 22.9 13.5 23.9 14C24.9 14.5 25.3 14.8 25.3 15.3C25.3 16 24.4 16.3 23.6 16.3C22.4 16.3 21.7 16.1 20.7 15.6L20.2 17.6C21.1 18 22.3 18.3 23.5 18.3C26.3 18.3 28.1 16.9 28.1 14.8C28.1 13.1 27 12.3 25.8 11.7C24.8 11.2 24.3 10.9 24.3 10.4C24.3 10 24.8 9.6 25.8 9.6C26.6 9.6 27.3 9.8 27.9 10L28.5 8.2ZM36 18H38.2L36.3 8H34.3C33.8 8 33.3 8.3 33.1 8.8L28.8 18H31.3L31.8 16.6H35L36 18ZM32.5 14.8L33.8 11.1L34.6 14.8H32.5ZM14.1 8H11.7C11.1 8 10.7 8.3 10.5 8.8L6.8 18H9.3L9.8 16.6H12.9L14.1 8Z" fill="white" />
+                                                                    </svg>
+                                                                    <svg width="30" height="20" viewBox="0 0 40 26" fill="none">
+                                                                        <rect width="40" height="26" rx="3" fill="#252525" />
+                                                                        <circle cx="16" cy="13" r="7.5" fill="#EB001B" />
+                                                                        <circle cx="24" cy="13" r="7.5" fill="#F79E1B" fillOpacity="0.92" />
+                                                                    </svg>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {pm.description && (
+                                                            <span style={{ fontSize: '11px', color: '#666', marginTop: '3px' }}>
+                                                                {pm.description}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* TH1: Chọn Chuyển khoản ngân hàng (BACS) */}
+                                {selectedMethod === 'bacs' && (
+                                    <div style={{
+                                        padding: '16px',
+                                        backgroundColor: '#F8F9FA',
+                                        borderRadius: '8px',
+                                        border: '1px solid #EAEAEA',
+                                        marginTop: '16px',
+                                        fontSize: '12px',
+                                        color: '#333',
+                                        lineHeight: 1.6
+                                    }}>
+                                        <div style={{ fontWeight: 700, color: '#AF8861', marginBottom: '8px', fontSize: '13px' }}>
+                                            🏦 THÔNG TIN TÀI KHOẢN HỌC VIỆN:
                                         </div>
-                                        <div className={styles["payment-method__icons"]}>
-                                            {/* VISA */}
-                                            <svg width="44" height="26" viewBox="0 0 44 26" fill="none">
-                                                <rect width="44" height="26" rx="4" fill="#00579F" />
-                                                <path d="M18.8 18H16.4L17.9 8H20.3L18.8 18ZM28.5 8.2C28 8 27.2 7.8 26.1 7.8C23.5 7.8 21.6 9.2 21.6 11.2C21.6 12.7 22.9 13.5 23.9 14C24.9 14.5 25.3 14.8 25.3 15.3C25.3 16 24.4 16.3 23.6 16.3C22.4 16.3 21.7 16.1 20.7 15.6L20.2 17.6C21.1 18 22.3 18.3 23.5 18.3C26.3 18.3 28.1 16.9 28.1 14.8C28.1 13.1 27 12.3 25.8 11.7C24.8 11.2 24.3 10.9 24.3 10.4C24.3 10 24.8 9.6 25.8 9.6C26.6 9.6 27.3 9.8 27.9 10L28.5 8.2ZM36 18H38.2L36.3 8H34.3C33.8 8 33.3 8.3 33.1 8.8L28.8 18H31.3L31.8 16.6H35L36 18ZM32.5 14.8L33.8 11.1L34.6 14.8H32.5ZM14.1 8H11.7C11.1 8 10.7 8.3 10.5 8.8L6.8 18H9.3L9.8 16.6H12.9L14.1 8Z" fill="white" />
-                                            </svg>
-                                            {/* Mastercard */}
-                                            <svg width="40" height="26" viewBox="0 0 40 26" fill="none">
-                                                <rect width="40" height="26" rx="4" fill="#252525" />
-                                                <circle cx="16" cy="13" r="7.5" fill="#EB001B" />
-                                                <circle cx="24" cy="13" r="7.5" fill="#F79E1B" fillOpacity="0.92" />
-                                            </svg>
+                                        <div><strong>Ngân hàng:</strong> Vietcombank (Chi nhánh Houston / HCM)</div>
+                                        <div><strong>Số tài khoản:</strong> 98420 6688 9999</div>
+                                        <div><strong>Chủ tài khoản:</strong> COUTURE BEAUTY ACADEMY</div>
+                                        <div><strong>Nội dung:</strong> {recipientData.phoneNumber ? `CBA ${recipientData.phoneNumber}` : 'CBA - [SĐT của bạn]'}</div>
+                                        <div style={{ marginTop: '8px', fontSize: '11px', color: '#777', fontStyle: 'italic' }}>
+                                            * Sau khi hoàn tất chuyển khoản, đơn hàng sẽ được kích hoạt tự động sau 5-10 phút.
                                         </div>
                                     </div>
-                                </div>
+                                )}
 
-                                {/* Card Row 1: Card Number & Expiry Date */}
-                                <div className={styles["form-row"]}>
-                                    <div className={styles["form-group"]}>
-                                        <label className={styles["form-label"]}>
-                                            CARD NUMBER
-                                            <span className={styles["form-label__required"]}>*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="cardNumber"
-                                            value={cardData.cardNumber}
-                                            onChange={handleCardChange}
-                                            placeholder=""
-                                            className={styles["form-input"]}
-                                            required
-                                        />
-                                    </div>
+                                {/* TH2: Chọn Thẻ tín dụng (Credit Card / Stripe) */}
+                                {(selectedMethod === 'credit_card' || selectedMethod === 'stripe') && (
+                                    <>
+                                        {/* Card Row 1: Card Number & Expiry Date */}
+                                        <div className={styles["form-row"]} style={{ marginTop: '16px' }}>
+                                            <div className={styles["form-group"]}>
+                                                <label className={styles["form-label"]}>
+                                                    CARD NUMBER
+                                                    <span className={styles["form-label__required"]}>*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="cardNumber"
+                                                    value={cardData.cardNumber}
+                                                    onChange={handleCardChange}
+                                                    placeholder="4532 •••• •••• ••••"
+                                                    className={styles["form-input"]}
+                                                    required
+                                                />
+                                            </div>
 
-                                    <div className={styles["form-group"]}>
-                                        <label className={styles["form-label"]}>
-                                            EXPIRY DATE
-                                            <span className={styles["form-label__required"]}>*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="expiryDate"
-                                            value={cardData.expiryDate}
-                                            onChange={handleCardChange}
-                                            placeholder="MM/YY"
-                                            className={styles["form-input"]}
-                                            required
-                                        />
-                                    </div>
-                                </div>
+                                            <div className={styles["form-group"]}>
+                                                <label className={styles["form-label"]}>
+                                                    EXPIRY DATE
+                                                    <span className={styles["form-label__required"]}>*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="expiryDate"
+                                                    value={cardData.expiryDate}
+                                                    onChange={handleCardChange}
+                                                    placeholder="MM/YY"
+                                                    className={styles["form-input"]}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
 
-                                {/* Card Row 2: Card Holder & CVV */}
-                                <div className={styles["form-row"]}>
-                                    <div className={styles["form-group"]}>
-                                        <label className={styles["form-label"]}>
-                                            CARD HOLDER
-                                            <span className={styles["form-label__required"]}>*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="cardHolder"
-                                            value={cardData.cardHolder}
-                                            onChange={handleCardChange}
-                                            placeholder=""
-                                            className={styles["form-input"]}
-                                            required
-                                        />
-                                    </div>
+                                        {/* Card Row 2: Card Holder & CVV */}
+                                        <div className={styles["form-row"]}>
+                                            <div className={styles["form-group"]}>
+                                                <label className={styles["form-label"]}>
+                                                    CARD HOLDER
+                                                    <span className={styles["form-label__required"]}>*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="cardHolder"
+                                                    value={cardData.cardHolder}
+                                                    onChange={handleCardChange}
+                                                    placeholder="NAME ON CARD"
+                                                    className={styles["form-input"]}
+                                                    required
+                                                />
+                                            </div>
 
-                                    <div className={styles["form-group"]}>
-                                        <label className={styles["form-label"]}>
-                                            CVV
-                                            <span className={styles["form-label__required"]}>*</span>
-                                        </label>
-                                        <input
-                                            type="password"
-                                            name="cvv"
-                                            maxLength={4}
-                                            value={cardData.cvv}
-                                            onChange={handleCardChange}
-                                            placeholder="CVV"
-                                            className={styles["form-input"]}
-                                            required
-                                        />
+                                            <div className={styles["form-group"]}>
+                                                <label className={styles["form-label"]}>
+                                                    CVV
+                                                    <span className={styles["form-label__required"]}>*</span>
+                                                </label>
+                                                <input
+                                                    type="password"
+                                                    name="cvv"
+                                                    maxLength={4}
+                                                    value={cardData.cvv}
+                                                    onChange={handleCardChange}
+                                                    placeholder="CVV"
+                                                    className={styles["form-input"]}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* TH3: Chọn COD */}
+                                {selectedMethod === 'cod' && (
+                                    <div style={{
+                                        padding: '16px',
+                                        backgroundColor: '#F8F9FA',
+                                        borderRadius: '8px',
+                                        border: '1px solid #EAEAEA',
+                                        marginTop: '16px',
+                                        fontSize: '13px',
+                                        color: '#333'
+                                    }}>
+                                        📦 Bạn sẽ thanh toán bằng tiền mặt khi nhận hàng tại địa chỉ đã cung cấp.
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Action Button Save */}
-                                <button type="submit" className={styles["btn-save"]}>
-                                    SAVE
+                                <button type="submit" className={styles["btn-save"]} disabled={isSubmitting}>
+                                    {isSubmitting ? 'PROCESSING ORDER...' : 'CONFIRM & PAY'}
                                 </button>
                             </form>
                         </div>
@@ -583,8 +716,18 @@ export default function PaymentModal({
                                 Payment Successful
                             </h2>
                             <p className={styles["success-desc"]}>
-                                Thank you for your purchase! Your order will be delivered to you soon.
+                                Thank you for your purchase! {orderId ? `Your Order Code is #${orderId}.` : ''} Your order will be processed and delivered to you soon.
                             </p>
+                            <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
+                                <button
+                                    type="button"
+                                    className={styles["btn-save"]}
+                                    onClick={onClose}
+                                    style={{ maxWidth: '240px' }}
+                                >
+                                    DONE
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -592,3 +735,4 @@ export default function PaymentModal({
         </div>
     );
 }
+

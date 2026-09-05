@@ -173,76 +173,55 @@ export interface NavSection {
     items: NavItem[];
 }
 
+/* ── Navigation Helpers ── */
+function makeItem(label: string, href: string, icon: React.ComponentType<any>, children?: NavItem[]): NavItem {
+    return children ? { label, href, icon, children } : { label, href, icon };
+}
+function makeSection(id: string, items: NavItem[]): NavSection {
+    return { id, items };
+}
+
 /* ── Default Teacher Navigation (Khớp 100% hình thiết kế của Teacher) ── */
-export const DEFAULT_TEACHER_NAV_SECTIONS: NavSection[] = [
-    {
-        id: 'main',
-        items: [
-            { label: 'Dashboard', href: '/teacher', icon: DashboardIcon },
-            {
-                label: 'Management',
-                href: '/teacher/management/classroom',
-                icon: ManagementIcon,
-                children: [
-                    { label: 'Classroom', href: '/teacher/management/classroom', icon: ClassroomIcon },
-                    { label: 'Students', href: '/teacher/management/students', icon: StudentsIcon },
-                ],
-            },
-        ],
-    },
-    {
-        id: 'academic',
-        items: [
-            { label: 'My Schedule', href: '/teacher/schedule', icon: ScheduleIcon },
-        ],
-    },
-    {
-        id: 'resources',
-        items: [
-            { label: 'Resources', href: '/teacher/resources', icon: ResourcesIcon },
-            { label: 'Payment History', href: '/teacher/payment-history', icon: PaymentHistoryIcon },
-        ],
-    },
-];
+export function getDefaultTeacherNavSections(): NavSection[] {
+    const sections: NavSection[] = [];
+    sections.push(makeSection('main', [
+        makeItem('Dashboard', '/teacher', DashboardIcon),
+        makeItem('Management', '/teacher/management/classroom', ManagementIcon, [
+            makeItem('Classroom', '/teacher/management/classroom', ClassroomIcon),
+            makeItem('Students', '/teacher/management/students', StudentsIcon),
+        ]),
+    ]));
+    sections.push(makeSection('academic', [
+        makeItem('My Schedule', '/teacher/schedule', ScheduleIcon),
+    ]));
+    sections.push(makeSection('resources', [
+        makeItem('Resources', '/teacher/resources', ResourcesIcon),
+        makeItem('Payment History', '/teacher/payment-history', PaymentHistoryIcon),
+    ]));
+    return sections;
+}
 
 /* ── Default Student Navigation ── */
-export const DEFAULT_STUDENT_NAV_SECTIONS: NavSection[] = [
-    {
-        id: 'main',
-        items: [
-            { label: 'Dashboard', href: '/student', icon: DashboardIcon },
-            { label: 'Courses', href: '/student/courses', icon: CoursesIcon },
-        ],
-    },
-    {
-        id: 'shop',
-        items: [
-            { label: 'Shop', href: '/student/shop', icon: ShopIcon },
-        ],
-    },
-    {
-        id: 'academic',
-        items: [
-            { label: 'My Schedule', href: '/student/schedule', icon: ScheduleIcon },
-            { label: 'Result', href: '/student/results', icon: ResultIcon },
-            { label: 'My Certificate', href: '/student/certificate', icon: CertificateIcon },
-        ],
-    },
-    {
-        id: 'resources',
-        items: [
-            { label: 'Resources', href: '/student/resources', icon: ResourcesIcon },
-            { label: 'Payment History', href: '/student/payment-history', icon: PaymentHistoryIcon },
-        ],
-    },
-];
-
-/* ── Default Bottom Navigation Items ── */
-export const DEFAULT_BOTTOM_NAV_ITEMS: NavItem[] = [
-    { label: 'Support', href: '/support', icon: SupportIcon },
-    { label: 'Back to Main Site', href: '/', icon: MainSiteIcon },
-    { label: 'Settings', href: '/settings', icon: SettingsIcon },
-];
+export function getDefaultStudentNavSections(): NavSection[] {
+    const sections: NavSection[] = [];
+    sections.push(makeSection('main', [
+        makeItem('Dashboard', '/student', DashboardIcon),
+        makeItem('Courses', '/student/courses', CoursesIcon),
+    ]));
+    sections.push(makeSection('shop', [
+        makeItem('Shop', '/student/shop', ShopIcon),
+    ]));
+    sections.push(makeSection('academic', [
+        makeItem('My Schedule', '/student/schedule', ScheduleIcon),
+        makeItem('Result', '/student/results', ResultIcon),
+        makeItem('My Certificate', '/student/certificate', CertificateIcon),
+    ]));
+    sections.push(makeSection('resources', [
+        makeItem('Resources', '/student/resources', ResourcesIcon),
+        makeItem('Payment History', '/student/payment-history', PaymentHistoryIcon),
+    ]));
+    return sections;
+}
 
 export interface SidebarProps {
     isCollapsed: boolean;
@@ -279,14 +258,14 @@ export default function Sidebar({
     // Resolved Nav Sections
     const navSections =
         propNavSections ||
-        (isTeacher ? DEFAULT_TEACHER_NAV_SECTIONS : DEFAULT_STUDENT_NAV_SECTIONS);
+        (isTeacher ? getDefaultTeacherNavSections() : getDefaultStudentNavSections());
 
     // Resolved Bottom Items
     const bottomNavItems =
         propBottomNavItems || [
-            { label: 'Support', href: `${basePath}/support`, icon: SupportIcon },
-            { label: 'Back to Main Site', href: '/', icon: MainSiteIcon },
-            { label: 'Settings', href: `${basePath}/settings`, icon: SettingsIcon },
+            makeItem('Support', `${basePath}/support`, SupportIcon),
+            makeItem('Back to Main Site', '/', MainSiteIcon),
+            makeItem('Settings', `${basePath}/settings`, SettingsIcon),
         ];
 
     useEffect(() => {

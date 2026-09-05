@@ -1,32 +1,59 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import styles from '@/styles/layout/Footer.module.css';
 
-const FOOTER_SECTIONS = [
-    {
+interface FooterLinkItem {
+    label: string;
+    href: string;
+}
+
+interface FooterSection {
+    title: string;
+    links: FooterLinkItem[];
+}
+
+const toLinks = (items: Array<[string, string]>): FooterLinkItem[] => items.map(([label, href]) => ({ label, href }));
+
+function getInitialFooterSections(): FooterSection[] {
+    const list: FooterSection[] = [];
+    list.push({
         title: 'MENU',
-        links: ['About', 'Instructors', 'Contact'],
-    },
-    {
+        links: toLinks([
+            ['About Us', '/about-us'],
+            ['Courses', '/courses'],
+            ['Contact', '/contact'],
+        ]),
+    });
+    list.push({
         title: 'COURSES',
-        links: ['All Courses', 'Skin Treatments', 'Skin Technology', 'Brows & Lashes'],
-    },
-    {
+        links: toLinks([
+            ['All Courses', '/courses'],
+            ['Skin Treatments', '/courses'],
+            ['Permanent Makeup', '/courses'],
+            ['Laser Training', '/courses'],
+        ]),
+    });
+    list.push({
         title: 'SHOP',
-        links: [
-            'Professional Skincare',
-            'PMU Supplies',
-            'Lash & Brow Supplies',
-            'Student Kits',
-            'Studio & Content Equipment',
-        ],
-    },
-    {
+        links: toLinks([
+            ['Professional Supplies', '/shop'],
+            ['Skincare', '/shop'],
+            ['PMU Supplies', '/shop'],
+            ['Student Kits', '/shop'],
+        ]),
+    });
+    list.push({
         title: 'RESOURCES',
-        links: ['Blog', 'Gallery', 'FAQ', 'Ebooks'],
-    },
-];
+        links: toLinks([
+            ['Learning Resources', '/resources'],
+            ['Articles & Blogs', '/resources'],
+            ['Student Portal', '/student'],
+        ]),
+    });
+    return list;
+}
 
 /* ── Send icon inline SVG (filled) ── */
 const SendIcon = () => (
@@ -150,17 +177,17 @@ export const Footer = ({ forceShow = false }: { forceShow?: boolean }) => {
 
                     {/* Nav columns */}
                     <div className={styles['nav-columns']}>
-                        {FOOTER_SECTIONS.map((section, idx) => (
+                        {getInitialFooterSections().map((section, idx) => (
                             <div key={idx} className={styles['nav-col']}>
                                 <span className={styles['nav-heading']}>{section.title}</span>
                                 {section.links.map((link, linkIdx) => (
-                                    <a
-                                        href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}
+                                    <Link
+                                        href={link.href}
                                         key={linkIdx}
                                         className={styles['nav-link']}
                                     >
-                                        {link}
-                                    </a>
+                                        {link.label}
+                                    </Link>
                                 ))}
                             </div>
                         ))}

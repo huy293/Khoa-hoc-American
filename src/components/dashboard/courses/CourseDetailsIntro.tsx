@@ -34,48 +34,13 @@ export interface CourseDetailsIntroProps {
     course?: WPCourse | null;
 }
 
-const defaultModules: CourseModule[] = [
-    {
-        id: "mod-1",
-        title: "Module 01: Theory",
-        lessonsCount: 5,
-        duration: "1 lesson/45 min",
-        progress: 100,
-    },
-    {
-        id: "mod-2",
-        title: "Module 02: Professional Practice",
-        lessonsCount: 5,
-        duration: "1 lesson/45 min",
-        progress: 85,
-    },
-    {
-        id: "mod-3",
-        title: "Module 03: Advanced Applications",
-        lessonsCount: 5,
-        duration: "1 lesson/45 min",
-        progress: 0,
-    },
-    {
-        id: "mod-4",
-        title: "Module 04: Business",
-        lessonsCount: 5,
-        duration: "1 lesson/45 min",
-        progress: 0,
-    },
-];
-
 export default function CourseDetailsIntro({
-    category = "CERTIFICATE TRAINING",
-    courseName = "HYDRA FACIAL",
-    title = "INTRODUCTION TO HYDRAFACIAL",
-    description = "Learn the essential techniques behind professional deep cleansing and exfoliation. This lesson covers proper skin preparation, product application, handpiece control, and key safety considerations to help you perform the treatment with confidence and precision.",
-    instructor = {
-        name: "Kathleen trainer",
-        avatar: "/images/kathleen.png",
-        rating: "4.9/5.0",
-    },
-    overallProgress = 85,
+    category = "TRAINING PROGRAM",
+    courseName = "Course Details",
+    title = "CHƯƠNG TRÌNH ĐÀO TẠO CHUYÊN SÂU",
+    description = "Nắm vững kỹ thuật chuyên môn qua lý thuyết, thực hành lâm sàng và các quy trình chuẩn y khoa dưới sự hướng dẫn của chuyên gia.",
+    instructor,
+    overallProgress = 0,
     currentModuleTitle,
     currentLessonTitle,
     modules,
@@ -85,37 +50,39 @@ export default function CourseDetailsIntro({
     const displayCategory = course?.courseFields?.category || category;
     const displayCourseName = course?.title || courseName;
     const displayTitle = course?.title ? `${course.title.toUpperCase()}` : title;
-    const displayDescription = course?.excerpt || course?.courseFields?.subtitle || description;
+    const displayDescription = course?.excerpt?.replace(/<[^>]*>/g, '').trim() || course?.courseFields?.subtitle || description;
 
     // Trainer info
     const trainerObj = course?.courseFields?.trainer;
-    const displayInstructorName = trainerObj?.name || (typeof course?.courseFields?.instructor === 'string' ? course.courseFields.instructor : '') || instructor.name;
-    const displayInstructorAvatar = trainerObj?.avatar || instructor.avatar;
-    const displayInstructorRating = trainerObj?.rating || course?.courseFields?.rating || instructor.rating;
+    const displayInstructorName = trainerObj?.name || (typeof course?.courseFields?.instructor === 'string' ? course.courseFields.instructor : '') || (course as any)?.author?.name || instructor?.name || "American Master Trainer";
+    const displayInstructorAvatar = trainerObj?.avatar || (course as any)?.author?.avatar || instructor?.avatar || "/images/kathleen.png";
+    const displayInstructorRating = trainerObj?.rating || course?.courseFields?.rating || (course?.rating ? `${course.rating}/5.0` : '5.0/5.0');
 
     // Sections / Modules
     const wpSections = course?.sections || course?.courseFields?.sections;
-    let displayModules: CourseModule[] = modules || defaultModules;
-
-    if (Array.isArray(wpSections) && wpSections.length > 0) {
-        displayModules = wpSections.map((sec, idx) => {
-            const items = Array.isArray(sec.items) ? sec.items : [];
-            const secTitle = sec.title || sec.name || `Module 0${idx + 1}`;
-            return {
-                id: String(sec.id || `mod-${idx + 1}`),
-                title: secTitle.startsWith('Module') ? secTitle : `Module 0${idx + 1}: ${secTitle}`,
-                lessonsCount: items.length,
-                duration: "1 lesson/45 min",
-                progress: idx === 0 ? 100 : (idx === 1 ? 85 : 0),
-            };
-        });
-    }
+    const displayModules: CourseModule[] = React.useMemo(() => {
+        if (modules && modules.length > 0) return modules;
+        if (Array.isArray(wpSections) && wpSections.length > 0) {
+            return wpSections.map((sec, idx) => {
+                const items = Array.isArray(sec.items) ? sec.items : [];
+                const secTitle = sec.title || sec.name || `Module 0${idx + 1}`;
+                return {
+                    id: String(sec.id || `mod-${idx + 1}`),
+                    title: secTitle.startsWith('Module') ? secTitle : `Module 0${idx + 1}: ${secTitle}`,
+                    lessonsCount: items.length,
+                    duration: "1 lesson/45 min",
+                    progress: idx === 0 && overallProgress > 0 ? Math.min(100, overallProgress) : 0,
+                };
+            });
+        }
+        return [];
+    }, [modules, wpSections]);
 
     const firstSection = Array.isArray(wpSections) && wpSections.length > 0 ? wpSections[0] : null;
     const firstLesson = firstSection && Array.isArray(firstSection.items) && firstSection.items.length > 0 ? firstSection.items[0] : null;
 
-    const activeModuleTitle = currentModuleTitle || (firstSection ? (firstSection.title?.startsWith('Module') ? firstSection.title : `Module 01: ${firstSection.title || firstSection.name || 'Theory'}`) : "Module 02: Professional Practice");
-    const activeLessonTitle = currentLessonTitle || (firstLesson ? (firstLesson.title || "Lesson 1: Introduction") : "Lesson 4: Understanding HydraFacial Tips");
+    const activeModuleTitle = currentModuleTitle || (firstSection ? (firstSection.title?.startsWith('Module') ? firstSection.title : `Module 01: ${firstSection.title || firstSection.name || 'Theory'}`) : "");
+    const activeLessonTitle = currentLessonTitle || (firstLesson ? (firstLesson.title || "Lesson 1") : "");
 
     const continueTitle = course?.title ? `${course.title}` : "Hydra Facial\nProfessional Training";
     const continueDesc = course?.excerpt || "Master professional techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";

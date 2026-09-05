@@ -79,95 +79,62 @@ interface ScheduleEventItem {
     durationMinutes: number; // 80 for 09:00-10:20 (1h20m), 200 for 13:00-16:20 (3h20m)
 }
 
-const WEEK_DAYS = [
-    { dayNum: 14, dayName: 'Sun', isActive: false },
-    { dayNum: 15, dayName: 'Mon', isActive: false },
-    { dayNum: 16, dayName: 'Tue', isActive: true }, // Highlighted in Blue
-    { dayNum: 17, dayName: 'Wed', isActive: false },
-    { dayNum: 18, dayName: 'Thu', isActive: false },
-    { dayNum: 19, dayName: 'Fri', isActive: false },
-    { dayNum: 20, dayName: 'Sat', isActive: false },
-];
-
-const TIME_SLOTS = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-];
-
-const SCHEDULE_EVENTS: ScheduleEventItem[] = [
-    {
-        id: 'event-1',
-        dayNumber: 14,
-        category: 'onsite',
-        title: 'Launch of the first on-site course',
-        timeLabel: '09:00 - 10:20',
-        startMinuteFrom9AM: 60, // 09:00 (60 mins from 08:00)
-        durationMinutes: 80,
-    },
-    {
-        id: 'event-2',
-        dayNumber: 16,
-        category: 'online',
-        title: 'HydraFacial lesson 1 (Online)',
-        timeLabel: '09:00 - 10:20',
-        startMinuteFrom9AM: 60, // 09:00 (60 mins from 08:00)
-        durationMinutes: 80,
-    },
-    {
-        id: 'event-3',
-        dayNumber: 17,
-        category: 'online',
-        title: 'HydraFacial lesson 2 (Online)',
-        timeLabel: '08:00 - 10:20',
-        startMinuteFrom9AM: 0, // 08:00 (0 mins from 08:00)
-        durationMinutes: 140,
-    },
-    {
-        id: 'event-4',
-        dayNumber: 16,
-        category: 'class-schedule',
-        title: 'Class Schedule',
-        subtitle: 'HydraFacial lesson 1',
-        timeLabel: '13:00 - 16:20',
-        startMinuteFrom9AM: 300, // 13:00 = 5h after 08:00 (300 mins)
-        durationMinutes: 200, // 3h20m = 200 mins (13:00 to 16:20)
-    },
-];
-
-// February calendar (1st day is Monday, Sunday is empty)
-const MINI_CALENDAR_DAYS = [
-    null, 1, 2, 3, 4, 5, 6,
-    7, 8, 9, 10, 11, 12, 13,
-    14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25, 26, 27,
-    28,
-];
-
-const PIXELS_PER_HOUR = 60; // 540px / 9 hours
+const TIME_SLOTS = Array.from({ length: 13 }, (_, i) => `${String(i + 8).padStart(2, '0')}:00`);
+const PIXELS_PER_HOUR = 60;
 const PIXELS_PER_MINUTE = PIXELS_PER_HOUR / 60;
 
-export default function MyScheduleSection() {
+export interface MyScheduleSectionProps {
+    events?: ScheduleEventItem[];
+}
+
+export default function MyScheduleSection({ events }: MyScheduleSectionProps = {}) {
     // Filter toggles
     const [filterOnsite, setFilterOnsite] = useState(true);
     const [filterOnline, setFilterOnline] = useState(true);
     const [filterClassSchedule, setFilterClassSchedule] = useState(true);
 
-    // Selected day in mini calendar
-    const [selectedCalendarDay, setSelectedCalendarDay] = useState<number>(16);
+    const today = React.useMemo(() => new Date(), []);
+    const [selectedCalendarDay, setSelectedCalendarDay] = useState<number>(today.getDate());
+
+    const weekDays = React.useMemo(() => {
+        const currentDayOfWeek = today.getDay();
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() - currentDayOfWeek);
+
+        const days = [];
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(sunday);
+            d.setDate(sunday.getDate() + i);
+            days.push({
+                dayNum: d.getDate(),
+                dayName: dayNames[i],
+                isActive: d.toDateString() === today.toDateString(),
+            });
+        }
+        return days;
+    }, [today]);
+
+    const miniCalendarDays = React.useMemo(() => {
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const days: (number | null)[] = [];
+        for (let i = 0; i < firstDay; i++) {
+            days.push(null);
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            days.push(i);
+        }
+        return days;
+    }, [today]);
+
+    const activeEvents = events || [];
 
     // Filter events based on checkboxes
-    const filteredEvents = SCHEDULE_EVENTS.filter((evt) => {
+    const filteredEvents = activeEvents.filter((evt) => {
         if (evt.category === 'onsite' && !filterOnsite) return false;
         if (evt.category === 'online' && !filterOnline) return false;
         if (evt.category === 'class-schedule' && !filterClassSchedule) return false;
@@ -223,7 +190,7 @@ export default function MyScheduleSection() {
                                         <span className={styles['schedule-grid__week-label']}>Week</span>
                                     </div>
 
-                                    {WEEK_DAYS.map((day) => (
+                                    {weekDays.map((day) => (
                                         <div
                                             key={day.dayNum}
                                             className={`${styles['schedule-grid__header-cell']} ${day.isActive ? styles['schedule-grid__header-cell--active'] : ''
@@ -264,7 +231,7 @@ export default function MyScheduleSection() {
                                         </div>
 
                                         {/* 7 Day Columns with Event Cards */}
-                                        {WEEK_DAYS.map((day) => {
+                                        {weekDays.map((day) => {
                                             const dayEvents = filteredEvents.filter(
                                                 (evt) => evt.dayNumber === day.dayNum
                                             );
@@ -334,7 +301,9 @@ export default function MyScheduleSection() {
                                 >
                                     &#8249;
                                 </button>
-                                <h3 className={styles['mini-calendar__month-title']}>February</h3>
+                                <h3 className={styles['mini-calendar__month-title']}>
+                                    {today.toLocaleDateString('en-US', { month: 'long' })}
+                                </h3>
                                 <button
                                     type="button"
                                     className={styles['mini-calendar__nav-btn']}
@@ -357,7 +326,7 @@ export default function MyScheduleSection() {
 
                                 {/* Days Grid */}
                                 <div className={styles['mini-calendar__days-grid']}>
-                                    {MINI_CALENDAR_DAYS.map((d, index) => {
+                                    {miniCalendarDays.map((d, index) => {
                                         if (d === null) {
                                             return <div key={`empty-${index}`} className={styles['mini-calendar__day-cell']} />;
                                         }
@@ -371,7 +340,7 @@ export default function MyScheduleSection() {
                                                     onClick={() => setSelectedCalendarDay(d)}
                                                     className={`${styles['mini-calendar__day-btn']} ${isSelected ? styles['mini-calendar__day-btn--active'] : ''
                                                         }`}
-                                                    aria-label={`Select February ${d}`}
+                                                    aria-label={`Select day ${d}`}
                                                 >
                                                     {d}
                                                 </button>

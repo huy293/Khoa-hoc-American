@@ -18,24 +18,6 @@ export interface OurImpactProps {
     counters?: ImpactCounterItem[];
 }
 
-const DEFAULT_COUNTERS: ImpactCounterItem[] = [
-    {
-        number: "27",
-        scriptText: "Programs",
-        label: "ACROSS FOUR DISCIPLINES",
-    },
-    {
-        number: "2,400+",
-        scriptText: "Graduates",
-        label: "NOW WORKING IN THE FIELD",
-    },
-    {
-        number: "10+",
-        scriptText: "Years",
-        label: "TRAINING PROFESSIONALS",
-    },
-];
-
 export default function OurImpact({
     eyebrow = "OUR IMPACT",
     title = (
@@ -47,9 +29,11 @@ export default function OurImpact({
     description = "One campus in Houston. Every lesson begins on this floor.",
     linkText = "ACADEMY CATALOG",
     linkUrl = "/courses",
-    counters = DEFAULT_COUNTERS,
+    counters = [],
 }: OurImpactProps) {
-    const is4Cols = counters.length === 4;
+    const displayCounters = counters || [];
+    if (displayCounters.length === 0) return null;
+    const is4Cols = displayCounters.length === 4;
 
     return (
         <section className={styles["our-impact"]}>
@@ -93,7 +77,7 @@ export default function OurImpact({
 
                     {/* Impact Cards Grid (3 or 4 Counters) */}
                     <div className={`${styles["our-impact__grid"]} ${is4Cols ? styles["our-impact__grid--4"] : ""}`}>
-                        {counters.map((item, index) => (
+                        {displayCounters.map((item, index) => (
                             <div key={index} className={styles["our-impact__card"]}>
                                 {/* Top-Left Corner Decorative Arc & Star */}
                                 <div className={styles["our-impact__card-decor"]}>

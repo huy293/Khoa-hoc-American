@@ -4,44 +4,13 @@ import { getWpCourses, getWpPosts, getWpProducts } from '@/lib/wordpress-queries
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${siteUrl}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${siteUrl}/courses`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${siteUrl}/resources`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.85,
-    },
-    {
-      url: `${siteUrl}/about-us`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/shop`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-  ];
+  const paths = ['', '/courses', '/resources', '/about-us', '/shop', '/contact'];
+  const staticRoutes: MetadataRoute.Sitemap = paths.map((path) => ({
+    url: `${siteUrl}${path}`,
+    lastModified: new Date(),
+    changeFrequency: path === '' || path === '/courses' || path === '/shop' ? 'daily' : 'monthly',
+    priority: path === '' ? 1.0 : path === '/courses' ? 0.9 : 0.8,
+  }));
 
   try {
     const courses = await getWpCourses(50);

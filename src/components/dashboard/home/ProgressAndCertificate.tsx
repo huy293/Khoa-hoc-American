@@ -31,33 +31,44 @@ const DownloadIcon = () => (
     </svg>
 );
 
-interface CertificateItem {
+import Link from 'next/link';
+import { WPCourse } from '@/types/wordpress';
+
+export interface CertificateItem {
     id: string;
     type: string;
     title: string;
     issuedDate: string;
 }
 
-const CERTIFICATES: CertificateItem[] = [
-    {
-        id: '1',
-        type: 'Diploma Awarded',
-        title: 'Hydra Facial Professional Training',
-        issuedDate: 'Issued Aug 20, 2026',
-    },
-    {
-        id: '2',
-        type: 'Diploma Awarded',
-        title: 'Derma Planning Training',
-        issuedDate: 'Issued Aug 20, 2026',
-    },
-];
+export interface ProgressAndCertificateProps {
+    enrolledCourses?: WPCourse[];
+    certificates?: CertificateItem[];
+}
 
-export default function ProgressAndCertificate() {
-    const progressPercent = 85;
+export default function ProgressAndCertificate({
+    enrolledCourses = [],
+    certificates = [],
+}: ProgressAndCertificateProps = {}) {
+    const activeCourse = enrolledCourses[0] || null;
+    const progressPercent = activeCourse ? ((activeCourse as any).progress ?? 0) : 0;
     const radius = 48;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+
+    const courseTitle = activeCourse?.title || "Khóa học chuyên sâu";
+    const courseDesc = activeCourse?.excerpt?.replace(/<[^>]*>/g, '').trim() ||
+        activeCourse?.courseFields?.subtitle ||
+        "Tiếp tục hành trình học tập, rèn luyện kỹ năng lâm sàng và nắm vững quy trình làm đẹp chuẩn quốc tế.";
+
+    const firstSection = activeCourse?.sections?.[0];
+    const firstLesson = firstSection?.items?.[0];
+    const moduleName = firstSection?.title
+        ? (firstSection.title.startsWith('Module') ? firstSection.title : `Module 01: ${firstSection.title}`)
+        : "Lộ trình đào tạo";
+    const lessonName = firstLesson?.title || "Bài học kế tiếp";
+    const lessonSlug = firstLesson?.slug || String(firstLesson?.id || 'lesson-1');
+    const resumeUrl = activeCourse ? `/student/courses/${activeCourse.slug}/lessons/${lessonSlug}` : '/student/courses';
 
     return (
         <section className={styles['section']} aria-label="Learning Progress & Certificates">
@@ -73,10 +84,10 @@ export default function ProgressAndCertificate() {
                         <span className={styles['progress-card__divider']}>
                         </span>
                         <h2 className={styles['progress-card__title']}>
-                            Hydra Facial<br />Professional Training
+                            {courseTitle}
                         </h2>
                         <p className={styles['progress-card__desc']}>
-                            Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.
+                            {courseDesc}
                         </p>
                     </div>
 
@@ -117,22 +128,21 @@ export default function ProgressAndCertificate() {
                         </div>
                         <div className={styles['progress-card__lesson-info']}>
                             <span className={styles['progress-card__lesson-module']}>
-                                Module 01: Theory
+                                {moduleName}
                             </span>
                             <span className={styles['progress-card__lesson-title']}>
-                                Lesson 4: Understanding HydraFacial Tips
+                                {lessonName}
                             </span>
                         </div>
                     </div>
 
-                    <button
-                        type="button"
+                    <Link
+                        href={resumeUrl}
                         className={styles['progress-card__play-btn']}
-                        aria-label="Continue Lesson 4"
-                        onClick={() => console.log('Continue Lesson clicked')}
+                        aria-label={`Tiếp tục bài học: ${lessonName}`}
                     >
                         <PlayIcon />
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -146,54 +156,63 @@ export default function ProgressAndCertificate() {
                         <span className={styles['cert-card__counter-icon']}>
                             <GraduationCapIcon />
                         </span>
-                        <span>{CERTIFICATES.length}</span>
+                        <span>{certificates.length}</span>
                     </div>
                 </div>
 
                 <div className={styles['cert-card__list']}>
-                    {CERTIFICATES.map((cert) => (
-                        <div key={cert.id} className={styles['cert-card__item']}>
-                            <div className={styles['cert-card__item-main']}>
-                                <div className={styles['cert-card__item-icon']}>
-                                    <GraduationCapIcon />
+                    {certificates.length > 0 ? (
+                        certificates.map((cert) => (
+                            <div key={cert.id} className={styles['cert-card__item']}>
+                                <div className={styles['cert-card__item-main']}>
+                                    <div className={styles['cert-card__item-icon']}>
+                                        <GraduationCapIcon />
+                                    </div>
+                                    <div className={styles['cert-card__item-content']}>
+                                        <span className={styles['cert-card__item-tag']}>
+                                            {cert.type}
+                                        </span>
+                                        <h3 className={styles['cert-card__item-name']}>
+                                            {cert.title}
+                                        </h3>
+                                    </div>
                                 </div>
-                                <div className={styles['cert-card__item-content']}>
-                                    <span className={styles['cert-card__item-tag']}>
-                                        {cert.type}
+
+                                <hr className={styles['cert-card__item-divider']} />
+
+                                <div className={styles['cert-card__item-footer']}>
+                                    <span className={styles['cert-card__item-date']}>
+                                        {cert.issuedDate}
                                     </span>
-                                    <h3 className={styles['cert-card__item-name']}>
-                                        {cert.title}
-                                    </h3>
+                                    <div className={styles['cert-card__item-actions']}>
+                                        <button
+                                            type="button"
+                                            className={styles['cert-card__action-btn']}
+                                            aria-label={`View certificate ${cert.title}`}
+                                            onClick={() => console.log('View certificate', cert.id)}
+                                        >
+                                            <ViewEyeIcon />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={styles['cert-card__action-btn']}
+                                            aria-label={`Download certificate ${cert.title}`}
+                                            onClick={() => console.log('Download certificate', cert.id)}
+                                        >
+                                            <DownloadIcon />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-
-                            <hr className={styles['cert-card__item-divider']} />
-
-                            <div className={styles['cert-card__item-footer']}>
-                                <span className={styles['cert-card__item-date']}>
-                                    {cert.issuedDate}
-                                </span>
-                                <div className={styles['cert-card__item-actions']}>
-                                    <button
-                                        type="button"
-                                        className={styles['cert-card__action-btn']}
-                                        aria-label={`View certificate ${cert.title}`}
-                                        onClick={() => console.log('View certificate', cert.id)}
-                                    >
-                                        <ViewEyeIcon />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={styles['cert-card__action-btn']}
-                                        aria-label={`Download certificate ${cert.title}`}
-                                        onClick={() => console.log('Download certificate', cert.id)}
-                                    >
-                                        <DownloadIcon />
-                                    </button>
-                                </div>
-                            </div>
+                        ))
+                    ) : (
+                        <div style={{ padding: '24px', textAlign: 'center', color: '#888' }}>
+                            <p style={{ margin: '0 0 12px', fontSize: '14px' }}>Chưa có chứng chỉ nào được cấp.</p>
+                            <Link href="/student/certificate" style={{ color: '#c28200', textDecoration: 'underline', fontSize: '13px' }}>
+                                Xem danh mục chứng chỉ &rarr;
+                            </Link>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </section>

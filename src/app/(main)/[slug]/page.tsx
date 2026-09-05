@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     });
 }
 
-export default function Page() {
-    return <SinglePostContent />;
-}
+export default async function Page({ params }: PageProps) {
+    const { slug } = await params;
+    const post = await getWpPostBySlug(slug);
+    return <SinglePostContent post={post} />;
+}
+

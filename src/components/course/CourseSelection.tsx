@@ -183,10 +183,12 @@ export default function CourseSelection({
         });
     });
 
-    const categoryTabs: ExtractedCategory[] = [
-        { name: 'ALL COURSE', slug: 'all' },
-        ...Array.from(allCategoriesMap.values()),
-    ];
+    const categoryTabs = React.useMemo<ExtractedCategory[]>(() => {
+        return [
+            { name: 'ALL COURSE', slug: 'all' },
+            ...Array.from(allCategoriesMap.values()),
+        ];
+    }, [allCategoriesMap]);
 
     // 🎯 Lọc khóa học chính xác theo taxonomy course_category
     const filteredCourses = activeTab === 'all'

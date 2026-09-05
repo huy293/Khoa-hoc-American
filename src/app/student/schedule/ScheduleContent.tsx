@@ -1,11 +1,15 @@
 import MyScheduleSection from '@/components/dashboard/schedule/MyScheduleSection';
-import ScheduleDetailedSection from '@/components/dashboard/schedule/ScheduleDetailedSection';
+import ScheduleDetailedSection, { ScheduleDetailGroup } from '@/components/dashboard/schedule/ScheduleDetailedSection';
 
-export default function ScheduleContent() {
+export interface ScheduleContentProps {
+    scheduleGroups?: ScheduleDetailGroup[];
+}
+
+export default function ScheduleContent({ scheduleGroups }: ScheduleContentProps = {}) {
     return (
         <>
             <MyScheduleSection />
-            <ScheduleDetailedSection />
+            <ScheduleDetailedSection scheduleGroups={scheduleGroups} />
         </>
     );
-}
+}

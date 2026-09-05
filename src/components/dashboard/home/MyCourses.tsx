@@ -324,9 +324,8 @@ export default function MyCourses({
             });
         });
 
-        const tabs = [
-            { id: 'all', label: `ALL COURSE (${formattedCourses.length})` },
-        ];
+        const tabs: Array<{ id: string; label: string }> = [];
+        tabs.push({ id: 'all', label: `ALL COURSE (${formattedCourses.length})` });
 
         categoryMap.forEach((item) => {
             tabs.push({

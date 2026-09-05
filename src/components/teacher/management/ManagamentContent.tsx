@@ -51,7 +51,7 @@ export interface TeacherCourseItem {
     subtitle: string;
     image: string;
     imageAlt?: string;
-    tag: string;
+    tag?: string;
     rating: string;
     traineeCount: string;
     progress: number;
@@ -63,158 +63,6 @@ export interface TeacherCourseItem {
     category?: 'cert' | 'laser' | 'pmu';
     courseUrl?: string;
 }
-
-const CLASS_TABS = [
-    { id: 'all', label: 'ALL CLASS (20)', title: 'All Courses' },
-    { id: 'online', label: 'ONLINE CLASS (12)', title: 'Online Courses' },
-    { id: 'onsite', label: 'ON-SITE CLASS (5)', title: 'On-site Courses' },
-];
-
-const FILTER_TABS = [
-    { id: 'all', label: 'ALL COURSE (20)' },
-    { id: 'cert', label: 'CERTIFICATE TRAINING (12)' },
-    { id: 'laser', label: 'LASER TRAINING COURSES (5)' },
-    { id: 'pmu', label: 'P.M.U TRAINING COURSES (3)' },
-];
-
-const INITIAL_COURSES: TeacherCourseItem[] = [
-    {
-        id: '1',
-        title: 'HYDRA FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/card-hydra.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 85,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '2',
-        title: 'ADVENCE FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/card-advance.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '3',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/card-derma.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '4',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/card-towel.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '5',
-        title: 'HYDRA FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/card-towel.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 85,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '6',
-        title: 'ADVENCE FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/about-left.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '7',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/about-center.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-    {
-        id: '8',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        image: '/images/courses/about-right.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        progress: 0,
-        modulesCount: 5,
-        lessonsCount: 24,
-        quizzesCount: 4,
-        studentsCount: 145,
-        classType: 'online',
-        category: 'cert',
-        courseUrl: '/courses/hydra-facial',
-    },
-];
 
 export interface ManagamentContentProps {
     initialClassTab?: string;
@@ -228,9 +76,9 @@ export interface ManagamentContentProps {
 }
 
 export default function ManagamentContent({
-    initialClassTab = 'online',
-    initialFilterTab = 'cert',
-    courses = INITIAL_COURSES,
+    initialClassTab = 'all',
+    initialFilterTab = 'all',
+    courses = [],
     showProgressInCourseCard,
     showTrainingProcessInCourseCard,
     showProgress,
@@ -251,11 +99,47 @@ export default function ManagamentContent({
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [displayCount, setDisplayCount] = useState<number>(8);
 
+    const classTabs = useMemo(() => {
+        const counts: Record<string, number> = {
+            all: courses.length,
+            online: courses.filter((c) => c.classType === 'online').length,
+            onsite: courses.filter((c) => c.classType === 'onsite').length,
+        };
+        const configs = [
+            'all|ALL CLASS|All Courses',
+            'online|ONLINE CLASS|Online Courses',
+            'onsite|ON-SITE CLASS|On-site Courses',
+        ];
+        return configs.map((cfg) => {
+            const [id, label, title] = cfg.split('|');
+            return { id, label: `${label} (${counts[id] || 0})`, title };
+        });
+    }, [courses]);
+
+    const filterTabs = useMemo(() => {
+        const counts: Record<string, number> = {
+            all: courses.length,
+            cert: courses.filter((c) => c.category === 'cert').length,
+            laser: courses.filter((c) => c.category === 'laser').length,
+            pmu: courses.filter((c) => c.category === 'pmu').length,
+        };
+        const configs = [
+            'all|ALL COURSE',
+            'cert|CERTIFICATE TRAINING',
+            'laser|LASER TRAINING COURSES',
+            'pmu|P.M.U TRAINING COURSES',
+        ];
+        return configs.map((cfg) => {
+            const [id, label] = cfg.split('|');
+            return { id, label: `${label} (${counts[id] || 0})` };
+        });
+    }, [courses]);
+
     // Current category heading title
     const currentClassTitle = useMemo(() => {
-        const found = CLASS_TABS.find((t) => t.id === activeClassTab);
-        return found ? found.title : 'Online Courses';
-    }, [activeClassTab]);
+        const found = classTabs.find((t) => t.id === activeClassTab);
+        return found ? found.title : 'All Courses';
+    }, [classTabs, activeClassTab]);
 
     // Filter courses based on active tabs & search query
     const filteredCourses = useMemo(() => {
@@ -265,7 +149,7 @@ export default function ManagamentContent({
                 const query = searchQuery.toLowerCase();
                 const matchTitle = course.title.toLowerCase().includes(query);
                 const matchSubtitle = course.subtitle.toLowerCase().includes(query);
-                const matchTag = course.tag.toLowerCase().includes(query);
+                const matchTag = course.tag ? course.tag.toLowerCase().includes(query) : false;
                 if (!matchTitle && !matchSubtitle && !matchTag) {
                     return false;
                 }
@@ -310,10 +194,10 @@ export default function ManagamentContent({
                                 </h1>
                             </div>
 
-                            {/* Level 1 Tabs: ALL CLASS (20), ONLINE CLASS (12), ON-SITE CLASS (5) */}
+                            {/* Level 1 Tabs */}
                             <div className={styles['management__class-nav']}>
                                 <div className={styles['management__class-tabs']} role="tablist">
-                                    {CLASS_TABS.map((tab) => (
+                                    {classTabs.map((tab) => (
                                         <button
                                             key={tab.id}
                                             type="button"
@@ -339,9 +223,9 @@ export default function ManagamentContent({
                             </h2>
 
                             <div className={styles['management__filter-row']}>
-                                {/* Level 2 Tabs: ALL COURSE, CERTIFICATE TRAINING, etc. */}
+                                {/* Level 2 Tabs */}
                                 <div className={styles['management__filter-tabs']} role="tablist">
-                                    {FILTER_TABS.map((tab) => (
+                                    {filterTabs.map((tab) => (
                                         <button
                                             key={tab.id}
                                             type="button"
@@ -397,7 +281,7 @@ export default function ManagamentContent({
                                             quizzes={`${course.quizzesCount} quizzes`}
                                             courseUrl={course.courseUrl || '/courses/hydra-facial'}
                                             variant="teacher"
-                                            studentsCount={course.studentsCount ?? 145}
+                                            studentsCount={course.studentsCount ?? 0}
                                             studentLabel="Students participated"
                                         />
                                     ))}

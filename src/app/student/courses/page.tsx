@@ -36,11 +36,27 @@ export default async function StudentCoursesPage() {
         }
     }
 
-    const enrolledCourses = await getWpUserEnrolledCourses({
-        userId: user?.id,
-        userEmail: user?.email,
-        enrolledSlugs,
-    });
+    const [enrolledCourses, wpPosts] = await Promise.all([
+        getWpUserEnrolledCourses({
+            userId: user?.id,
+            userEmail: user?.email,
+            enrolledSlugs,
+        }),
+        import('@/lib/wordpress-queries').then(m => m.getWpPosts(4)),
+    ]);
+
+    const dynamicResources = wpPosts.map((p) => ({
+        id: String(p.id || p.slug),
+        image: p.featuredImage?.node?.sourceUrl || '/images/gallery/image-1.jpg',
+        title: p.title,
+        description: p.excerpt ? p.excerpt.replace(/<[^>]*>/g, '').trim() : 'Tài liệu và cẩm nang kiến thức chuyên sâu.',
+        author: {
+            name: p.author?.node?.name || 'Couture Beauty Academy',
+            avatar: p.author?.node?.avatar?.url || '/images/thomas-nguyen.png',
+            date: p.date ? new Date(p.date).toLocaleDateString('vi-VN') : 'Mới cập nhật',
+        },
+        category: 'cert',
+    }));
 
     return (
         <>
@@ -59,6 +75,7 @@ export default async function StudentCoursesPage() {
                 filterTab={false}
                 seemore={false}
                 limit={4}
+                resources={dynamicResources}
             />
         </>
     );

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthUser } from '@/lib/auth-client';
+import { useCart } from '@/context/CartContext';
 import styles from '@/styles/dashboard/Header.module.css';
 
 /* ── Page Info Dictionary for Dashboard Sub-pages ── */
@@ -98,12 +99,13 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
     const pathname = usePathname();
     const {
         displayName,
-        avatar: userAvatar,
         initials,
         roleBadge,
+        avatar: userAvatar,
         isTeacher,
         basePath: userBasePath,
     } = useAuthUser();
+    const { cartCount, isHydrated } = useCart();
 
     const [avatarError, setAvatarError] = useState(false);
 
@@ -210,6 +212,11 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
                         aria-label="Shopping Cart"
                     >
                         <CartIcon />
+                        {isHydrated && cartCount > 0 && (
+                            <span className={styles['header__cart-badge']}>
+                                {cartCount > 99 ? '99+' : cartCount}
+                            </span>
+                        )}
                     </Link>
                 </div>
 

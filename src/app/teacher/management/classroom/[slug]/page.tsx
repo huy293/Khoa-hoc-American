@@ -20,9 +20,18 @@ export default async function ClassRoomDetailsPage({
     const { slug } = await params;
     const course = await getWpCourseBySlug(slug);
 
+    const cf = (course?.courseFields || {}) as any;
+
     return (
         <>
-            <ClassroomDetailsIntro />
+            <ClassroomDetailsIntro
+                title={course?.title || 'Classroom Details'}
+                description={course?.excerpt ? course.excerpt.replace(/<[^>]*>/g, '').trim() : ''}
+                trainerName={cf.trainer?.name}
+                trainerAvatar={cf.trainer?.avatar}
+                trainerRating={cf.trainer?.rating}
+                learningProgress={cf.progress || 0}
+            />
             <LearningContent course={course} columnEnd="progress" />
             <ResourcesContent ShowTab={false} styleSearch="style2" limit={4} />
         </>

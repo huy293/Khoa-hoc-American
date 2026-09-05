@@ -19,29 +19,6 @@ export interface OurSpecializedProps {
     className?: string;
 }
 
-export const DEFAULT_SPECIALIZED_ITEMS: SpecializedItem[] = [
-    {
-        number: "01",
-        title: "Facial & Skin Treatments",
-        description: "From classic facials to advanced chemical peels and dermaplaning.",
-    },
-    {
-        number: "02",
-        title: "Laser Training",
-        description: "Device-based treatments taught to TDLR certification standards.",
-    },
-    {
-        number: "03",
-        title: "Permanent Makeup",
-        description: "Microblading, powder brows, eyeliner and lip — taught on live models.",
-    },
-    {
-        number: "04",
-        title: "License Programs",
-        description: "State licensure tracks up to 750 hours, ending at the Texas exam.",
-    },
-];
-
 export default function OurSpecialized({
     eyebrow = "Our Specialized Training Programs",
     title = (
@@ -53,13 +30,15 @@ export default function OurSpecialized({
     imageAlt = "license-training",
     imageWidth = 480,
     imageHeight = 360,
-    items = DEFAULT_SPECIALIZED_ITEMS,
+    items = [],
     className = "",
 }: OurSpecializedProps = {}) {
-    const item1 = items[0] || DEFAULT_SPECIALIZED_ITEMS[0];
-    const item2 = items[1] || DEFAULT_SPECIALIZED_ITEMS[1];
-    const item3 = items[2] || DEFAULT_SPECIALIZED_ITEMS[2];
-    const item4 = items[3] || DEFAULT_SPECIALIZED_ITEMS[3];
+    const list = items || [];
+    if (list.length === 0) return null;
+    const item1 = list[0] || { number: "01", title: "", description: "" };
+    const item2 = list[1] || { number: "02", title: "", description: "" };
+    const item3 = list[2] || { number: "03", title: "", description: "" };
+    const item4 = list[3] || { number: "04", title: "", description: "" };
 
     return (
         <section className={`${styles["our-specialized"]} ${className}`.trim()}>

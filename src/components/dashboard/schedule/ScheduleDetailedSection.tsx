@@ -131,70 +131,6 @@ export interface ScheduleDetailGroup {
     items: ScheduleDetailItem[];
 }
 
-const SCHEDULE_GROUPS: ScheduleDetailGroup[] = [
-    {
-        id: 'group-1',
-        date: {
-            dayName: 'Tue',
-            dayNum: 16,
-            month: 'February',
-        },
-        badgeTheme: 'cream',
-        items: [
-            {
-                id: 'item-1-1',
-                title: 'HydraFacial lesson 1 Online',
-                titleVariant: 'gold',
-                time: '09:00 - 10:20',
-                format: 'Online',
-                location: 'Online/ VOD',
-                trainer: {
-                    name: 'Kathleen trainer',
-                    rating: '4.9/5.0',
-                    avatar: '/images/kathleen.png',
-                },
-            },
-            {
-                id: 'item-1-2',
-                title: 'Class Schedule HydraFacial lesson 1 Online',
-                titleVariant: 'gold',
-                time: '13:00 - 16:20',
-                format: 'On-site',
-                location: 'Couture Beauty Academy - Training Room 02',
-                trainer: {
-                    name: 'Kathleen trainer',
-                    rating: '4.9/5.0',
-                    avatar: '/images/kathleen.png',
-                },
-            },
-        ],
-    },
-    {
-        id: 'group-2',
-        date: {
-            dayName: 'Tue',
-            dayNum: 16,
-            month: 'February',
-        },
-        badgeTheme: 'gray',
-        items: [
-            {
-                id: 'item-2-1',
-                title: 'HydraFacial lesson 1 Online',
-                titleVariant: 'dark',
-                time: '09:00 - 10:20',
-                format: 'Online',
-                location: 'Online/ VOD',
-                trainer: {
-                    name: 'Kathleen trainer',
-                    rating: '4.9/5.0',
-                    avatar: '/images/kathleen.png',
-                },
-            },
-        ],
-    },
-];
-
 export interface ScheduleDetailedSectionProps {
     tag?: React.ReactNode;
     title?: React.ReactNode;
@@ -210,7 +146,7 @@ export default function ScheduleDetailedSection({
     title = 'Detailed class schedule',
     seeMore = false,
     seeMoreHref,
-    scheduleGroups = SCHEDULE_GROUPS,
+    scheduleGroups = [],
     columnEnd = 'trainer-info',
     'column-end': columnEndKebab,
 }: ScheduleDetailedSectionProps = {}) {
@@ -314,7 +250,7 @@ export default function ScheduleDetailedSection({
                                                             {item.studentsLabel || 'Students participated'}
                                                         </span>
                                                         <span className={styles['detailed-item__students-count']}>
-                                                            {item.studentsCount ?? 145}
+                                                            {item.studentsCount ?? 0}
                                                         </span>
                                                     </div>
                                                 </div>

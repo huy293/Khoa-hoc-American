@@ -2,51 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Sidebar, {
-    NavSection,
-    DashboardIcon,
-    ManagementIcon,
-    ClassroomIcon,
-    StudentsIcon,
-    ScheduleIcon,
-    ResourcesIcon,
-    PaymentHistoryIcon,
-} from "@/components/dashboard/Sidebar";
+import Sidebar from "@/components/dashboard/Sidebar";
 import Header from "@/components/dashboard/Header";
 import { Footer } from "@/components/layout/Footer";
 import styles from "@/styles/dashboard/DashboardLayout.module.css";
-
-/* ── Teacher Sidebar Navigation Sections (Khớp 100% hình ảnh) ── */
-const TEACHER_NAV_SECTIONS: NavSection[] = [
-    {
-        id: 'main',
-        items: [
-            { label: 'Dashboard', href: '/teacher', icon: DashboardIcon },
-            {
-                label: 'Management',
-                href: '/teacher/management/classroom',
-                icon: ManagementIcon,
-                children: [
-                    { label: 'Classroom', href: '/teacher/management/classroom', icon: ClassroomIcon },
-                    { label: 'Students', href: '/teacher/management/students', icon: StudentsIcon },
-                ],
-            },
-        ],
-    },
-    {
-        id: 'schedule',
-        items: [
-            { label: 'My Schedule', href: '/teacher/schedule', icon: ScheduleIcon },
-        ],
-    },
-    {
-        id: 'resources',
-        items: [
-            { label: 'Resources', href: '/teacher/resources', icon: ResourcesIcon },
-            { label: 'Payment History', href: '/teacher/payment-history', icon: PaymentHistoryIcon },
-        ],
-    },
-];
 
 export default function DashboardLayout({
     children,
@@ -85,7 +44,6 @@ export default function DashboardLayout({
                 setIsCollapsed={setIsCollapsed}
                 isMobileOpen={isMobileOpen}
                 setIsMobileOpen={setIsMobileOpen}
-                navSections={TEACHER_NAV_SECTIONS}
             />
 
             {/* 2. Toàn bộ khu vực nội dung chính */}
