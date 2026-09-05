@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "@/styles/dashboard/courses/LearningContent.module.css";
@@ -14,10 +14,10 @@ export interface LessonItem {
     slug?: string;
     number: number;
     title: string;
-    videosCount: number;
-    exercisesCount: number;
-    duration: string;
-    status: "completed" | "in_progress" | "pending";
+    videosCount?: number;
+    exercisesCount?: number;
+    duration?: string;
+    status?: "completed" | "in_progress" | "pending";
     progress?: number;
 }
 
@@ -80,135 +80,10 @@ const LessonProgressRing: React.FC<LessonProgressRingProps> = ({
 export interface CourseModuleData {
     id: string;
     title: string;
-    lessonsCount: number;
-    duration: string;
+    lessonsCount?: number;
+    duration?: string;
     lessons: LessonItem[];
 }
-
-const defaultCourseModules: CourseModuleData[] = [
-    {
-        id: "mod-1",
-        title: "Module 01: Theory of Everything",
-        lessonsCount: 5,
-        duration: "1 lesson/45 min",
-        lessons: [
-            {
-                id: "m1-l1",
-                slug: "introduction-to-hydrafacial-technology",
-                number: 1,
-                title: "Introduction to HydraFacial Technology",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m1-l2",
-                slug: "skin-anatomy-skin-types",
-                number: 2,
-                title: "Skin Anatomy & Skin Types",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m1-l3",
-                slug: "how-the-hydrafacial-system-works",
-                number: 3,
-                title: "How the HydraFacial System Works",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m1-l4",
-                slug: "understanding-hydrafacial-tips",
-                number: 4,
-                title: "Understanding HydraFacial Tips",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m1-l5",
-                slug: "serums-active-ingredients",
-                number: 5,
-                title: "Serums & Active Ingredients",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-        ],
-    },
-    {
-        id: "mod-2",
-        title: "Module 02: Professional Practice",
-        lessonsCount: 4,
-        duration: "1 lesson/45 min",
-        lessons: [
-            {
-                id: "m2-l1",
-                slug: "sterilization-protocols-setup",
-                number: 1,
-                title: "Sterilization Protocols & Setup",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "completed",
-            },
-            {
-                id: "m2-l2",
-                slug: "live-model-step-by-step-execution",
-                number: 2,
-                title: "Live Model Step-by-Step Execution",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "in_progress",
-            },
-        ],
-    },
-    {
-        id: "mod-3",
-        title: "Module 03: Advanced Applications",
-        lessonsCount: 3,
-        duration: "1 lesson/45 min",
-        lessons: [
-            {
-                id: "m3-l1",
-                slug: "customized-treatment-for-sensitive-skin",
-                number: 1,
-                title: "Customized Treatment for Sensitive Skin",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-        ],
-    },
-    {
-        id: "mod-4",
-        title: "Module 04: Business",
-        lessonsCount: 4,
-        duration: "1 lesson/45 min",
-        lessons: [
-            {
-                id: "m4-l1",
-                slug: "treatment-pricing-package-design",
-                number: 1,
-                title: "Treatment Pricing & Package Design",
-                videosCount: 2,
-                exercisesCount: 1,
-                duration: "45 min",
-                status: "pending",
-            },
-        ],
-    },
-];
 
 export interface LearningContentProps {
     tag?: string;
@@ -229,60 +104,120 @@ export default function LearningContent({
 }: LearningContentProps) {
     const activeColumnEnd = columnEndKebab || columnEnd;
 
-    // 🎯 Tự động chuyển đổi mảng sections của LearnPress thành CourseModuleData
-    const wpSections = course?.sections || course?.courseFields?.sections;
+    // 🎯 Tự động chuyển đổi mảng sections của LearnPress thành CourseModuleData (được memoize để chống hydration mismatch)
+    const displayModules: CourseModuleData[] = useMemo(() => {
+        const wpSections = course?.sections || course?.courseFields?.sections;
 
-    let displayModules: CourseModuleData[] = defaultCourseModules;
+        if (Array.isArray(wpSections) && wpSections.length > 0) {
+            return wpSections.map((sec, sIdx) => {
+                const modId = String(sec.id || `mod-${sIdx + 1}`);
+                const rawTitle = (sec.title || sec.name || '')
+                    .replace(/&#038;/g, '&')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&#8211;/g, '-')
+                    .replace(/&#8217;/g, "'")
+                    .trim();
+                const modTitle = rawTitle
+                    ? (rawTitle.toLowerCase().startsWith('module') ? rawTitle : `Module 0${sIdx + 1}: ${rawTitle}`)
+                    : `Module 0${sIdx + 1}`;
 
-    if (Array.isArray(wpSections) && wpSections.length > 0) {
-        displayModules = wpSections.map((sec, sIdx) => {
-            const modId = `mod-${sec.id || sIdx + 1}`;
-            const modTitle = sec.title || sec.name || `Module 0${sIdx + 1}`;
-            const items = Array.isArray(sec.items) ? sec.items : [];
-            const lessonsCount = items.length;
-            const duration = "1 lesson/45 min";
-            const lessons: LessonItem[] = items.map((it, lIdx) => {
-                const isCompleted = sIdx === 0 && lIdx < items.length - 1;
-                const isInProgress = (sIdx === 0 && lIdx === items.length - 1) || (sIdx === 1 && lIdx === 0);
-                const itemTitle = it.title || `Lesson 0${lIdx + 1}`;
-                const itemSlug = it.slug || toSlug(itemTitle) || String(it.id || `${modId}-l${lIdx + 1}`);
+                const items = Array.isArray(sec.items) ? sec.items : [];
+                const lessonsCount = items.length;
+
+                const secDuration = typeof sec.duration === 'string' && sec.duration.trim() ? sec.duration.trim() : '';
+
+                const lessons: LessonItem[] = items.map((it: any, lIdx: number) => {
+                    const itemTitle = (typeof it.title === 'string' ? it.title : (it.title?.rendered || it.name || `Lesson 0${lIdx + 1}`))
+                        .replace(/&#038;/g, '&')
+                        .replace(/&amp;/g, '&')
+                        .replace(/&#8211;/g, '-')
+                        .replace(/&#8217;/g, "'")
+                        .trim();
+                    const itemSlug = it.slug || toSlug(itemTitle) || String(it.id || `${modId}-l${lIdx + 1}`);
+
+                    let status: "completed" | "in_progress" | "pending" = "pending";
+                    if (it.status === 'completed' || it.graduation === 'passed' || it.graduation === 'completed') {
+                        status = "completed";
+                    } else if (it.status === 'in_progress' || it.status === 'viewing' || it.status === 'started') {
+                        status = "in_progress";
+                    } else if (it.locked) {
+                        status = "pending";
+                    } else if (it.status === 'pending') {
+                        status = "pending";
+                    }
+
+                    let progress: number | undefined = undefined;
+                    if (typeof it.progress === 'number' && !isNaN(it.progress)) {
+                        progress = it.progress;
+                    } else if (status === 'completed') {
+                        progress = 100;
+                    }
+
+                    let videosCount: number | undefined = undefined;
+                    if (typeof it.videosCount === 'number' && it.videosCount > 0) {
+                        videosCount = it.videosCount;
+                    } else if (it.video_url || it.lesson_videos || it.acf?.lesson_videos) {
+                        videosCount = 1;
+                    }
+
+                    let exercisesCount: number | undefined = undefined;
+                    if (typeof it.exercisesCount === 'number' && it.exercisesCount > 0) {
+                        exercisesCount = it.exercisesCount;
+                    } else if (it.type === 'lp_quiz') {
+                        exercisesCount = 1;
+                    }
+
+                    const itemDuration = typeof it.duration === 'string' && it.duration.trim() && it.duration !== '0'
+                        ? it.duration.trim()
+                        : undefined;
+
+                    return {
+                        id: String(it.id || `${modId}-l${lIdx + 1}`),
+                        slug: itemSlug,
+                        number: lIdx + 1,
+                        title: itemTitle,
+                        videosCount,
+                        exercisesCount,
+                        duration: itemDuration,
+                        status,
+                        progress,
+                    };
+                });
+
                 return {
-                    id: String(it.id || `${modId}-l${lIdx + 1}`),
-                    slug: itemSlug,
-                    number: lIdx + 1,
-                    title: itemTitle,
-                    videosCount: 2,
-                    exercisesCount: 1,
-                    duration: (typeof it.duration === 'string' && it.duration) ? it.duration : "45 min",
-                    status: it.locked ? "pending" : (isCompleted ? "completed" : (isInProgress ? "in_progress" : "pending")),
-                    progress: isCompleted ? 100 : (isInProgress ? 50 : 0),
+                    id: modId,
+                    title: modTitle,
+                    lessonsCount: lessonsCount > 0 ? lessonsCount : undefined,
+                    duration: secDuration || undefined,
+                    lessons,
                 };
             });
+        }
 
-            return {
-                id: modId,
-                title: modTitle.startsWith('Module') ? modTitle : `Module 0${sIdx + 1}: ${modTitle}`,
-                lessonsCount,
-                duration,
-                lessons,
-            };
-        });
-    } else if (modules && modules.length > 0) {
-        displayModules = modules;
-    }
+        if (Array.isArray(modules) && modules.length > 0) {
+            return modules;
+        }
+
+        return [];
+    }, [course, modules]);
 
     const pathname = usePathname();
     const isTeacher = pathname?.startsWith('/teacher');
-    const courseSlug = course?.slug || 'hydra-facial';
-    const baseCourseUrl = isTeacher
-        ? `/teacher/management/classroom/${courseSlug}`
-        : `/student/courses/${courseSlug}`;
+    const pathSlug = pathname ? (pathname.split('/courses/')[1]?.split('/')[0] || pathname.split('/classroom/')[1]?.split('/')[0]) : '';
+    const courseSlug = course?.slug || pathSlug || (course?.id ? String(course.id) : '');
+    const baseCourseUrl = courseSlug
+        ? (isTeacher ? `/teacher/management/classroom/${courseSlug}` : `/student/courses/${courseSlug}`)
+        : (isTeacher ? '/teacher/management/classroom' : '/student/courses');
 
-    const [openModules, setOpenModules] = useState<string[]>([
-        displayModules[0]?.id || "mod-1",
-        displayModules[1]?.id || "mod-2",
-        displayModules[2]?.id || "mod-3",
-    ]);
+    const [openModules, setOpenModules] = useState<string[]>(() =>
+        displayModules.map((m) => m.id)
+    );
+
+    useEffect(() => {
+        if (displayModules.length > 0) {
+            setOpenModules((prev) => (prev.length === 0 ? displayModules.map((m) => m.id) : prev));
+        }
+    }, [displayModules]);
 
     const toggleModule = (moduleId: string) => {
         setOpenModules((prev) =>
@@ -292,11 +227,16 @@ export default function LearningContent({
         );
     };
 
+    // 🎯 Có thì xuất, không có thì thôi không xuất gì
+    if (displayModules.length === 0) {
+        return null;
+    }
+
     return (
         <section className={styles["learning-content"]}>
             <div className={styles["learning-content__container"]}>
                 {/* 1. Section Header: Tag & Title */}
-                <DashboardHeadings tag={tag} title={title} />
+                {(tag || title) && <DashboardHeadings tag={tag} title={title} />}
 
                 {/* 2. Modules Accordion */}
                 <div className={styles["modules-accordion"]}>
@@ -336,11 +276,17 @@ export default function LearningContent({
                                             <h3 className={styles["accordion-header__title"]}>
                                                 {mod.title}
                                             </h3>
-                                            <p className={styles["accordion-header__meta"]}>
-                                                {mod.lessonsCount} lessons{" "}
-                                                <span className={styles["meta-bullet"]}>•</span>{" "}
-                                                {mod.duration}
-                                            </p>
+                                            {Boolean(mod.lessonsCount || mod.duration) && (
+                                                <p className={styles["accordion-header__meta"]} suppressHydrationWarning>
+                                                    {mod.lessonsCount !== undefined && (
+                                                        <span>{`${mod.lessonsCount} ${mod.lessonsCount === 1 ? 'lesson' : 'lessons'}`}</span>
+                                                    )}
+                                                    {mod.lessonsCount !== undefined && mod.duration && (
+                                                        <span className={styles["meta-bullet"]}>•</span>
+                                                    )}
+                                                    {mod.duration && <span>{mod.duration}</span>}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -373,7 +319,9 @@ export default function LearningContent({
                                     <div className={styles["lessons-list"]}>
                                         {mod.lessons.map((lesson) => {
                                             const isCompleted = lesson.status === "completed";
-                                            const lessonHref = `${baseCourseUrl}/lessons/${lesson.slug || lesson.id}`;
+                                            const lessonHref = baseCourseUrl
+                                                ? `${baseCourseUrl}/lessons/${lesson.slug || lesson.id}`
+                                                : `#`;
                                             return (
                                                 <div
                                                     key={lesson.id}
@@ -399,13 +347,43 @@ export default function LearningContent({
                                                                     {lesson.title}
                                                                 </Link>
                                                             </h4>
-                                                            <p className={styles["lesson-item__meta"]}>
-                                                                {lesson.videosCount} videos{" "}
-                                                                <span className={styles["meta-bullet"]}>•</span>{" "}
-                                                                {lesson.exercisesCount} exercise{" "}
-                                                                <span className={styles["meta-bullet"]}>•</span>{" "}
-                                                                {lesson.duration}
-                                                            </p>
+                                                            {(() => {
+                                                                const metaItems: React.ReactNode[] = [];
+                                                                if (lesson.videosCount !== undefined && lesson.videosCount > 0) {
+                                                                    metaItems.push(
+                                                                        <span key="videos">
+                                                                            {`${lesson.videosCount} ${lesson.videosCount === 1 ? 'video' : 'videos'}`}
+                                                                        </span>
+                                                                    );
+                                                                }
+                                                                if (lesson.exercisesCount !== undefined && lesson.exercisesCount > 0) {
+                                                                    metaItems.push(
+                                                                        <span key="exercises">
+                                                                            {`${lesson.exercisesCount} ${lesson.exercisesCount === 1 ? 'exercise' : 'exercises'}`}
+                                                                        </span>
+                                                                    );
+                                                                }
+                                                                if (lesson.duration) {
+                                                                    metaItems.push(
+                                                                        <span key="duration">{lesson.duration}</span>
+                                                                    );
+                                                                }
+
+                                                                if (metaItems.length === 0) return null;
+
+                                                                return (
+                                                                    <p className={styles["lesson-item__meta"]} suppressHydrationWarning>
+                                                                        {metaItems.map((item, idx) => (
+                                                                            <React.Fragment key={idx}>
+                                                                                {idx > 0 && (
+                                                                                    <span className={styles["meta-bullet"]}>•</span>
+                                                                                )}
+                                                                                {item}
+                                                                            </React.Fragment>
+                                                                        ))}
+                                                                    </p>
+                                                                );
+                                                            })()}
                                                         </div>
                                                     </div>
 
@@ -418,8 +396,6 @@ export default function LearningContent({
                                                                         ? lesson.progress
                                                                         : isCompleted
                                                                         ? 100
-                                                                        : lesson.status === "in_progress"
-                                                                        ? 50
                                                                         : 0
                                                                 }
                                                             />

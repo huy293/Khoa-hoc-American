@@ -23,13 +23,60 @@ function parseWpCourse(c: any): WPCourse {
     (typeof scf.featured_image === 'string' ? scf.featured_image : scf.featured_image?.sourceUrl) ||
     '';
 
-  // Lấy Category từ taxonomy course_category hoặc lp_course_category của LearnPress
+  // Lấy Category chính xác từ taxonomy course_category của LearnPress / WordPress
   const terms: any[] = c._embedded?.['wp:term'] ? c._embedded['wp:term'].flat() : [];
-  const catTerm = terms.find((t: any) =>
-    t.taxonomy === 'course_category' ||
-    t.taxonomy === 'lp_course_category' ||
-    t.taxonomy === 'category'
-  );
+  const courseCategories: Array<{ id: number; name: string; slug: string; taxonomy: string }> = [];
+
+  terms.forEach((t: any) => {
+    if (t && (t.taxonomy === 'course_category' || t.taxonomy === 'lp_course_category')) {
+      courseCategories.push({
+        id: Number(t.id),
+        name: typeof t.name === 'string' ? t.name.trim() : '',
+        slug: typeof t.slug === 'string' ? t.slug.trim() : '',
+        taxonomy: t.taxonomy,
+      });
+    }
+  });
+
+  if (courseCategories.length === 0) {
+    const rawCats = Array.isArray(c.categories) ? c.categories : (Array.isArray(scf.categories) ? scf.categories : []);
+    rawCats.forEach((cat: any) => {
+      if (typeof cat === 'string' && cat.trim()) {
+        courseCategories.push({
+          id: 0,
+          name: cat.trim(),
+          slug: toSlug(cat.trim()),
+          taxonomy: 'course_category',
+        });
+      } else if (cat && typeof cat === 'object') {
+        const catName = typeof cat.name === 'string' ? cat.name.trim() : '';
+        if (catName) {
+          courseCategories.push({
+            id: Number(cat.id || 0),
+            name: catName,
+            slug: typeof cat.slug === 'string' && cat.slug.trim() ? cat.slug.trim() : toSlug(catName),
+            taxonomy: 'course_category',
+          });
+        }
+      }
+    });
+
+    if (courseCategories.length === 0) {
+      const singleCat = (typeof scf.category === 'string' && scf.category.trim())
+        ? scf.category.trim()
+        : (typeof c.category === 'string' && c.category.trim() ? c.category.trim() : '');
+      if (singleCat) {
+        courseCategories.push({
+          id: 0,
+          name: singleCat,
+          slug: toSlug(singleCat),
+          taxonomy: 'course_category',
+        });
+      }
+    }
+  }
+
+  const catTerm = courseCategories[0];
   const tagTerm = terms.find((t: any) =>
     t.taxonomy === 'course_tag' ||
     t.taxonomy === 'lp_course_tag' ||
@@ -37,33 +84,33 @@ function parseWpCourse(c: any): WPCourse {
   );
 
   const categoryName =
-    scf.category ||
     catTerm?.name ||
+    scf.category ||
     (Array.isArray(c.categories) && c.categories.length > 0 ? (typeof c.categories[0] === 'string' ? c.categories[0] : c.categories[0]?.name) : '') ||
-    'CERTIFICATE TRAINING';
+    '';
 
   const tagName =
     scf.tag ||
     tagTerm?.name ||
     catTerm?.name ||
-    'Facial class';
+    '';
 
   // Lấy Author / Giảng viên
   const author = c._embedded?.author?.[0];
   const trainerName =
     scf.trainer?.name ||
     scf.instructor ||
-    author?.name ||
+    (author?.name && author.name !== 'admin' ? author.name : '') ||
     c.instructor?.name ||
-    'Kathleen trainer';
+    '';
   const trainerAvatar =
     scf.trainer?.avatar ||
     author?.avatar_urls?.['96'] ||
     author?.avatar_urls?.['48'] ||
     author?.avatar_urls?.['24'] ||
     c.instructor?.avatar ||
-    '/images/home/kathleen.png';
-  const trainerRating = scf.trainer?.rating || scf.rating || '4.9/5.0';
+    '';
+  const trainerRating = scf.trainer?.rating || scf.rating || '';
 
   // Xử lý giá tiền (LearnPress meta: _lp_price, _lp_regular_price)
   let rawPrice = scf.price;
@@ -74,17 +121,17 @@ function parseWpCourse(c: any): WPCourse {
   } else if (!rawPrice && c.price !== undefined && c.price !== '') {
     rawPrice = typeof c.price === 'number' ? `$ ${c.price.toLocaleString()}` : String(c.price);
   }
-  if (!rawPrice) rawPrice = '$ 1,200';
+  rawPrice = rawPrice || '';
 
   // Thời lượng & cấp độ
-  const duration = scf.duration || c.meta?._lp_duration || c.duration || '4 Weeks';
-  const level = scf.level || c.meta?._lp_level || c.level || 'All Levels';
+  const duration = scf.duration || c.meta?._lp_duration || c.duration || '';
+  const level = scf.level || c.meta?._lp_level || c.level || '';
 
   // Số lượng học viên
   const traineeCount =
     scf.traineeCount ||
     scf.trainee_count ||
-    (c.meta?._lp_students ? `(${c.meta._lp_students}+ trainee)` : (c.count_students ? `(${c.count_students}+ trainee)` : '(2.700+ trainee)'));
+    (c.meta?._lp_students ? `(${c.meta._lp_students}+ trainee)` : (c.count_students ? `(${c.count_students}+ trainee)` : ''));
 
   // Module Sections & Giáo trình (Curriculum)
   const rawSections = Array.isArray(c.sections) ? c.sections : [];
@@ -119,7 +166,7 @@ function parseWpCourse(c: any): WPCourse {
             title: itemTitle,
             slug: itemSlug,
             type: it.type || 'lp_lesson',
-            duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 min',
+            duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '',
             lesson_videos: lessonVideos,
             video_url: lessonVideos || it.video_url,
             acf: it.acf || (lessonVideos ? { lesson_videos: lessonVideos } : undefined),
@@ -158,7 +205,7 @@ function parseWpCourse(c: any): WPCourse {
         ? `${c.meta._lp_lesson_count} lessons`
         : (c.count_items?.lesson
           ? `${c.count_items.lesson} lessons`
-          : '12 lessons')));
+          : '')));
 
   const quizzes =
     scf.quizzes ||
@@ -166,22 +213,22 @@ function parseWpCourse(c: any): WPCourse {
       ? `${totalQuizzesCount} quizzes`
       : (c.count_items?.quiz
         ? `${c.count_items.quiz} quizzes`
-        : '3 quizzes'));
+        : ''));
 
   const moduleCount =
     scf.module ||
     (sections.length > 0
       ? `${sections.length} modules`
-      : (Array.isArray(scf.curriculum)
+      : (Array.isArray(scf.curriculum) && scf.curriculum.length > 0
         ? `${scf.curriculum.length} modules`
-        : '4 modules'));
+        : ''));
 
   // Giáo trình (Curriculum)
   let curriculum = scf.curriculum;
   if (!curriculum && sections.length > 0) {
     curriculum = sections.map((sec: any) => ({
       id: sec.id,
-      title: sec.title || sec.name || 'Module',
+      title: sec.title || sec.name || '',
       lessons: Array.isArray(sec.items)
         ? sec.items.map((it: any) => it.title || it.name || '')
         : [],
@@ -209,10 +256,13 @@ function parseWpCourse(c: any): WPCourse {
     date: c.date,
     modified: c.modified,
     featuredImage: featuredImg ? { node: { sourceUrl: featuredImg } } : undefined,
+    categories: courseCategories,
+    course_category: Array.isArray(c.course_category) ? c.course_category : courseCategories.map(cat => cat.id),
     sections,
     courseFields: {
       ...scf,
       category: categoryName,
+      categories: courseCategories,
       tag: tagName,
       price: rawPrice,
       originalPrice: scf.originalPrice || c.meta?._lp_regular_price || c.origin_price_rendered || '',
@@ -221,7 +271,7 @@ function parseWpCourse(c: any): WPCourse {
       lessons,
       quizzes,
       module: moduleCount,
-      rating: scf.rating || (c.rating ? `${c.rating}/5.0` : '4.9/5.0'),
+      rating: scf.rating || (c.rating ? `${c.rating}/5.0` : ''),
       traineeCount,
       subtitle: scf.subtitle || cleanExcerpt,
       trainer: {
@@ -285,6 +335,53 @@ export async function getWpCourses(first = 20): Promise<WPCourse[]> {
         );
 
         return enrichedCourses.map(parseWpCourse);
+      }
+    } catch {
+      // Thử endpoint tiếp theo
+    }
+  }
+
+  return [];
+}
+
+export interface WPCourseCategoryItem {
+  id: number;
+  name: string;
+  slug: string;
+  count?: number;
+  description?: string;
+  taxonomy?: string;
+}
+
+/**
+ * Lấy danh sách danh mục khóa học (taxonomy: 'course_category' hoặc 'lp_course_category')
+ */
+export async function getWpCourseCategories(): Promise<WPCourseCategoryItem[]> {
+  const endpoints = [
+    '/wp-json/wp/v2/course_category?per_page=100',
+    '/wp-json/wp/v2/lp_course_category?per_page=100',
+    '/wp-json/learnpress/v1/courses/category',
+  ];
+
+  for (const ep of endpoints) {
+    try {
+      const res = await fetchWpRest<any>(ep);
+      const rawCats = Array.isArray(res)
+        ? res
+        : (Array.isArray(res?.data) ? res.data : []);
+      if (Array.isArray(rawCats) && rawCats.length > 0) {
+        return rawCats
+          .map((item: any) => ({
+            id: Number(item.id || 0),
+            name: typeof item.name === 'string'
+              ? item.name.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/&#8211;/g, '-').replace(/&#8217;/g, "'").trim()
+              : '',
+            slug: typeof item.slug === 'string' ? item.slug.trim() : '',
+            count: typeof item.count === 'number' ? item.count : undefined,
+            description: typeof item.description === 'string' ? item.description : undefined,
+            taxonomy: item.taxonomy || 'course_category',
+          }))
+          .filter((cat) => Boolean(cat.name));
       }
     } catch {
       // Thử endpoint tiếp theo

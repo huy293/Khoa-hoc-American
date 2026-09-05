@@ -106,23 +106,23 @@ const LaptopDeviceIcon = () => (
 
 export interface CourseTrainer {
     name: string;
-    avatar: string;
-    rating: string;
+    avatar?: string;
+    rating?: string;
 }
 
 export interface CourseCardProps {
     id?: string;
-    image: string;
+    image?: string;
     imageAlt?: string;
-    tag: string;
-    rating: string;
-    traineeCount: string;
+    tag?: string;
+    rating?: string;
+    traineeCount?: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
     progress?: number;
     module?: string;
-    lessons: string;
-    quizzes: string;
+    lessons?: string;
+    quizzes?: string;
     curriculum?: (string | { title?: string; name?: string; [key: string]: any })[];
     sections?: Array<{ id?: string | number; title?: string; name?: string; [key: string]: any }>;
     trainer?: CourseTrainer;
@@ -159,13 +159,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     trainer,
     actionType = 'register',
     ctaText,
-    courseUrl = '/courses/hydra-facial',
-    previewUrl = '/courses/hydra-facial',
+    courseUrl = '',
+    previewUrl = '',
     showPreviewLink = true,
     onPlay,
     className = '',
     variant = 'student',
-    studentsCount = 145,
+    studentsCount,
     studentLabel = 'Students participated',
 }) => {
     // Ưu tiên lấy danh sách Module (Section) từ mảng sections (LearnPress: sections[].title) hoặc curriculum
@@ -176,33 +176,43 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     return (
         <div className={`${styles['course-card']} ${className}`.trim()}>
             {/* Card Image */}
-            <Link href={courseUrl} className={styles['course-card__image-wrap']}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    src={image}
-                    alt={imageAlt || title}
-                    className={styles['course-card__image']}
-                />
+            <Link href={courseUrl || '#'} className={styles['course-card__image-wrap']}>
+                {image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src={image}
+                        alt={imageAlt || title}
+                        className={styles['course-card__image']}
+                    />
+                ) : (
+                    <div style={{ width: '100%', height: '100%', minHeight: 200, background: '#f5f0eb' }} />
+                )}
             </Link>
 
             {/* Tag & Rating Row */}
-            <div className={styles['course-card__tag-rating']}>
-                <span className={styles['course-card__tag']}>{tag}</span>
-                <div className={styles['course-card__rating']}>
-                    <StarIcon />
-                    <span className={styles['course-card__score']}>{rating}</span>
-                    <span className={styles['course-card__trainee']}>{traineeCount}</span>
+            {(tag || rating) && (
+                <div className={styles['course-card__tag-rating']}>
+                    {tag ? <span className={styles['course-card__tag']}>{tag}</span> : <div />}
+                    {rating && (
+                        <div className={styles['course-card__rating']}>
+                            <StarIcon />
+                            <span className={styles['course-card__score']}>{rating}</span>
+                            {traineeCount && <span className={styles['course-card__trainee']}>{traineeCount}</span>}
+                        </div>
+                    )}
                 </div>
-            </div>
+            )}
 
             {/* Title & Subtitle */}
-            <Link href={courseUrl} style={{ textDecoration: 'none' }}>
-                <h3 className={styles['course-card__title']}>{title}</h3>
-            </Link>
-            <p className={styles['course-card__subtitle']}>{subtitle}</p>
+            {title && (
+                <Link href={courseUrl || '#'} style={{ textDecoration: 'none' }}>
+                    <h3 className={styles['course-card__title']}>{title}</h3>
+                </Link>
+            )}
+            {subtitle && <p className={styles['course-card__subtitle']}>{subtitle}</p>}
 
             {/* Optional Progress Bar */}
-            {showProgress && progress !== undefined && (
+            {showProgress && progress !== undefined && typeof progress === 'number' && (
                 <div className={styles['course-card__progress-wrap']}>
                     <div className={styles['course-card__progress-track']}>
                         <div
@@ -217,62 +227,72 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             )}
 
             {/* Content Box / Training Process */}
-            {showTrainingProcess && (
+            {showTrainingProcess && (module || lessons || quizzes || timelineModules.length > 0 || (showPreviewLink && previewUrl)) && (
                 <div className={styles['course-card__process-box']}>
-                    <div className={styles['course-card__process-header']}>
-                        <span className={styles['course-card__process-title']}>
-                            TRAINING PROCESS
-                        </span>
-                        <div className={styles['course-card__process-meta']}>
-                            {module && (
-                                <div className={styles['course-card__meta-item']}>
-                                    <ModuleIcon />
-                                    <span>{module}</span>
-                                </div>
-                            )}
-                            <div className={styles['course-card__meta-item']}>
-                                <BookIcon />
-                                <span>{lessons}</span>
-                            </div>
-                            <div className={styles['course-card__meta-item']}>
-                                <QuizIcon />
-                                <span>{quizzes}</span>
+                    {(module || lessons || quizzes) && (
+                        <div className={styles['course-card__process-header']}>
+                            <span className={styles['course-card__process-title']}>
+                                TRAINING PROCESS
+                            </span>
+                            <div className={styles['course-card__process-meta']}>
+                                {module && (
+                                    <div className={styles['course-card__meta-item']}>
+                                        <ModuleIcon />
+                                        <span>{module}</span>
+                                    </div>
+                                )}
+                                {lessons && (
+                                    <div className={styles['course-card__meta-item']}>
+                                        <BookIcon />
+                                        <span>{lessons}</span>
+                                    </div>
+                                )}
+                                {quizzes && (
+                                    <div className={styles['course-card__meta-item']}>
+                                        <QuizIcon />
+                                        <span>{quizzes}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {variant !== 'teacher' && (
                         <>
-                            <div className={styles['course-card__process-divider']} />
-
-                            {/* Vertical Timeline Stepper - Render 4 tên Module (Section) từ WordPress LearnPress */}
                             {timelineModules.length > 0 && (
-                                <div className={styles['course-card__timeline']}>
-                                    <div className={styles['course-card__timeline-line']} />
-                                    {timelineModules.map((step, sIdx) => {
-                                        const stepTitle = typeof step === 'string'
-                                            ? step
-                                            : (step.title || (step as any).name || `Module 0${sIdx + 1}`);
-                                        const stepKey = (typeof step === 'object' && step && (step as any).id)
-                                            ? `section-${(step as any).id}`
-                                            : `step-${sIdx}`;
-                                        return (
-                                            <div key={stepKey} className={styles['course-card__timeline-step']}>
-                                                <div className={styles['course-card__timeline-dot-wrap']}>
-                                                    <TimelineDotIcon />
+                                <>
+                                    {(module || lessons || quizzes) && (
+                                        <div className={styles['course-card__process-divider']} />
+                                    )}
+                                    <div className={styles['course-card__timeline']}>
+                                        <div className={styles['course-card__timeline-line']} />
+                                        {timelineModules.map((step, sIdx) => {
+                                            const stepTitle = typeof step === 'string'
+                                                ? step
+                                                : (step.title || (step as any).name || `Module 0${sIdx + 1}`);
+                                            const stepKey = (typeof step === 'object' && step && (step as any).id)
+                                                ? `section-${(step as any).id}`
+                                                : `step-${sIdx}`;
+                                            return (
+                                                <div key={stepKey} className={styles['course-card__timeline-step']}>
+                                                    <div className={styles['course-card__timeline-dot-wrap']}>
+                                                        <TimelineDotIcon />
+                                                    </div>
+                                                    <span className={styles['course-card__timeline-text']}>
+                                                        {stepTitle}
+                                                    </span>
                                                 </div>
-                                                <span className={styles['course-card__timeline-text']}>
-                                                    {stepTitle}
-                                                </span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </>
                             )}
 
-                            {showPreviewLink && (
+                            {showPreviewLink && previewUrl && (
                                 <>
-                                    <div className={styles['course-card__process-divider']} />
+                                    {((module || lessons || quizzes) || timelineModules.length > 0) && (
+                                        <div className={styles['course-card__process-divider']} />
+                                    )}
 
                                     {/* Preview Class Link */}
                                     <Link href={previewUrl} className={styles['course-card__preview-link']}>
@@ -314,29 +334,35 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                 </div>
             ) : (
                 <div className={styles['course-card__footer']}>
-                    {trainer && (
+                    {trainer && trainer.name ? (
                         <div className={styles['course-card__trainer']}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={trainer.avatar}
-                                alt={trainer.name}
-                                className={styles['course-card__trainer-avatar']}
-                            />
+                            {trainer.avatar && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={trainer.avatar}
+                                    alt={trainer.name}
+                                    className={styles['course-card__trainer-avatar']}
+                                />
+                            )}
                             <div className={styles['course-card__trainer-info']}>
                                 <span className={styles['course-card__trainer-name']}>
                                     {trainer.name}
                                 </span>
-                                <div className={styles['course-card__trainer-rating']}>
-                                    <StarIcon />
-                                    <span>{trainer.rating}</span>
-                                </div>
+                                {trainer.rating && (
+                                    <div className={styles['course-card__trainer-rating']}>
+                                        <StarIcon />
+                                        <span>{trainer.rating}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
+                    ) : (
+                        <div />
                     )}
 
                     {actionType === 'play' ? (
                         <Link
-                            href={courseUrl}
+                            href={courseUrl || '#'}
                             className={styles['course-card__play-btn']}
                             aria-label={`Play ${title}`}
                             onClick={onPlay}
