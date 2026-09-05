@@ -10,6 +10,7 @@
     align-items: center;
     overflow: hidden;
     background-color: #FFF7ED;
+    padding: 0 40px;
 }
 
 /* ── Background Image ── */
@@ -46,10 +47,12 @@
     position: relative;
     z-index: 3;
     width: 100%;
-    padding: 160px 80px 100px;
+    padding: 160px 0px 100px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
+    max-width: 1560px;
+    margin: 0 auto;
 }
 
 /* ── Left Content Column ── */
@@ -78,7 +81,8 @@
     font-size: 74px;
     font-style: normal;
     font-weight: 700;
-    line-height: 80px; /* 108.108% */
+    line-height: 80px;
+    /* 108.108% */
     margin: 0 0 28px 0;
     letter-spacing: -0.02em;
 }
@@ -124,7 +128,8 @@
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
-    line-height: 28px; /* 155.556% */
+    line-height: 28px;
+    /* 155.556% */
     letter-spacing: -0.5px;
     margin: 0 0 36px 0;
     max-width: 540px;

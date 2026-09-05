@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import styles from '@/styles/course-detail/CourseDetailHero.module.css';
+import { WPCourse } from '@/types/wordpress';
 
 /* ── SVGs ── */
 const BookIcon = () => (
@@ -104,8 +106,6 @@ const ArrowRightIcon = () => (
     </svg>
 );
 
-import { WPCourse } from '@/types/wordpress';
-
 interface CourseDetailHeroProps {
     /** Whether user has enrolled/purchased this course (from auth/backend API) */
     isEnrolled?: boolean;
@@ -118,12 +118,115 @@ export default function CourseDetailHero({
     courseSlug = 'hydra-facial',
     course,
 }: CourseDetailHeroProps) {
-    const cf = course?.courseFields || {};
+    const router = useRouter();
+    const pathname = usePathname();
+    const [enrolled, setEnrolled] = useState(isEnrolled);
+    const [loading, setLoading] = useState(false);
+
+    // Đồng bộ trạng thái đã đăng ký (từ props hoặc cookie phiên học)
+    useEffect(() => {
+        if (isEnrolled) {
+            setEnrolled(true);
+            return;
+        }
+        if (typeof document !== 'undefined') {
+            const match = document.cookie.match(/hn_enrolled_courses=([^;]+)/);
+            if (match) {
+                try {
+                    const list = JSON.parse(decodeURIComponent(match[1]));
+                    const currentId = course?.id ? String(course.id) : '';
+                    if (Array.isArray(list) && (list.includes(courseSlug) || (currentId && list.includes(currentId)))) {
+                        setEnrolled(true);
+                    }
+                } catch {
+                    // ignore
+                }
+            }
+        }
+    }, [isEnrolled, courseSlug, course?.id]);
+
+    // Kiểm tra khóa học có phải miễn phí không
+    const isFree = useMemo(() => {
+        if (!course) return true;
+        const cf = course.courseFields;
+        const p = cf?.price || (course as any)?.price;
+        const rawMetaPrice = (course as any)?.meta?._lp_price;
+        if ((course as any)?.is_free === true) return true;
+        if (rawMetaPrice === 0 || rawMetaPrice === '0') return true;
+        if (!p || p === '' || p === 0 || p === '0') return true;
+        if (typeof p === 'string') {
+            const clean = p.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+            return clean === '0' || clean === 'free' || clean === 'mienphi' || clean === '';
+        }
+        return false;
+    }, [course]);
+
+    // Xử lý nút Enroll / Registration Now
+    const handleEnrollClick = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (loading) return;
+
+        // 1. Kiểm tra đăng nhập
+        const isLoggedIn = typeof document !== 'undefined' &&
+            document.cookie.split(';').some(item => item.trim().startsWith('hn_user_session='));
+
+        if (!isLoggedIn) {
+            // Chưa đăng nhập -> Chuyển hướng đến /login kèm query redirect để quay lại sau khi login
+            const currentPath = pathname || `/courses/${courseSlug}`;
+            router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+            return;
+        }
+
+        // 2. Đã đăng nhập: Khóa học miễn phí -> tự động enroll bằng LearnPress Headless API
+        if (isFree) {
+            setLoading(true);
+            try {
+                const res = await fetch('/api/courses/enroll', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        courseId: course?.id || courseSlug,
+                        courseSlug: courseSlug,
+                    }),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    if (data.requireLogin) {
+                        const currentPath = pathname || `/courses/${courseSlug}`;
+                        router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+                        return;
+                    }
+                    alert(data.message || 'Không thể đăng ký khóa học lúc này. Vui lòng thử lại sau.');
+                    setLoading(false);
+                    return;
+                }
+
+                // Enroll thành công -> Cập nhật trạng thái và chuyển đến trang bài học
+                setEnrolled(true);
+                setTimeout(() => {
+                    router.push(data.redirectUrl || `/student/courses/${courseSlug}`);
+                }, 500);
+            } catch (err) {
+                console.error('Enroll error:', err);
+                alert('Lỗi kết nối máy chủ. Vui lòng thử lại sau.');
+                setLoading(false);
+            }
+        } else {
+            // Khóa học có phí -> Chuyển đến giỏ hàng / checkout
+            router.push(`/cart?course=${courseSlug}`);
+        }
+    };
+
+    const cf = (course?.courseFields || {}) as any;
     const title = course?.title || "HYDRA FACIAL";
-    const category = cf.category || "CERTIFICATE TRAINING";
-    const lessons = cf.lessons || "12 lessons";
+    const courseCats = Array.isArray((course as any)?.categories) ? (course as any).categories : (Array.isArray(cf.categories) ? cf.categories : []);
+    const firstCat = courseCats[0];
+    const category = cf.category || (typeof firstCat === 'string' ? firstCat : (firstCat?.name || 'CERTIFICATE TRAINING'));
+    const lessons = cf.lessons || (course?.sections ? `${course.sections.reduce((acc: number, s: any) => acc + (s.items?.length || 0), 0)} lessons` : '') || "12 lessons";
     const duration = cf.duration || "3 weeks";
-    const description = cf.subtitle || course?.excerpt || "Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";
+    const description = cf.subtitle || (course?.excerpt ? course.excerpt.replace(/<[^>]*>/g, '').trim() : '') || "Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";
     const rating = cf.rating || "4.9/5.0";
     const traineeCount = cf.traineeCount || "(2.700+ trainee)";
     const trainerName = cf.trainer?.name || "Kathleen trainer";
@@ -174,8 +277,8 @@ export default function CourseDetailHero({
                         </p>
 
                         <div className={styles['detail-hero__actions']}>
-                            {/* PREVIEW CLASS: Hidden after purchasing the course */}
-                            {!isEnrolled && (
+                            {/* PREVIEW CLASS: Hidden after purchasing/enrolling in the course */}
+                            {!enrolled && (
                                 <Link
                                     href="#preview-class"
                                     className={`${styles['detail-hero__btn']} ${styles['detail-hero__btn--primary']}`}
@@ -185,14 +288,27 @@ export default function CourseDetailHero({
                                 </Link>
                             )}
 
-                            {/* REGISTRATION NOW! transforms into CONTINUE THE LESSON after purchase */}
-                            <Link
-                                href={isEnrolled ? `/learn/${courseSlug}` : '#register'}
-                                className={`${styles['detail-hero__btn']} ${styles['detail-hero__btn--secondary']}`}
-                            >
-                                <span>{isEnrolled ? 'CONTINUE THE LESSON' : 'REGISTRATION NOW!'}</span>
-                                {isEnrolled && <ArrowRightIcon />}
-                            </Link>
+                            {/* REGISTRATION NOW! transforms into CONTINUE THE LESSON after purchase/enroll */}
+                            {enrolled ? (
+                                <Link
+                                    href={`/student/courses/${courseSlug}`}
+                                    className={`${styles['detail-hero__btn']} ${styles['detail-hero__btn--secondary']}`}
+                                >
+                                    <span>CONTINUE THE LESSON</span>
+                                    <ArrowRightIcon />
+                                </Link>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleEnrollClick}
+                                    disabled={loading}
+                                    className={`${styles['detail-hero__btn']} ${styles['detail-hero__btn--secondary']}`}
+                                    style={{ cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.8 : 1 }}
+                                >
+                                    <span>{loading ? 'ENROLLING...' : (isFree ? 'ENROLL NOW' : 'REGISTRATION NOW!')}</span>
+                                    {!loading && <ArrowRightIcon />}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
