@@ -74,7 +74,7 @@ export function replaceWordpressURLs<T>(data: T): T {
     const escapedWpHost = wpHost.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     if (typeof data === 'string') {
-      let result = data;
+      let result: string = data as string;
       // Thay thế https?://course-amc.homenest.edu.vn -> targetUrl
       const regexPlain = new RegExp(`https?:\\/\\/(?:www\\.)?${escapedWpHost}`, 'gi');
       result = result.replace(regexPlain, targetUrl);
