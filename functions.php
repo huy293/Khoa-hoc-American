@@ -485,12 +485,59 @@ add_action('rest_api_init', function () {
                     'email'       => $email,
                     'displayName' => $fullName ?: $username,
                     'role'        => 'student',
+                    'avatar'      => get_avatar_url($user_id, ['size' => 96, 'default' => 'identicon']),
                 ],
                 'message' => 'Tạo tài khoản học viên thành công!'
             ]);
         },
         'permission_callback' => '__return_true'
     ]);
+
+/**
+ * Lấy URL avatar đa nguồn cho người dùng WordPress Headless
+ * Hỗ trợ Simple Local Avatars, ACF avatar, Ultimate Member và Gravatar
+ */
+function hn_get_user_avatar_url($user_id) {
+    if (empty($user_id)) return '';
+
+    // 1. Kiểm tra Simple Local Avatars
+    $local_avatar = get_user_meta($user_id, 'simple_local_avatar', true);
+    if (!empty($local_avatar) && is_array($local_avatar) && !empty($local_avatar['full'])) {
+        return $local_avatar['full'];
+    }
+
+    // 2. Kiểm tra ACF / Custom User Meta Avatar
+    $custom_avatar = get_user_meta($user_id, 'user_avatar', true) 
+        ?: get_user_meta($user_id, 'avatar', true) 
+        ?: get_user_meta($user_id, 'profile_photo', true);
+
+    if (!empty($custom_avatar)) {
+        if (is_numeric($custom_avatar)) {
+            $img_url = wp_get_attachment_image_url((int)$custom_avatar, 'full');
+            if ($img_url) return $img_url;
+        } elseif (is_string($custom_avatar) && filter_var($custom_avatar, FILTER_VALIDATE_URL)) {
+            return $custom_avatar;
+        }
+    }
+
+    // 3. Ultimate Member Profile Photo
+    $um_photo = get_user_meta($user_id, 'profile_photo', true);
+    if (!empty($um_photo)) {
+        $upload_dir = wp_upload_dir();
+        $um_url = $upload_dir['baseurl'] . '/ultimatemember/' . $user_id . '/' . $um_photo;
+        return $um_url;
+    }
+
+    // 4. get_avatar_url của WordPress (Gravatar)
+    $wp_avatar = get_avatar_url($user_id, ['size' => 150, 'default' => 'identicon']);
+    if (!empty($wp_avatar)) {
+        return $wp_avatar;
+    }
+
+    $user = get_user_by('id', $user_id);
+    $name = $user ? $user->display_name : 'User';
+    return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=AF8861&color=ffffff&size=150&bold=true';
+}
 
     // E. ĐĂNG NHẬP & PHÂN QUYỀN (POST /wp-json/homenest/v1/auth/login)
     register_rest_route('homenest/v1', '/auth/login', [
@@ -517,9 +564,438 @@ add_action('rest_api_init', function () {
                     'email'       => $user->user_email,
                     'displayName' => $user->display_name,
                     'role'        => $role,
+                    'avatar'      => hn_get_user_avatar_url($user->ID),
                     'redirectUrl' => $isTeacher ? '/teacher' : '/student',
                 ],
                 'message' => 'Đăng nhập thành công!'
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // E.1. LẤY THÔNG TIN TÀI KHOẢN HIỆN TẠI (GET /wp-json/homenest/v1/auth/me)
+    register_rest_route('homenest/v1', '/auth/me', [
+        'methods' => 'GET',
+        'callback' => function ($request) {
+            $userId = $request->get_param('userId') ?: $request->get_param('user_id');
+            $userEmail = $request->get_param('userEmail') ?: $request->get_param('user_email');
+            $username = $request->get_param('username') ?: $request->get_param('login');
+            $user = null;
+
+            if (!empty($userId)) {
+                $user = get_user_by('id', (int)$userId);
+            }
+            if (!$user && !empty($userEmail)) {
+                $user = get_user_by('email', sanitize_email($userEmail));
+            }
+            if (!$user && !empty($username)) {
+                $user = get_user_by('login', sanitize_user($username));
+            }
+
+            if (!$user) {
+                return new WP_Error('not_found', 'Không tìm thấy thông tin người dùng.', ['status' => 404]);
+            }
+
+            $roles = (array)$user->roles;
+            $isTeacher = in_array('teacher', $roles) || in_array('instructor', $roles) || in_array('administrator', $roles);
+            $role = $isTeacher ? 'teacher' : 'student';
+
+            return rest_ensure_response([
+                'success' => true,
+                'user'    => [
+                    'id'          => $user->ID,
+                    'username'    => $user->user_login,
+                    'email'       => $user->user_email,
+                    'displayName' => $user->display_name,
+                    'role'        => $role,
+                    'avatar'      => hn_get_user_avatar_url($user->ID),
+                    'phone'       => get_user_meta($user->ID, 'phone_number', true) ?: '',
+                ]
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // E.2. LẤY KHÓA HỌC HỌC VIÊN ĐÃ ĐĂNG KÝ TRONG LEARNPRESS (GET /wp-json/homenest/v1/user-courses)
+    register_rest_route('homenest/v1', '/user-courses', [
+        'methods' => 'GET',
+        'callback' => function ($request) {
+            $userId = $request->get_param('userId') ?: $request->get_param('user_id');
+            $userEmail = $request->get_param('userEmail') ?: $request->get_param('user_email');
+
+            if (empty($userId) && !empty($userEmail)) {
+                $user_obj = get_user_by('email', $userEmail);
+                if ($user_obj) {
+                    $userId = $user_obj->ID;
+                }
+            }
+
+            if (empty($userId)) {
+                return rest_ensure_response([]);
+            }
+
+            global $wpdb;
+            $course_ids = [];
+            $progress_map = [];
+
+            // 1. Kiểm tra bảng learnpress_user_items của LearnPress
+            $table_user_items = $wpdb->prefix . 'learnpress_user_items';
+            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_user_items}'") === $table_user_items;
+
+            if ($table_exists) {
+                $items = $wpdb->get_results($wpdb->prepare(
+                    "SELECT item_id, status, graduation FROM {$table_user_items} 
+                     WHERE user_id = %d 
+                       AND item_type = 'lp_course' 
+                       AND status IN ('enrolled', 'in-progress', 'completed', 'finished')",
+                    (int)$userId
+                ));
+
+                if (!empty($items)) {
+                    foreach ($items as $item) {
+                        $cid = (int)$item->item_id;
+                        $course_ids[] = $cid;
+                        if ($item->status === 'completed' || $item->status === 'finished' || $item->graduation === 'passed') {
+                            $progress_map[$cid] = 100;
+                        }
+                    }
+                }
+            }
+
+            // 2. Kiểm tra hàm LP_User nếu LearnPress đang active
+            if (function_exists('learn_press_get_user')) {
+                $lp_user = learn_press_get_user((int)$userId);
+                if ($lp_user && method_exists($lp_user, 'get_enrolled_courses')) {
+                    $enrolled = $lp_user->get_enrolled_courses();
+                    if (!empty($enrolled) && is_array($enrolled)) {
+                        foreach ($enrolled as $enrolled_id => $enrolled_obj) {
+                            $cid = (int)$enrolled_id;
+                            $course_ids[] = $cid;
+                            if (method_exists($lp_user, 'get_course_data')) {
+                                $cdata = $lp_user->get_course_data($cid);
+                                if ($cdata && method_exists($cdata, 'get_percent_result')) {
+                                    $progress_map[$cid] = (float)$cdata->get_percent_result();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Kiểm tra các đơn hàng lp_order của user
+            $orders = get_posts([
+                'post_type'   => 'lp_order',
+                'post_status' => ['lp-completed', 'publish', 'completed'],
+                'meta_key'    => '_user_id',
+                'meta_value'  => (int)$userId,
+                'numberposts' => 50,
+            ]);
+            if (!empty($orders)) {
+                foreach ($orders as $order) {
+                    $order_items = get_post_meta($order->ID, '_order_items', true);
+                    if (!empty($order_items) && is_array($order_items)) {
+                        foreach ($order_items as $oitem) {
+                            if (!empty($oitem['course_id'])) {
+                                $course_ids[] = (int)$oitem['course_id'];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 4. Kiểm tra user meta _enrolled_courses
+            $meta_enrolled = get_user_meta((int)$userId, '_enrolled_courses', true) ?: get_user_meta((int)$userId, 'enrolled_courses', true);
+            if (!empty($meta_enrolled) && is_array($meta_enrolled)) {
+                foreach ($meta_enrolled as $mc) {
+                    if (is_numeric($mc)) $course_ids[] = (int)$mc;
+                }
+            }
+
+            $course_ids = array_values(array_unique(array_filter($course_ids)));
+
+            if (empty($course_ids)) {
+                return rest_ensure_response([]);
+            }
+
+            // Truy vấn chi tiết các khóa học đã đăng ký
+            $query = new WP_Query([
+                'post_type'      => 'lp_course',
+                'post__in'       => $course_ids,
+                'posts_per_page' => count($course_ids),
+                'post_status'    => 'publish',
+            ]);
+
+            $courses = [];
+            foreach ($query->posts as $post) {
+                $course_id = $post->ID;
+                $lp_course = function_exists('learn_press_get_course') ? learn_press_get_course($course_id) : null;
+                $curriculum = [];
+
+                if ($lp_course) {
+                    $sections = $lp_course->get_curriculum();
+                    if ($sections) {
+                        foreach ($sections as $section) {
+                            $lessons = [];
+                            foreach ($section->get_items() as $item) {
+                                $lessons[] = $item->get_title();
+                            }
+                            $curriculum[] = ['title' => $section->get_title(), 'lessons' => $lessons];
+                        }
+                    }
+                }
+
+                $terms = wp_get_post_terms($course_id, ['course_category', 'lp_course_category']);
+                $categories = [];
+                foreach ($terms as $t) {
+                    $categories[] = [
+                        'id'       => $t->term_id,
+                        'name'     => $t->name,
+                        'slug'     => $t->slug,
+                        'taxonomy' => $t->taxonomy,
+                    ];
+                }
+
+                $thumb_url = get_the_post_thumbnail_url($course_id, 'full') ?: '';
+                $author_name = get_the_author_meta('display_name', $post->post_author) ?: 'Admin';
+                $author_avatar = get_avatar_url($post->post_author, ['size' => 96]) ?: '';
+
+                $courses[] = [
+                    'id'            => (string)$course_id,
+                    'databaseId'    => $course_id,
+                    'title'         => $post->post_title,
+                    'slug'          => $post->post_name,
+                    'excerpt'       => wp_strip_all_tags($post->post_excerpt),
+                    'content'       => apply_filters('the_content', $post->post_content),
+                    'image'         => $thumb_url,
+                    'featured_image_url' => $thumb_url,
+                    'featuredImage' => ['node' => ['sourceUrl' => $thumb_url]],
+                    'categories'    => $categories,
+                    'progress'      => $progress_map[$course_id] ?? 0,
+                    'trainer'       => [
+                        'name'   => $author_name,
+                        'avatar' => $author_avatar,
+                        'rating' => '5.0',
+                    ],
+                    'courseFields'  => [
+                        'duration'      => get_post_meta($course_id, '_lp_duration', true) ?: '10 weeks',
+                        'level'         => get_post_meta($course_id, '_lp_level', true) ?: 'All levels',
+                        'price'         => get_post_meta($course_id, '_lp_price', true) ?: 0,
+                        'originalPrice' => get_post_meta($course_id, '_lp_regular_price', true) ?: 0,
+                        'instructor'    => $author_name,
+                        'lessons'       => $lp_course ? count($lp_course->get_items()) : 0,
+                        'curriculum'    => $curriculum,
+                        'categories'    => $categories,
+                        'progress'      => $progress_map[$course_id] ?? 0,
+                        'trainer'       => [
+                            'name'   => $author_name,
+                            'avatar' => $author_avatar,
+                            'rating' => '5.0',
+                        ],
+                    ],
+                ];
+            }
+
+            return rest_ensure_response($courses);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // E.3. ENROLL KHÓA HỌC CHO HỌC VIÊN TRONG LEARNPRESS (POST /wp-json/homenest/v1/courses/enroll)
+    // Lưu chính thức vào database LearnPress để hiển thị trên page=learn-press-students-enrolled
+    register_rest_route('homenest/v1', '/courses/enroll', [
+        'methods' => 'POST',
+        'callback' => function ($request) {
+            $params = $request->get_json_params();
+            $courseId = $params['courseId'] ?? $params['course_id'] ?? $params['id'] ?? 0;
+            $courseSlug = sanitize_text_field($params['courseSlug'] ?? $params['course_slug'] ?? '');
+            $userId = $params['userId'] ?? $params['user_id'] ?? 0;
+            $userEmail = sanitize_email($params['userEmail'] ?? $params['user_email'] ?? '');
+            $username = sanitize_user($params['username'] ?? $params['login'] ?? '');
+
+            // 1. Xác định Course ID
+            if (empty($courseId) && !empty($courseSlug)) {
+                $post = get_page_by_path($courseSlug, OBJECT, 'lp_course');
+                if (!$post) {
+                    $q = new WP_Query([
+                        'post_type'      => 'lp_course',
+                        'name'           => $courseSlug,
+                        'posts_per_page' => 1,
+                        'post_status'    => 'publish',
+                    ]);
+                    $post = $q->posts[0] ?? null;
+                }
+                if ($post) {
+                    $courseId = $post->ID;
+                }
+            }
+
+            if (empty($courseId)) {
+                return new WP_Error('missing_course', 'Không tìm thấy thông tin khóa học.', ['status' => 400]);
+            }
+
+            // 2. Xác định User ID
+            if (empty($userId) && !empty($userEmail)) {
+                $user_obj = get_user_by('email', $userEmail);
+                if ($user_obj) {
+                    $userId = $user_obj->ID;
+                }
+            }
+
+            if (empty($userId) && !empty($username)) {
+                $user_obj = get_user_by('login', $username);
+                if ($user_obj) {
+                    $userId = $user_obj->ID;
+                }
+            }
+
+            if (empty($userId)) {
+                return new WP_Error('missing_user', 'Vui lòng đăng nhập để tham gia khóa học.', ['status' => 401]);
+            }
+
+            global $wpdb;
+            $courseId = (int)$courseId;
+            $userId   = (int)$userId;
+            $courseTitle = get_the_title($courseId) ?: "Course #{$courseId}";
+
+            // 3. Tạo Đơn Hàng LearnPress (lp_order) với trạng thái lp-completed
+            $order_id = wp_insert_post([
+                'post_type'   => 'lp_order',
+                'post_title'  => sprintf('Order #%s - %s', date('YmdHis'), $courseTitle),
+                'post_status' => 'lp-completed',
+                'post_author' => $userId,
+                'post_date'   => current_time('mysql'),
+            ]);
+
+            if ($order_id && !is_wp_error($order_id)) {
+                update_post_meta($order_id, '_user_id', $userId);
+                update_post_meta($order_id, '_order_currency', 'VND');
+                update_post_meta($order_id, '_order_subtotal', 0);
+                update_post_meta($order_id, '_order_total', 0);
+                update_post_meta($order_id, '_payment_method', 'free_enroll');
+                update_post_meta($order_id, '_payment_method_title', 'Headless Free Enrollment');
+                update_post_meta($order_id, '_order_version', '4.0.0');
+
+                // Lưu vào bảng learnpress_order_items & learnpress_order_itemmeta
+                $table_order_items = $wpdb->prefix . 'learnpress_order_items';
+                $table_order_itemmeta = $wpdb->prefix . 'learnpress_order_itemmeta';
+
+                if ($wpdb->get_var("SHOW TABLES LIKE '{$table_order_items}'") === $table_order_items) {
+                    $wpdb->insert($table_order_items, [
+                        'order_id'  => $order_id,
+                        'item_id'   => $courseId,
+                        'item_name' => $courseTitle,
+                    ]);
+                    $order_item_id = $wpdb->insert_id;
+
+                    if ($order_item_id && $wpdb->get_var("SHOW TABLES LIKE '{$table_order_itemmeta}'") === $table_order_itemmeta) {
+                        $wpdb->insert($table_order_itemmeta, [
+                            'learnpress_order_item_id' => $order_item_id,
+                            'meta_key'                 => '_course_id',
+                            'meta_value'               => $courseId,
+                        ]);
+                        $wpdb->insert($table_order_itemmeta, [
+                            'learnpress_order_item_id' => $order_item_id,
+                            'meta_key'                 => '_quantity',
+                            'meta_value'               => 1,
+                        ]);
+                        $wpdb->insert($table_order_itemmeta, [
+                            'learnpress_order_item_id' => $order_item_id,
+                            'meta_key'                 => '_subtotal',
+                            'meta_value'               => 0,
+                        ]);
+                        $wpdb->insert($table_order_itemmeta, [
+                            'learnpress_order_item_id' => $order_item_id,
+                            'meta_key'                 => '_total',
+                            'meta_value'               => 0,
+                        ]);
+                    }
+                }
+            }
+
+            // 4. Lưu học viên vào bảng learnpress_user_items (Nguồn hiển thị page=learn-press-students-enrolled)
+            $table_user_items = $wpdb->prefix . 'learnpress_user_items';
+            $user_item_id = 0;
+
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$table_user_items}'") === $table_user_items) {
+                $existing = $wpdb->get_row($wpdb->prepare(
+                    "SELECT user_item_id, status FROM {$table_user_items} 
+                     WHERE user_id = %d AND item_id = %d AND item_type = 'lp_course'",
+                    $userId,
+                    $courseId
+                ));
+
+                if ($existing) {
+                    $wpdb->update(
+                        $table_user_items,
+                        [
+                            'status'     => 'enrolled',
+                            'graduation' => 'in-progress',
+                            'ref_id'     => $order_id ?: 0,
+                            'ref_type'   => 'lp_order',
+                            'start_time' => current_time('mysql'),
+                        ],
+                        ['user_item_id' => $existing->user_item_id]
+                    );
+                    $user_item_id = $existing->user_item_id;
+                } else {
+                    $wpdb->insert($table_user_items, [
+                        'user_id'      => $userId,
+                        'item_id'      => $courseId,
+                        'start_time'   => current_time('mysql'),
+                        'item_type'    => 'lp_course',
+                        'status'       => 'enrolled',
+                        'graduation'   => 'in-progress',
+                        'access_level' => 50,
+                        'ref_id'       => $order_id ?: 0,
+                        'ref_type'     => 'lp_order',
+                        'parent_id'    => 0,
+                    ]);
+                    $user_item_id = $wpdb->insert_id;
+                }
+            }
+
+            // 5. Kích hoạt phương thức LP_User nếu LearnPress Core đang active
+            if (function_exists('learn_press_get_user')) {
+                $lp_user = learn_press_get_user($userId);
+                if ($lp_user && method_exists($lp_user, 'enroll')) {
+                    try {
+                        $lp_user->enroll($courseId);
+                    } catch (\Throwable $e) {
+                        // Đã lưu trực tiếp DB an toàn
+                    }
+                }
+            }
+
+            // 6. Kích hoạt các Action Hooks của LearnPress để cập nhật các Addon và trang quản trị
+            if ($user_item_id) {
+                do_action('learnpress/user/enrolled-course', $user_item_id, $courseId, $userId);
+                do_action('learn_press_user_enrolled_course', $courseId, $userId, $user_item_id);
+            }
+            if ($order_id && !is_wp_error($order_id)) {
+                do_action('learn_press_order_status_completed', $order_id);
+                do_action('learnpress/order/status-completed', $order_id);
+            }
+
+            // 7. Cập nhật User Meta _enrolled_courses
+            $enrolled_meta = get_user_meta($userId, '_enrolled_courses', true) ?: [];
+            if (!is_array($enrolled_meta)) $enrolled_meta = [];
+            if (!in_array($courseId, $enrolled_meta)) {
+                $enrolled_meta[] = $courseId;
+                update_user_meta($userId, '_enrolled_courses', $enrolled_meta);
+            }
+
+            // 8. Cập nhật số lượng học viên khóa học (count_enrolled_users)
+            $current_students = (int)get_post_meta($courseId, 'count_enrolled_users', true);
+            update_post_meta($courseId, 'count_enrolled_users', max(1, $current_students + 1));
+
+            return rest_ensure_response([
+                'success'      => true,
+                'status'       => 'success',
+                'message'      => 'Đăng ký khóa học thành công!',
+                'course_id'    => $courseId,
+                'user_id'      => $userId,
+                'order_id'     => $order_id ?: 0,
+                'user_item_id' => $user_item_id ?: 0,
             ]);
         },
         'permission_callback' => '__return_true'
