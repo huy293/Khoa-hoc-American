@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     client_id: appId,
     redirect_uri: redirectUri,
     state: 'facebook_oauth_state',
-    scope: 'email,public_profile',
+    scope: 'public_profile',
     response_type: 'code',
   });
 

@@ -12,10 +12,39 @@ import {
 import { fetchGraphQL, fetchWpRest } from './wordpress';
 import { toSlug } from './wordpress-format';
 
-/**
- * Helper: Parse dữ liệu từ WordPress/LearnPress (lp_course) thành đối tượng chuẩn WPCourse
- */
 function parseWpCourse(c: any): WPCourse {
+  if (c && c.courseFields && typeof c.courseFields === 'object' && c.title && c.slug) {
+    return {
+      id: String(c.id),
+      databaseId: Number(c.databaseId || c.id),
+      title: c.title,
+      slug: c.slug,
+      excerpt: c.excerpt || '',
+      content: c.content || '',
+      featuredImage: c.featuredImage || (c.image ? { node: { sourceUrl: c.image } } : undefined),
+      categories: c.categories || [],
+      course_category: c.course_category || [],
+      sections: c.sections || [],
+      courseFields: {
+        duration: c.courseFields.duration || '10 weeks',
+        level: c.courseFields.level || 'All levels',
+        price: c.courseFields.price ?? 0,
+        originalPrice: c.courseFields.originalPrice ?? 0,
+        instructor: c.courseFields.instructor || 'Admin',
+        lessons: c.courseFields.lessons || 0,
+        curriculum: c.courseFields.curriculum || [],
+        categories: c.courseFields.categories || c.categories || [],
+        trainer: c.courseFields.trainer || {
+          name: c.courseFields.instructor || 'Admin',
+          avatar: '/images/kathleen.png',
+          rating: '5.0',
+        },
+        ...c.courseFields,
+      },
+      seo: c.seo || null,
+    };
+  }
+
   const scf = (c.acf || c.scf || {}) as any;
   const featuredImg =
     c.featuredImage?.node?.sourceUrl ||
@@ -300,6 +329,7 @@ function parseWpCourse(c: any): WPCourse {
 export async function getWpCourses(first = 20): Promise<WPCourse[]> {
   // 1. Thử REST API endpoints của LearnPress và WordPress CPT (Ưu tiên REST vì LearnPress chuẩn REST)
   const endpoints = [
+    `/wp-json/homenest/v1/courses?per_page=${first}`,
     `/wp-json/learnpress/v1/courses?per_page=${first}`,
     `/wp-json/wp/v2/lp_course?per_page=${first}&_embed=1`,
     `/wp-json/lp/v1/courses/archive-course`,

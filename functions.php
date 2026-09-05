@@ -302,6 +302,64 @@ add_action('manage_crm_lead_posts_custom_column', function ($column, $post_id) {
 
 
 /**
+ * Tự động tạo vai trò Student & Teacher trong WordPress nếu chưa có
+ */
+add_action('init', function () {
+    if (!get_role('student')) {
+        add_role('student', 'Student', ['read' => true]);
+    }
+    if (!get_role('teacher')) {
+        add_role('teacher', 'Teacher', ['read' => true, 'edit_posts' => true]);
+    }
+});
+
+/**
+ * Lấy URL avatar đa nguồn cho người dùng WordPress Headless
+ * Hỗ trợ Simple Local Avatars, ACF avatar, Ultimate Member và Gravatar
+ */
+function hn_get_user_avatar_url($user_id) {
+    if (empty($user_id)) return '';
+
+    // 1. Kiểm tra Simple Local Avatars
+    $local_avatar = get_user_meta($user_id, 'simple_local_avatar', true);
+    if (!empty($local_avatar) && is_array($local_avatar) && !empty($local_avatar['full'])) {
+        return $local_avatar['full'];
+    }
+
+    // 2. Kiểm tra ACF / Custom User Meta Avatar
+    $custom_avatar = get_user_meta($user_id, 'user_avatar', true) 
+        ?: get_user_meta($user_id, 'avatar', true) 
+        ?: get_user_meta($user_id, 'profile_photo', true);
+
+    if (!empty($custom_avatar)) {
+        if (is_numeric($custom_avatar)) {
+            $img_url = wp_get_attachment_image_url((int)$custom_avatar, 'full');
+            if ($img_url) return $img_url;
+        } elseif (is_string($custom_avatar) && filter_var($custom_avatar, FILTER_VALIDATE_URL)) {
+            return $custom_avatar;
+        }
+    }
+
+    // 3. Ultimate Member Profile Photo
+    $um_photo = get_user_meta($user_id, 'profile_photo', true);
+    if (!empty($um_photo)) {
+        $upload_dir = wp_upload_dir();
+        $um_url = $upload_dir['baseurl'] . '/ultimatemember/' . $user_id . '/' . $um_photo;
+        return $um_url;
+    }
+
+    // 4. get_avatar_url của WordPress (Gravatar)
+    $wp_avatar = get_avatar_url($user_id, ['size' => 150, 'default' => 'identicon']);
+    if (!empty($wp_avatar)) {
+        return $wp_avatar;
+    }
+
+    $user = get_user_by('id', $user_id);
+    $name = $user ? $user->display_name : 'User';
+    return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=AF8861&color=ffffff&size=150&bold=true';
+}
+
+/**
  * =========================================================================
  * 🌐 2. TOÀN BỘ REST API HOMENEST (GOM 1 HOOK DUY NHẤT)
  * =========================================================================
@@ -493,51 +551,98 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true'
     ]);
 
-/**
- * Lấy URL avatar đa nguồn cho người dùng WordPress Headless
- * Hỗ trợ Simple Local Avatars, ACF avatar, Ultimate Member và Gravatar
- */
-function hn_get_user_avatar_url($user_id) {
-    if (empty($user_id)) return '';
+    // E.0. ĐĂNG NHẬP / ĐĂNG KÝ BẰNG MẠNG XÃ HỘI (GOOGLE / FACEBOOK) (POST /wp-json/homenest/v1/auth/social)
+    register_rest_route('homenest/v1', '/auth/social', [
+        'methods' => 'POST',
+        'callback' => function ($request) {
+            $params     = $request->get_json_params();
+            $provider   = sanitize_text_field($params['provider'] ?? 'google');
+            $providerId = sanitize_text_field($params['providerId'] ?? '');
+            $email      = sanitize_email($params['email'] ?? '');
+            $name       = sanitize_text_field($params['name'] ?? '');
+            $avatar     = esc_url_raw($params['avatar'] ?? '');
 
-    // 1. Kiểm tra Simple Local Avatars
-    $local_avatar = get_user_meta($user_id, 'simple_local_avatar', true);
-    if (!empty($local_avatar) && is_array($local_avatar) && !empty($local_avatar['full'])) {
-        return $local_avatar['full'];
-    }
+            if (empty($email)) {
+                if (!empty($providerId)) {
+                    $email = "{$provider}_{$providerId}@social.user";
+                } else {
+                    return new WP_Error('missing_email', 'Thiếu thông tin email từ dịch vụ mạng xã hội.', ['status' => 400]);
+                }
+            }
 
-    // 2. Kiểm tra ACF / Custom User Meta Avatar
-    $custom_avatar = get_user_meta($user_id, 'user_avatar', true) 
-        ?: get_user_meta($user_id, 'avatar', true) 
-        ?: get_user_meta($user_id, 'profile_photo', true);
+            // 1. Kiểm tra xem người dùng đã tồn tại trong WP chưa (theo email)
+            $user = get_user_by('email', $email);
 
-    if (!empty($custom_avatar)) {
-        if (is_numeric($custom_avatar)) {
-            $img_url = wp_get_attachment_image_url((int)$custom_avatar, 'full');
-            if ($img_url) return $img_url;
-        } elseif (is_string($custom_avatar) && filter_var($custom_avatar, FILTER_VALIDATE_URL)) {
-            return $custom_avatar;
-        }
-    }
+            if (!$user) {
+                // Tạo username duy nhất từ email hoặc providerId
+                $base_username = sanitize_user(explode('@', $email)[0]);
+                $username = $base_username;
+                $counter = 1;
+                while (username_exists($username)) {
+                    $username = $base_username . $counter;
+                    $counter++;
+                }
 
-    // 3. Ultimate Member Profile Photo
-    $um_photo = get_user_meta($user_id, 'profile_photo', true);
-    if (!empty($um_photo)) {
-        $upload_dir = wp_upload_dir();
-        $um_url = $upload_dir['baseurl'] . '/ultimatemember/' . $user_id . '/' . $um_photo;
-        return $um_url;
-    }
+                $random_password = wp_generate_password(24, true, true);
+                $user_id = wp_create_user($username, $random_password, $email);
 
-    // 4. get_avatar_url của WordPress (Gravatar)
-    $wp_avatar = get_avatar_url($user_id, ['size' => 150, 'default' => 'identicon']);
-    if (!empty($wp_avatar)) {
-        return $wp_avatar;
-    }
+                if (is_wp_error($user_id)) {
+                    return new WP_Error('create_failed', $user_id->get_error_message(), ['status' => 500]);
+                }
 
-    $user = get_user_by('id', $user_id);
-    $name = $user ? $user->display_name : 'User';
-    return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=AF8861&color=ffffff&size=150&bold=true';
-}
+                $user = new WP_User($user_id);
+                $user->set_role('student');
+
+                wp_update_user([
+                    'ID'           => $user_id,
+                    'display_name' => $name ?: $username,
+                    'first_name'   => $name ?: $username,
+                ]);
+
+                // Lưu vào CRM Lead
+                wp_insert_post([
+                    'post_type'   => 'crm_lead',
+                    'post_title'  => $name ?: $username,
+                    'post_status' => 'publish',
+                    'meta_input'  => [
+                        '_lead_email'   => $email,
+                        '_lead_course'  => "Đăng ký qua {$provider}",
+                        '_lead_status'  => 'enrolled',
+                    ]
+                ]);
+            } else {
+                $user_id = $user->ID;
+            }
+
+            // Cập nhật Meta xã hội & Avatar
+            update_user_meta($user_id, 'social_provider', $provider);
+            if (!empty($providerId)) {
+                update_user_meta($user_id, 'social_id', $providerId);
+            }
+            if (!empty($avatar)) {
+                update_user_meta($user_id, 'user_avatar', $avatar);
+            }
+
+            $roles = (array)$user->roles;
+            $isTeacher = in_array('teacher', $roles) || in_array('instructor', $roles) || in_array('administrator', $roles);
+            $role = $isTeacher ? 'teacher' : 'student';
+
+            return rest_ensure_response([
+                'success' => true,
+                'user'    => [
+                    'id'          => $user_id,
+                    'username'    => $user->user_login,
+                    'email'       => $user->user_email,
+                    'displayName' => $user->display_name ?: $name,
+                    'role'        => $role,
+                    'avatar'      => hn_get_user_avatar_url($user_id),
+                    'provider'    => $provider,
+                ],
+                'message' => 'Đồng bộ tài khoản xã hội thành công!'
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
 
     // E. ĐĂNG NHẬP & PHÂN QUYỀN (POST /wp-json/homenest/v1/auth/login)
     register_rest_route('homenest/v1', '/auth/login', [
@@ -1246,9 +1351,4 @@ add_filter('register_post_type_args', function ($args, $post_type) {
         $args['show_in_rest'] = true;
     }
     return $args;
-}, 10, 2);
-
-
-
-
-
+}, 10, 2);

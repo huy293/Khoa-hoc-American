@@ -41,6 +41,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/wp-content/:path*',
+        destination: `${wpUrl || 'https://course-amc.homenest.edu.vn'}/wp-content/:path*`,
+      },
+    ];
+  },
   async redirects() {
     return [
       {

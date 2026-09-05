@@ -3,11 +3,19 @@ import { FetchOptions, WPGraphQLResponse } from '@/types/wordpress';
 /**
  * Cấu hình Endpoint & Secret Key cho WordPress Headless (chuẩn HomeNest)
  */
-export const WP_URL = (process.env.NEXT_PUBLIC_WORDPRESS_URL || '').replace(/\/$/, '');
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '');
+export const WP_URL = (
+  process.env.NEXT_PUBLIC_WORDPRESS_URL ||
+  process.env.WORDPRESS_URL ||
+  'https://course-amc.homenest.edu.vn'
+).replace(/\/$/, '');
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.SITE_URL ||
+  'https://course.homenest.edu.vn'
+).replace(/\/$/, '');
 export const WP_GRAPHQL_ENDPOINT = WP_URL ? `${WP_URL}/graphql` : '';
 export const WP_REST_ENDPOINT = WP_URL ? `${WP_URL}/wp-json/wp/v2` : '';
-export const WP_SECRET = process.env.HN_API_SECRET || '';
+export const WP_SECRET = process.env.HN_API_SECRET || 'khoa-hoc-my-x-homenest-x-nguyen-x-huy';
 export const DEFAULT_REVALIDATE = Number(process.env.REVALIDATE_TIME) || 3600;
 
 /**
