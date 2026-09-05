@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from '@/styles/dashboard/courses/LessonDetailContent.module.css';
@@ -76,6 +76,12 @@ export default function LessonDetailContent({
     basePath: customBasePath,
 }: LessonDetailContentProps) {
     const [showQuiz, setShowQuiz] = useState(false);
+    const [isVideoCompleted, setIsVideoCompleted] = useState<boolean>(false);
+    const [showLockAlert, setShowLockAlert] = useState<boolean>(false);
+    const [showUnlockToast, setShowUnlockToast] = useState<boolean>(false);
+    const videoContainerRef = useRef<HTMLDivElement>(null);
+
+    const videoStorageKey = `lp_video_completed_${slug}_${lessonSlug}`;
 
     const basePath = customBasePath || (isStudent ? `/student/courses/${slug}` : `/courses/${slug}`);
 
@@ -220,6 +226,149 @@ export default function LessonDetailContent({
         parsedVideo = parseLessonVideo(rawContent);
     }
 
+    // 🎯 Kiểm tra trạng thái đã xem hết video bài học từ localStorage
+    useEffect(() => {
+        // Nếu bài học hoàn toàn không có video, tự động mở khóa
+        if (!parsedVideo) {
+            setIsVideoCompleted(true);
+            return;
+        }
+
+        try {
+            const saved = localStorage.getItem(videoStorageKey);
+            if (saved === 'true') {
+                setIsVideoCompleted(true);
+            }
+        } catch {
+            // LocalStorage không khả dụng
+        }
+    }, [videoStorageKey, parsedVideo]);
+
+    // 🎯 Tải script SDK Spotlightr nếu bài học sử dụng video Spotlightr
+    useEffect(() => {
+        const isSpotlightr =
+            parsedVideo?.src?.includes('spotlightr.com') ||
+            parsedVideo?.html?.includes('spotlightr') ||
+            rawLessonVideo?.includes('spotlightr');
+
+        if (isSpotlightr && typeof window !== 'undefined') {
+            const existingScript = document.querySelector('script[src*="spotlightr.js"]');
+            if (!existingScript) {
+                const script = document.createElement('script');
+                script.src = 'https://spotlightrteam.cdn.spotlightr.com/assets/spotlightr.js';
+                script.async = true;
+                document.body.appendChild(script);
+            }
+        }
+    }, [parsedVideo, rawLessonVideo]);
+
+    // 🎯 Hàm đánh dấu học viên đã xem hết video bài học
+    const markVideoAsCompleted = () => {
+        setIsVideoCompleted((prev) => {
+            if (prev) return prev;
+            try {
+                localStorage.setItem(videoStorageKey, 'true');
+            } catch {}
+            setShowUnlockToast(true);
+            setShowLockAlert(false);
+            return true;
+        });
+    };
+
+    // 🎯 Lắng nghe các sự kiện postMessage từ iframe (Spotlightr, YouTube, Vimeo)
+    useEffect(() => {
+        if (isVideoCompleted) return;
+
+        const handleMessage = (e: MessageEvent) => {
+            try {
+                const data = e.data;
+                if (!data) return;
+
+                // 1. Spotlightr / vooPlayer: Lắng nghe triggerGtmTags sự kiện 'ended' hoặc '100%'
+                if (data.data && data.data.name === 'triggerGtmTags') {
+                    const ev = String(data.data.event || '').toLowerCase();
+                    if (ev === 'ended' || ev === '100%' || ev === 'finish') {
+                        markVideoAsCompleted();
+                        return;
+                    }
+                }
+                if (data.name === 'triggerGtmTags') {
+                    const ev = String(data.event || '').toLowerCase();
+                    if (ev === 'ended' || ev === '100%' || ev === 'finish') {
+                        markVideoAsCompleted();
+                        return;
+                    }
+                }
+                if (data.event === 'ended' || data.event === 'spotlightr-video-ended') {
+                    markVideoAsCompleted();
+                    return;
+                }
+                if (data.data && data.data.event === 'ended') {
+                    markVideoAsCompleted();
+                    return;
+                }
+
+                // 2. YouTube Iframe API
+                if (typeof data === 'string') {
+                    try {
+                        const parsed = JSON.parse(data);
+                        if (parsed.event === 'onStateChange' && (parsed.info === 0 || parsed.info === '0')) {
+                            markVideoAsCompleted();
+                            return;
+                        }
+                        if (parsed.event === 'infoDelivery' && parsed.info && (parsed.info.playerState === 0 || parsed.info.playerState === '0')) {
+                            markVideoAsCompleted();
+                            return;
+                        }
+                    } catch {}
+                } else if (typeof data === 'object') {
+                    if (data.event === 'onStateChange' && (data.info === 0 || data.info === '0')) {
+                        markVideoAsCompleted();
+                        return;
+                    }
+                    if (data.info && (data.info.playerState === 0 || data.info.playerState === '0')) {
+                        markVideoAsCompleted();
+                        return;
+                    }
+                }
+
+                // 3. Vimeo Iframe API
+                if (typeof data === 'string') {
+                    try {
+                        const parsed = JSON.parse(data);
+                        if (parsed.event === 'ended' || parsed.event === 'finish') {
+                            markVideoAsCompleted();
+                            return;
+                        }
+                    } catch {}
+                } else if (typeof data === 'object') {
+                    if (data.event === 'ended' || data.event === 'finish') {
+                        markVideoAsCompleted();
+                        return;
+                    }
+                }
+            } catch {
+                // Bỏ qua lỗi format
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, [isVideoCompleted, videoStorageKey]);
+
+    // Xử lý khi bấm nút Take Quiz khi chưa xem hết video
+    const handleQuizClick = (e: React.MouseEvent) => {
+        if (!isVideoCompleted) {
+            e.preventDefault();
+            setShowLockAlert(true);
+            if (videoContainerRef.current) {
+                videoContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    };
+
     // 🎯 Calculate Next Lesson & Next Module links
     const currentLessonIdx = lessonsList.findIndex(
         (l) => l.slug === lessonSlug || toSlug(l.title) === lessonSlug || String(l.id) === lessonSlug
@@ -306,7 +455,7 @@ export default function LessonDetailContent({
                 <div className={styles['lesson-grid']}>
                     {/* Left Column: Video Player & Action Buttons */}
                     <div className={styles['lesson-main']}>
-                        <div className={styles['video-container']}>
+                        <div ref={videoContainerRef} className={styles['video-container']}>
                             {parsedVideo ? (
                                 parsedVideo.type === 'iframe' && parsedVideo.src ? (
                                     <iframe
@@ -323,6 +472,13 @@ export default function LessonDetailContent({
                                         playsInline
                                         poster={videoThumb}
                                         className={styles['video-container__video']}
+                                        onEnded={markVideoAsCompleted}
+                                        onTimeUpdate={(e) => {
+                                            const v = e.currentTarget;
+                                            if (v.duration && v.currentTime >= v.duration - 0.5) {
+                                                markVideoAsCompleted();
+                                            }
+                                        }}
                                     />
                                 ) : parsedVideo.type === 'html' && parsedVideo.html ? (
                                     <div
@@ -353,6 +509,7 @@ export default function LessonDetailContent({
                                         type="button"
                                         className={styles['video-container__play-btn']}
                                         aria-label="Play Lesson Video"
+                                        onClick={markVideoAsCompleted}
                                     >
                                         <svg
                                             className={styles['video-container__play-icon']}
@@ -366,23 +523,113 @@ export default function LessonDetailContent({
                             )}
                         </div>
 
-                        <div className={styles['lesson-actions']}>
-                            <Link
-                                href={nextLessonUrl}
-                                className={styles['lesson-actions__next-btn']}
-                            >
-                                <span>NEXT LESSON</span>
-                                <span>→</span>
-                            </Link>
+                        <div className={styles['lesson-actions-area']}>
+                            {showLockAlert && (
+                                <div className={styles['video-lock-alert']} role="alert">
+                                    <div className={styles['video-lock-alert__content']}>
+                                        <span>⚠️</span>
+                                        <span>
+                                            <strong>Chưa thể làm Quiz:</strong> Bạn cần xem hết video bài học để mở khóa bài kiểm tra!
+                                        </span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className={styles['video-lock-alert__close']}
+                                        onClick={() => setShowLockAlert(false)}
+                                        aria-label="Đóng thông báo"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            )}
 
-                            {hasQuiz && (
+                            {showUnlockToast && isVideoCompleted && (
+                                <div className={styles['video-lock-alert']} style={{ backgroundColor: '#F0FDF4', borderColor: '#86EFAC', color: '#166534' }} role="status">
+                                    <div className={styles['video-lock-alert__content']}>
+                                        <span>🎉</span>
+                                        <span>
+                                            <strong>Tuyệt vời!</strong> Bạn đã xem hết video bài học. Bài kiểm tra (Take Quiz) đã được mở khóa!
+                                        </span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className={styles['video-lock-alert__close']}
+                                        style={{ color: '#166534' }}
+                                        onClick={() => setShowUnlockToast(false)}
+                                        aria-label="Đóng thông báo"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            )}
+
+                            <div className={styles['lesson-actions']}>
                                 <Link
-                                    href={quizUrl}
-                                    className={styles['lesson-actions__quiz-btn']}
+                                    href={nextLessonUrl}
+                                    className={styles['lesson-actions__next-btn']}
                                 >
-                                    <span>TAKE QUIZ</span>
+                                    <span>NEXT LESSON</span>
                                     <span>→</span>
                                 </Link>
+
+                                {hasQuiz && (
+                                    isVideoCompleted ? (
+                                        <Link
+                                            href={quizUrl}
+                                            className={`${styles['lesson-actions__quiz-btn']} ${styles['lesson-actions__quiz-btn--unlocked']}`}
+                                            title="Bắt đầu làm bài kiểm tra"
+                                        >
+                                            <span>🔓 TAKE QUIZ</span>
+                                            <span>→</span>
+                                        </Link>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={handleQuizClick}
+                                            className={`${styles['lesson-actions__quiz-btn']} ${styles['lesson-actions__quiz-btn--locked']}`}
+                                            title="Vui lòng xem hết video bài học để mở khóa"
+                                        >
+                                            <span>🔒 TAKE QUIZ</span>
+                                            <span>→</span>
+                                        </button>
+                                    )
+                                )}
+                            </div>
+
+                            {hasQuiz && (
+                                isVideoCompleted ? (
+                                    <div className={`${styles['quiz-status-badge']} ${styles['quiz-status-badge--unlocked']}`}>
+                                        <span>✅</span>
+                                        <span>Đã hoàn thành video — Sẵn sàng làm bài kiểm tra</span>
+                                    </div>
+                                ) : (
+                                    <div className={`${styles['quiz-status-badge']} ${styles['quiz-status-badge--locked']}`}>
+                                        <span>🔒</span>
+                                        <span>Xem hết video để mở khóa bài kiểm tra (Quiz)</span>
+                                    </div>
+                                )
+                            )}
+
+                            {/* Nút kiểm thử nhanh trạng thái video */}
+                            {hasQuiz && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (isVideoCompleted) {
+                                            try {
+                                                localStorage.removeItem(videoStorageKey);
+                                            } catch {}
+                                            setIsVideoCompleted(false);
+                                            setShowUnlockToast(false);
+                                        } else {
+                                            markVideoAsCompleted();
+                                        }
+                                    }}
+                                    className={styles['dev-test-toggle']}
+                                    title="Dành cho kiểm thử: Bấm để bật/tắt nhanh trạng thái xem video"
+                                >
+                                    {isVideoCompleted ? '⚡ [Test] Đặt lại: Chưa xem video' : '⚡ [Test] Mở khóa nhanh Quiz'}
+                                </button>
                             )}
                         </div>
 
