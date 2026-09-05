@@ -71,7 +71,15 @@ export default function LoginContent() {
 
             setSuccessMsg('Đăng nhập thành công! Đang chuyển hướng...');
             setTimeout(() => {
-                router.push(data.redirectUrl || '/student');
+                let targetUrl = data.redirectUrl || '/student';
+                if (typeof window !== 'undefined') {
+                    const params = new URLSearchParams(window.location.search);
+                    const r = params.get('redirect');
+                    if (r && r.startsWith('/')) {
+                        targetUrl = r;
+                    }
+                }
+                router.push(targetUrl);
             }, 800);
         } catch {
             setErrorMsg('Lỗi kết nối máy chủ. Vui lòng thử lại sau.');
