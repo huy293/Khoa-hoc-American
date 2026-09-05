@@ -71,6 +71,7 @@ export default async function StudentLessonPage({
             lesson={lesson}
             slug={slug}
             lessonSlug={lessonSlug}
+            isStudent={false}
         />
     );
 }

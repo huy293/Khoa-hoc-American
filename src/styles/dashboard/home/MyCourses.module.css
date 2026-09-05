@@ -205,6 +205,72 @@
     width: 100%;
 }
 
+/* ── Empty State ── */
+.my-courses__empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    border: 1px dashed #E2D3C2;
+    box-shadow: 0 4px 20px rgba(175, 136, 97, 0.05);
+    margin: 10px 0;
+}
+
+.my-courses__empty-icon {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #FFF8EF;
+}
+
+.my-courses__empty-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2B2117;
+    margin: 0 0 8px;
+}
+
+.my-courses__empty-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: #696969;
+    max-width: 480px;
+    line-height: 1.5;
+    margin: 0 0 24px;
+}
+
+.my-courses__empty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #AF8861 0%, #8D703D 100%);
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 99px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(175, 136, 97, 0.25);
+}
+
+.my-courses__empty-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(175, 136, 97, 0.35);
+}
+
 /* ── Load More Button ── */
 .my-courses__load-more-wrapper {
     display: flex;

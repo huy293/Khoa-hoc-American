@@ -44,9 +44,15 @@ export async function POST(req: NextRequest) {
       }
 
       // Xác thực thành công -> Lấy thông tin user và role
-      const user = data.user || {
-        username,
-        role: 'student',
+      const displayName = data.user?.displayName || username;
+      const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=AF8861&color=ffffff&size=150&bold=true`;
+
+      const user = {
+        ...data.user,
+        username: data.user?.username || username,
+        displayName: displayName,
+        role: data.user?.role || 'student',
+        avatar: data.user?.avatar || defaultAvatar,
       };
 
       const isTeacher = user.role === 'teacher' || user.role === 'instructor' || user.role === 'administrator';
@@ -76,11 +82,17 @@ export async function POST(req: NextRequest) {
       const isTeacher = username.toLowerCase().includes('teacher') || username.toLowerCase().includes('giangvien');
       const mockRole = isTeacher ? 'teacher' : 'student';
       const redirectUrl = isTeacher ? '/teacher' : '/student';
+      const mockDisplayName = isTeacher ? 'Giảng Viên Couture' : 'Học Viên Couture';
+
+      const mockAvatar = isTeacher
+        ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
+        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
 
       const mockUser = {
         username,
-        displayName: isTeacher ? 'Giảng Viên Couture' : 'Học Viên Couture',
+        displayName: mockDisplayName,
         role: mockRole,
+        avatar: mockAvatar,
       };
 
       const response = NextResponse.json({

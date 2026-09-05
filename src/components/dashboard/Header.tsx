@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuthUser } from '@/lib/auth-client';
 import styles from '@/styles/dashboard/Header.module.css';
 
 /* ── Page Info Dictionary for Dashboard Sub-pages ── */
@@ -95,6 +96,25 @@ interface HeaderProps {
 
 export default function Header({ onToggleSidebar, title, description }: HeaderProps = {}) {
     const pathname = usePathname();
+    const {
+        displayName,
+        avatar: userAvatar,
+        initials,
+        roleBadge,
+        isTeacher,
+        basePath: userBasePath,
+    } = useAuthUser();
+
+    const [avatarError, setAvatarError] = useState(false);
+
+    // Tự động reset trạng thái lỗi nếu URL avatar thay đổi
+    useEffect(() => {
+        setAvatarError(false);
+    }, [userAvatar]);
+
+    const activeAvatar = userAvatar || '/images/kathleen.png';
+    const isRemote = activeAvatar.startsWith('http');
+
     const isDashboardHome =
         pathname === '/dashboard' ||
         pathname === '/dashboard/' ||
@@ -103,7 +123,7 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
         pathname === '/teacher' ||
         pathname === '/teacher/';
 
-    const basePath = pathname?.startsWith('/teacher') ? '/teacher' : '/student';
+    const basePath = pathname?.startsWith('/teacher') ? '/teacher' : userBasePath || '/student';
 
     // Resolve custom or default page info for sub-routes (supports /student, /teacher, and /dashboard)
     const normalizedPath = pathname?.replace(/^\/(student|teacher)/, '/dashboard') || '';
@@ -121,19 +141,29 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
             {isDashboardHome ? (
                 <div className={styles['header__greeting']}>
                     <div className={styles['header__avatar-wrap']}>
-                        <Image
-                            src="/images/kathleen.png"
-                            alt="Lalisa Moban"
-                            width={48}
-                            height={48}
-                            className={styles['header__avatar-img']}
-                            priority
-                        />
+                        {!avatarError ? (
+                            <Image
+                                src={activeAvatar}
+                                alt={displayName}
+                                width={70}
+                                height={70}
+                                className={styles['header__avatar-img']}
+                                priority
+                                onError={() => setAvatarError(true)}
+                                unoptimized={isRemote}
+                            />
+                        ) : (
+                            <span className={styles['header__avatar-initials']}>
+                                {initials}
+                            </span>
+                        )}
                     </div>
                     <div className={styles['header__greeting-info']}>
-                        <h1 className={styles['header__greeting-title']}>Hi, Lalisa Moban!</h1>
+                        <h1 className={styles['header__greeting-title']}>Hi, {displayName}!</h1>
                         <p className={styles['header__greeting-desc']}>
-                            Take your steps to built a successful learning habit
+                            {isTeacher
+                                ? 'Manage your classrooms, curriculum, and student achievements'
+                                : 'Take your steps to built a successful learning habit'}
                         </p>
                     </div>
                 </div>
@@ -188,20 +218,28 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
                 <Link
                     href={`${basePath}/profile`}
                     className={styles['header__profile']}
-                    aria-label="User Account Profile"
+                    aria-label={`User Account Profile - ${displayName}`}
                 >
                     <div className={styles['header__profile-avatar-wrap']}>
-                        <Image
-                            src="/images/kathleen.png"
-                            alt="Lalisa Moban"
-                            width={36}
-                            height={36}
-                            className={styles['header__profile-avatar-img']}
-                        />
+                        {!avatarError ? (
+                            <Image
+                                src={activeAvatar}
+                                alt={displayName}
+                                width={48}
+                                height={48}
+                                className={styles['header__profile-avatar-img']}
+                                onError={() => setAvatarError(true)}
+                                unoptimized={isRemote}
+                            />
+                        ) : (
+                            <span className={styles['header__profile-avatar-initials']}>
+                                {initials}
+                            </span>
+                        )}
                     </div>
                     <div className={styles['header__profile-info']}>
-                        <span className={styles['header__profile-name']}>Lalisa Moban</span>
-                        <span className={styles['header__profile-badge']}>Student account</span>
+                        <span className={styles['header__profile-name']}>{displayName}</span>
+                        <span className={styles['header__profile-badge']}>{roleBadge}</span>
                     </div>
                     <span className={styles['header__profile-chevron']}>
                         <ChevronRightIcon />
