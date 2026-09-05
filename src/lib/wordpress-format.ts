@@ -188,7 +188,7 @@ export function parseLessonVideo(rawInput?: string | null): ParsedVideo | null {
   if (ytMatch && ytMatch[1]) {
     return {
       type: 'iframe',
-      src: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`,
+      src: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0&modestbranding=1&enablejsapi=1`,
     };
   }
 
@@ -199,7 +199,7 @@ export function parseLessonVideo(rawInput?: string | null): ParsedVideo | null {
   if (vimeoMatch && vimeoMatch[1]) {
     return {
       type: 'iframe',
-      src: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
+      src: `https://player.vimeo.com/video/${vimeoMatch[1]}?api=1`,
     };
   }
 
