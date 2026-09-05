@@ -72,6 +72,25 @@ export const Header = () => {
     const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [userHref, setUserHref] = useState('/login');
+
+    useEffect(() => {
+        try {
+            const match = document.cookie.match(/hn_user_session=([^;]+)/);
+            if (match) {
+                const user = JSON.parse(decodeURIComponent(match[1]));
+                const isTeacher =
+                    user.role === 'teacher' ||
+                    user.role === 'instructor' ||
+                    user.role === 'administrator';
+                setUserHref(isTeacher ? '/teacher' : '/student');
+            } else {
+                setUserHref('/login');
+            }
+        } catch {
+            setUserHref('/login');
+        }
+    }, [pathname]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -160,7 +179,7 @@ export const Header = () => {
                     </button>
 
                     <Link
-                        href="/student"
+                        href={userHref}
                         className={styles['header__action-btn']}
                         aria-label="User Account"
                     >
