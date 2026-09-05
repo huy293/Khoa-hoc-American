@@ -54,112 +54,6 @@ export interface ClassroomStudentItem {
     isHighlight?: boolean;
 }
 
-/* ── Sample Student Submissions Data (5 cột) ── */
-export const DEFAULT_STUDENT_SUBMISSIONS: StudentSubmissionItem[] = [
-    { id: '1', studentName: 'Shakia Afumba', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 1, status: 'Passed' },
-    { id: '2', studentName: 'Thomas Diaz', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 3, status: 'Unfinished' },
-    { id: '3', studentName: 'Felipe Castro', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 1, status: 'Passed' },
-    { id: '4', studentName: 'Carlos Álvarez', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 2, status: 'Unfinished' },
-    { id: '5', studentName: 'Fatima Ababio', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 2, status: 'Passed' },
-    { id: '6', studentName: 'Nicole Williams', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 3, status: 'Passed' },
-    { id: '7', studentName: 'Stephen Williams', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 1, status: 'Passed' },
-    { id: '8', studentName: 'Ishita Singh', submittedAt: 'Aug 25, 2026', score: '95/100', attempts: 1, status: 'Passed' },
-];
-
-/* ── Sample Classroom Students Data (6 cột như hình mẫu trong management/students) ── */
-export const DEFAULT_CLASSROOM_STUDENTS: ClassroomStudentItem[] = [
-    {
-        id: '1',
-        studentName: 'Zendaya Abdallah',
-        progress: '89%',
-        currentLesson: 'M02_LS03',
-        assignments: '3/4',
-        lastActive: 'Today',
-        quizAvg: '89%',
-        isHighlight: false,
-    },
-    {
-        id: '2',
-        studentName: 'Prasetyo Makuta Dabukke',
-        progress: '89%',
-        currentLesson: 'M02_LS03',
-        assignments: '3/4',
-        lastActive: '3days ago',
-        quizAvg: '89%',
-        isHighlight: false,
-    },
-    {
-        id: '3',
-        studentName: 'Maryam Khan',
-        progress: '89%',
-        currentLesson: 'M02_LS03',
-        assignments: '3/4',
-        lastActive: 'Today',
-        quizAvg: '89%',
-        isHighlight: false,
-    },
-    {
-        id: '4',
-        studentName: 'Jay Devi',
-        progress: '100%',
-        currentLesson: 'M02_LS03',
-        assignments: '4/4',
-        lastActive: 'Today',
-        quizAvg: 'Passed',
-        isHighlight: true,
-    },
-    {
-        id: '5',
-        studentName: 'Nicholas Hernandez',
-        progress: '89%',
-        currentLesson: 'M02_LS03',
-        assignments: '3/4',
-        lastActive: 'Today',
-        quizAvg: '89%',
-        isHighlight: false,
-    },
-    {
-        id: '6',
-        studentName: 'Aditya Das',
-        progress: '89%',
-        currentLesson: 'M02_LS03',
-        assignments: '3/4',
-        lastActive: 'Today',
-        quizAvg: '89%',
-        isHighlight: false,
-    },
-    {
-        id: '7',
-        studentName: 'Ishita Kumar',
-        progress: '100%',
-        currentLesson: 'M02_LS03',
-        assignments: '4/4',
-        lastActive: 'Today',
-        quizAvg: 'Passed',
-        isHighlight: true,
-    },
-    {
-        id: '8',
-        studentName: 'Parteek Lumari',
-        progress: '89%',
-        currentLesson: 'M02_LS03',
-        assignments: '3/4',
-        lastActive: 'Today',
-        quizAvg: '89%',
-        isHighlight: false,
-    },
-    {
-        id: '9',
-        studentName: 'Anaya Mandal',
-        progress: '100%',
-        currentLesson: 'M02_LS03',
-        assignments: '4/4',
-        lastActive: 'Today',
-        quizAvg: 'Passed',
-        isHighlight: true,
-    },
-];
-
 /* ── Generic Column Definition ── */
 export interface TablePaymentColumn<T = any> {
     key: string;
@@ -300,7 +194,7 @@ export default function TablePayment<T = any>({
     // ── 2. Classroom Students 6-Column Mode (NAME STUDENT, PROGRESS, CURRENT LESSON, ASSIGNMENTS, LAST ACTIVE, QUIZ AVG.) ──
     if (isStudentsMode) {
         const list: ClassroomStudentItem[] =
-            classroomStudents || (data as unknown as ClassroomStudentItem[]) || DEFAULT_CLASSROOM_STUDENTS;
+            classroomStudents || (data as unknown as ClassroomStudentItem[]) || [];
 
         const th1 = col1Title || 'NAME STUDENT';
         const th2 = col2Title || 'PROGRESS';
@@ -407,7 +301,7 @@ export default function TablePayment<T = any>({
     // ── 3. Student Submissions 5-Column Mode (NAME STUDENT, SUBMITTED AT, SCORE, ATTEMPTS, STATUS) ──
     if (isSubmissionMode) {
         const studentList: StudentSubmissionItem[] =
-            studentSubmissions || (data as unknown as StudentSubmissionItem[]) || DEFAULT_STUDENT_SUBMISSIONS;
+            studentSubmissions || (data as unknown as StudentSubmissionItem[]) || [];
 
         const th1 = col1Title || colIdTitle || 'NAME STUDENT';
         const th2 = col2Title || colPurchaseTitle || 'SUBMITTED AT';

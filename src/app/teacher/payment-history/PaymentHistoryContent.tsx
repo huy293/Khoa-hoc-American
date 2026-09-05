@@ -31,7 +31,7 @@ const EyeIcon = () => (
     </svg>
 );
 
-/* ── Invoice Interface & Sample Data ── */
+/* ── Invoice Interface Definitions ── */
 export interface InvoiceItem {
     id: string;
     orderId: string;
@@ -46,100 +46,29 @@ export interface InvoiceItem {
     tax?: string;
 }
 
-const TABS = [
-    { id: 'all', label: 'ALL INVOICES (20)' },
-    { id: 'course', label: 'COURSE PURCHASE INVOICE (20)' },
-    { id: 'product', label: 'PRODUCT PURCHASE INVOICE (8)' },
-];
+export interface PaymentHistoryContentProps {
+    initialInvoices?: InvoiceItem[];
+}
 
-const INITIAL_INVOICES: InvoiceItem[] = [
-    {
-        id: 'inv-1',
-        orderId: '#CBA-98421',
-        purchase: 'HydraFacial + 1 item',
-        category: 'product',
-        date: 'Aug 25, 2026',
-        payment: 'CREDIT CARD',
-        total: '$556.25',
-        isHighlight: false,
-        customerName: 'Lalisa Moban',
-        subtotal: '$515.00',
-        tax: '$41.25',
-    },
-    {
-        id: 'inv-2',
-        orderId: '#CBA-98421',
-        purchase: 'HydraFacial + 1 item',
-        category: 'product',
-        date: 'Aug 25, 2026',
-        payment: 'CREDIT CARD',
-        total: '$556.25',
-        isHighlight: false,
-        customerName: 'Lalisa Moban',
-        subtotal: '$515.00',
-        tax: '$41.25',
-    },
-    {
-        id: 'inv-3',
-        orderId: '#CBA-98421',
-        purchase: 'HydraFacial Traning Class',
-        category: 'course',
-        date: 'Aug 25, 2026',
-        payment: 'PAYPAL/ PAYPAL LATER/ CREDIT CARD',
-        total: '$556.25',
-        isHighlight: true, // background: #FFFBF4
-        customerName: 'Lalisa Moban',
-        subtotal: '$530.00',
-        tax: '$26.25',
-    },
-    {
-        id: 'inv-4',
-        orderId: '#CBA-98421',
-        purchase: 'HydraFacial + 1 item',
-        category: 'product',
-        date: 'Aug 25, 2026',
-        payment: 'CREDIT CARD',
-        total: '$556.25',
-        isHighlight: false,
-        customerName: 'Lalisa Moban',
-        subtotal: '$515.00',
-        tax: '$41.25',
-    },
-    {
-        id: 'inv-5',
-        orderId: '#CBA-98421',
-        purchase: 'HydraFacial + 1 item',
-        category: 'product',
-        date: 'Aug 25, 2026',
-        payment: 'CREDIT CARD',
-        total: '$556.25',
-        isHighlight: false,
-        customerName: 'Lalisa Moban',
-        subtotal: '$515.00',
-        tax: '$41.25',
-    },
-    {
-        id: 'inv-6',
-        orderId: '#CBA-98421',
-        purchase: 'HydraFacial Traning Class',
-        category: 'course',
-        date: 'Aug 25, 2026',
-        payment: 'PAYPAL/ PAYPAL LATER/ CREDIT CARD',
-        total: '$556.25',
-        isHighlight: true, // background: #FFFBF4
-        customerName: 'Lalisa Moban',
-        subtotal: '$530.00',
-        tax: '$26.25',
-    },
-];
-
-export default function PaymentHistoryContent() {
+export default function PaymentHistoryContent({ initialInvoices = [] }: PaymentHistoryContentProps = {}) {
+    const [invoices, setInvoices] = useState<InvoiceItem[]>(initialInvoices || []);
     const [activeTab, setActiveTab] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedInvoice, setSelectedInvoice] = useState<InvoiceItem | null>(null);
 
+    const allCount = invoices.length;
+    const courseCount = invoices.filter((i) => i.category === 'course').length;
+    const productCount = invoices.filter((i) => i.category === 'product').length;
+
+    const tabs: Array<{ id: string; label: string }> = [];
+    tabs.push(
+        { id: 'all', label: `ALL INVOICES (${allCount})` },
+        { id: 'course', label: `COURSE PURCHASE INVOICE (${courseCount})` },
+        { id: 'product', label: `PRODUCT PURCHASE INVOICE (${productCount})` }
+    );
+
     // Filter by Tab and Search query
-    const filteredInvoices = INITIAL_INVOICES.filter((item) => {
+    const filteredInvoices = invoices.filter((item) => {
         // Tab check
         if (activeTab !== 'all' && item.category !== activeTab) {
             return false;
@@ -162,14 +91,14 @@ export default function PaymentHistoryContent() {
             <div className={styles['payment-history__container']}>
                 {/* 1. Dashboard Heading */}
                 <DashboardHeadings
-                    tag="RESOURCES"
-                    title="Learning Resources"
+                    tag="PAYMENT HISTORY"
+                    title="Invoices & Transactions History"
                 />
 
                 {/* 2. Navigation Row: Filter Tabs & Search Box */}
                 <div className={styles['payment-history__nav-row']}>
                     <div className={styles['payment-history__tabs']}>
-                        {TABS.map((tab) => {
+                        {tabs.map((tab) => {
                             const isActive = activeTab === tab.id;
                             return (
                                 <button

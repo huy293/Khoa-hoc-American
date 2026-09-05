@@ -40,7 +40,7 @@ const LoadMoreChevronIcon = () => (
     </svg>
 );
 
-/* ── Types & Mock Data ── */
+/* ── Types & Interface Definitions ── */
 interface ResourceItem {
     id: string;
     category: 'all' | 'cert' | 'laser' | 'pmu';
@@ -54,165 +54,35 @@ interface ResourceItem {
     };
 }
 
-const TABS = [
-    { id: 'all', label: 'ALL COURSE (20)' },
-    { id: 'cert', label: 'CERTIFICATE TRAINING (12)' },
-    { id: 'laser', label: 'LASER TRAINING COURSES (5)' },
-    { id: 'pmu', label: 'P.M.U TRAINING COURSES (3)' },
-];
-
-const MOCK_RESOURCES: ResourceItem[] = [
-    {
-        id: '1',
-        category: 'cert',
-        image: '/images/gallery/image-1.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '2',
-        category: 'cert',
-        image: '/images/gallery/image-2.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '3',
-        category: 'laser',
-        image: '/images/gallery/image-3.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '4',
-        category: 'pmu',
-        image: '/images/gallery/image-4.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '5',
-        category: 'cert',
-        image: '/images/gallery/image-5.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '6',
-        category: 'laser',
-        image: '/images/gallery/image-6.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '7',
-        category: 'pmu',
-        image: '/images/gallery/image-7.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '8',
-        category: 'cert',
-        image: '/images/gallery/image-8.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '9',
-        category: 'laser',
-        image: '/images/gallery/image-9.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '10',
-        category: 'pmu',
-        image: '/images/gallery/image-10.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '11',
-        category: 'cert',
-        image: '/images/gallery/image-1.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '12',
-        category: 'cert',
-        image: '/images/gallery/image-2.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-];
-
-export default function ResourcesContent() {
+export default function ResourcesContent({
+    initialResources = [],
+}: {
+    initialResources?: ResourceItem[];
+}) {
+    const allResources = initialResources || [];
     const [activeTab, setActiveTab] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
     const [visibleCount, setVisibleCount] = useState<number>(8);
+
+    const dynamicTabs = useMemo(() => {
+        const counts: Record<string, number> = {
+            all: allResources.length,
+            cert: allResources.filter((r) => r.category === 'cert').length,
+            laser: allResources.filter((r) => r.category === 'laser').length,
+            pmu: allResources.filter((r) => r.category === 'pmu').length,
+        };
+        const tabConfigs = [
+            'all|ALL COURSE',
+            'cert|CERTIFICATE TRAINING',
+            'laser|LASER TRAINING COURSES',
+            'pmu|P.M.U TRAINING COURSES',
+        ];
+        return tabConfigs.map((cfg) => {
+            const [id, label] = cfg.split('|');
+            return { id, label: `${label} (${counts[id] || 0})` };
+        });
+    }, [allResources]);
 
     const toggleLike = (id: string) => {
         setLikedIds((prev) => {
@@ -251,7 +121,7 @@ export default function ResourcesContent() {
 
     // Filter by tab & search query
     const filteredResources = useMemo(() => {
-        return MOCK_RESOURCES.filter((res) => {
+        return allResources.filter((res) => {
             const matchesTab = activeTab === 'all' || res.category === activeTab;
             const matchesSearch =
                 searchQuery.trim() === '' ||
@@ -281,7 +151,7 @@ export default function ResourcesContent() {
                 {/* 2. Navigation Row: Filter Tabs & Search Box */}
                 <div className={styles['resources-content__nav-row']}>
                     <div className={styles['resources-content__tabs']}>
-                        {TABS.map((tab) => {
+                        {dynamicTabs.map((tab) => {
                             const isActive = activeTab === tab.id;
                             return (
                                 <button

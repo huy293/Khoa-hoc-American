@@ -10,35 +10,15 @@ export interface TestimonialProps {
     items?: WPTestimonialItem[];
 }
 
-const DEFAULT_STORIES = [
-    {
-        name: "Jasmine Lee",
-        role: "PERMANENT MAKEUP · CLASS OF 2024",
-        comment: "“My instructors stayed with me until my technique was consistent, not just good enough for class. The training gave me complete confidence.”",
-        avatar: "/images/home/jasmine_lee.jpg",
-    },
-    {
-        name: "Sarah Jenkins",
-        role: "LASER SPECIALIST · CLASS OF 2023",
-        comment: "“The hands-on training on real models gave me the confidence I needed to launch my own aesthetic studio immediately after graduation. The master trainers are truly world-class.”",
-        avatar: "/images/home/emily.png",
-    },
-    {
-        name: "Kathleen Nguyen",
-        role: "ESTHETICIAN · CLASS OF 2024",
-        comment: "“Starting with zero experience, Couture Beauty Academy provided step-by-step guidance and TDLR licensing exam preparation that completely transformed my career path.”",
-        avatar: "/images/home/kathleen.png",
-    },
-];
-
 export default function Testimonial({
     eyebrow = "STUDENT STORIES",
     title = "Most of them started <br />with no experience",
-    items = DEFAULT_STORIES,
+    items = [],
 }: TestimonialProps = {}) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const activeList = items && items.length > 0 ? items : DEFAULT_STORIES;
+    const activeList = items || [];
+    if (activeList.length === 0) return null;
 
     const handlePrev = () => {
         setCurrentIndex((prev) => (prev === 0 ? activeList.length - 1 : prev - 1));
@@ -48,7 +28,7 @@ export default function Testimonial({
         setCurrentIndex((prev) => (prev === activeList.length - 1 ? 0 : prev + 1));
     };
 
-    const currentStory = activeList[currentIndex] || DEFAULT_STORIES[0];
+    const currentStory = activeList[currentIndex] || activeList[0] || { name: "", role: "", comment: "" };
     const avatarUrl = typeof currentStory.avatar === 'string' ? currentStory.avatar : (currentStory.avatar?.sourceUrl || "/images/home/jasmine_lee.jpg");
 
     return (

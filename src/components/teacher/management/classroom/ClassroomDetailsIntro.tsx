@@ -107,42 +107,24 @@ export interface ClassroomDetailsIntroProps {
     metrics?: MetricCardItem[];
 }
 
-const DEFAULT_METRICS: MetricCardItem[] = [
-    {
-        id: 'students',
-        number: '13',
-        title: 'TOTAL STUDENTS',
-        icon: <StudentsGroupIcon />,
-    },
-    {
-        id: 'completed',
-        number: '3',
-        title: 'TOTAL STUDENTS COMPLETED',
-        icon: <GraduationCapIcon />,
-    },
-    {
-        id: 'progress',
-        number: '88%',
-        title: 'AVERAGE PROGRESS',
-        icon: <ScreenMonitorIcon />,
-    },
-    {
-        id: 'attendance',
-        number: '91%',
-        title: 'ATTENDANCE',
-        icon: <AttendanceIcon />,
-    },
-];
+function makeMetricCard(id: string, number: string, title: string, icon: React.ReactNode): MetricCardItem {
+    return { id, number, title, icon };
+}
+
+function getInitialMetrics(): MetricCardItem[] {
+    const list: MetricCardItem[] = [];
+    list.push(makeMetricCard('students', '0', 'TOTAL STUDENTS', <StudentsGroupIcon />));
+    list.push(makeMetricCard('completed', '0', 'TOTAL STUDENTS COMPLETED', <GraduationCapIcon />));
+    list.push(makeMetricCard('progress', '0%', 'AVERAGE PROGRESS', <ScreenMonitorIcon />));
+    list.push(makeMetricCard('attendance', '100%', 'ATTENDANCE', <AttendanceIcon />));
+    return list;
+}
 
 export default function ClassroomDetailsIntro({
     backHref = '/teacher/management/classroom',
-    title = 'INTRODUCTION TO HYDRAFACIAL',
-    description = 'Learn the essential techniques behind professional deep cleansing and exfoliation. This lesson covers proper skin preparation, product application, handpiece control, and key safety considerations to help you perform the treatment with confidence and precision.',
-    trainer = {
-        name: 'Kathleen trainer',
-        avatar: '/images/kathleen.png',
-        rating: '4.9/5.0',
-    },
+    title = '',
+    description = '',
+    trainer,
     trainerName,
     trainerAvatar,
     trainerRating,
@@ -154,17 +136,13 @@ export default function ClassroomDetailsIntro({
     starIcon,
     rightContent,
     onBackClick,
-    journeyBadge = 'Continue Your Learning Journey',
-    journeyTitle = (
-        <>
-            Hydra Facial<br />
-            Professional Training
-        </>
-    ),
-    journeyDesc = 'Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.',
-    learningProgress = 89,
-    metrics = DEFAULT_METRICS,
+    journeyBadge = 'Course Learning Journey',
+    journeyTitle,
+    journeyDesc,
+    learningProgress = 0,
+    metrics,
 }: ClassroomDetailsIntroProps) {
+    const displayMetrics = metrics && metrics.length > 0 ? metrics : getInitialMetrics();
     // Gauge calculations for radius = 56 (circumference ≈ 351.86)
     const gaugeRadius = 56;
     const gaugeStrokeWidth = 14;
@@ -257,7 +235,7 @@ export default function ClassroomDetailsIntro({
 
                     {/* Right 2x2 Metric Cards Grid */}
                     <div className={styles['metrics-grid']}>
-                        {metrics.map((item) => (
+                        {displayMetrics.map((item) => (
                             <article key={item.id} className={styles['metric-card']}>
                                 <div className={styles['metric-card__top']}>
                                     <div className={styles['metric-card__icon-box']}>

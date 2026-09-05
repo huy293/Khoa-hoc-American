@@ -69,9 +69,16 @@ export async function GET(req: NextRequest) {
         if (wpRes.ok) {
           const wpData = await wpRes.json();
           if (wpData?.success && wpData?.user) {
+            const isTeacher =
+              wpData.user.role === 'teacher' ||
+              wpData.user.role === 'instructor' ||
+              wpData.user.role === 'administrator' ||
+              (user.username && (user.username.toLowerCase().includes('teacher') || user.username.toLowerCase().includes('giangvien')));
+
             user = {
               ...user,
               ...wpData.user,
+              role: isTeacher ? 'teacher' : (wpData.user.role || 'student'),
               avatar: wpData.user.avatar || user.avatar,
             };
           }

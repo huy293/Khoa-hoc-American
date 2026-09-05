@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { CartProvider } from '@/context/CartContext';
 
 export const metadata: Metadata = {
   metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
@@ -15,8 +16,11 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
 }
+

@@ -47,16 +47,22 @@ export async function POST(req: NextRequest) {
       const displayName = data.user?.displayName || username;
       const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=AF8861&color=ffffff&size=150&bold=true`;
 
+      // Phân quyền 100% dựa vào Role thực tế từ WordPress Database, không check theo tên tài khoản
+      const userRole = data.user?.role || 'student';
+      const isTeacherRole =
+        userRole === 'teacher' ||
+        userRole === 'instructor' ||
+        userRole === 'administrator';
+
       const user = {
         ...data.user,
         username: data.user?.username || username,
         displayName: displayName,
-        role: data.user?.role || 'student',
+        role: isTeacherRole ? 'teacher' : userRole,
         avatar: data.user?.avatar || defaultAvatar,
       };
 
-      const isTeacher = user.role === 'teacher' || user.role === 'instructor' || user.role === 'administrator';
-      const redirectUrl = isTeacher ? '/teacher' : '/student';
+      const redirectUrl = isTeacherRole ? '/teacher' : '/student';
 
       const response = NextResponse.json({
         success: true,
@@ -76,41 +82,11 @@ export async function POST(req: NextRequest) {
 
       return response;
     } catch (wpError) {
-      console.warn('WP Login Endpoint not ready, handling smart mock for testing:', wpError);
-
-      // Nhận diện tài khoản test cho developer
-      const isTeacher = username.toLowerCase().includes('teacher') || username.toLowerCase().includes('giangvien');
-      const mockRole = isTeacher ? 'teacher' : 'student';
-      const redirectUrl = isTeacher ? '/teacher' : '/student';
-      const mockDisplayName = isTeacher ? 'Giảng Viên Couture' : 'Học Viên Couture';
-
-      const mockAvatar = isTeacher
-        ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
-        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
-
-      const mockUser = {
-        username,
-        displayName: mockDisplayName,
-        role: mockRole,
-        avatar: mockAvatar,
-      };
-
-      const response = NextResponse.json({
-        success: true,
-        message: 'Đăng nhập thành công!',
-        user: mockUser,
-        redirectUrl,
-      });
-
-      response.cookies.set('hn_user_session', JSON.stringify(mockUser), {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7,
-      });
-
-      return response;
+      console.error('WP Login error:', wpError);
+      return NextResponse.json(
+        { success: false, message: 'Không thể kết nối với máy chủ xác thực WordPress. Vui lòng kiểm tra lại kết nối.' },
+        { status: 502 }
+      );
     }
   } catch (error) {
     return NextResponse.json(

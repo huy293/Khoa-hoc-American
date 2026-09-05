@@ -13,112 +13,10 @@ const ChevronRightIcon = () => (
     </svg>
 );
 
-const TABS = [
-    { id: 'all', label: 'ALL COURSE (20)' },
-    { id: 'cert', label: 'CERTIFICATE TRAINING (12)' },
-    { id: 'laser', label: 'LASER TRAINING COURSES (5)' },
-    { id: 'pmu', label: 'P.M.U TRAINING COURSES (3)' },
-];
-
 export interface CatalogCourseItem extends CourseCardProps {
     id: string;
     category: 'cert' | 'laser' | 'pmu' | 'all';
 }
-
-const DEFAULT_COURSES: CatalogCourseItem[] = [
-    {
-        id: 'course-1',
-        category: 'cert',
-        image: '/images/courses/card-hydra.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'HYDRA FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        module: '5 module',
-        lessons: '24 lessons',
-        quizzes: '4 quizzes',
-        curriculum: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-        actionType: 'register',
-        ctaText: 'REGISTARTION NOW!',
-        courseUrl: '/courses/hydra-facial',
-        previewUrl: '/courses/hydra-facial',
-    },
-    {
-        id: 'course-2',
-        category: 'cert',
-        image: '/images/courses/card-advance.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'ADVENCE FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        module: '5 module',
-        lessons: '24 lessons',
-        quizzes: '4 quizzes',
-        curriculum: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-        actionType: 'register',
-        ctaText: 'REGISTARTION NOW!',
-        courseUrl: '/courses/advence-facial',
-        previewUrl: '/courses/advence-facial',
-    },
-    {
-        id: 'course-3',
-        category: 'cert',
-        image: '/images/courses/card-hydra.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'HYDRA FACIAL',
-        subtitle: 'Professional HydraFacial Training',
-        module: '5 module',
-        lessons: '24 lessons',
-        quizzes: '4 quizzes',
-        curriculum: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-        actionType: 'register',
-        ctaText: 'REGISTARTION NOW!',
-        courseUrl: '/courses/hydra-facial',
-        previewUrl: '/courses/hydra-facial',
-    },
-    {
-        id: 'course-4',
-        category: 'cert',
-        image: '/images/courses/card-derma.jpg',
-        tag: 'Facial class',
-        rating: '4.9/5.0',
-        traineeCount: '(2.700+ trainee)',
-        title: 'DERMA PLANNING',
-        subtitle: 'Professional HydraFacial Training',
-        module: '5 module',
-        lessons: '24 lessons',
-        quizzes: '4 quizzes',
-        curriculum: ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'],
-        trainer: {
-            name: 'Kathleen trainer',
-            avatar: '/images/kathleen.png',
-            rating: '4.9/5.0',
-        },
-        actionType: 'register',
-        ctaText: 'REGISTARTION NOW!',
-        courseUrl: '/courses/derma-planning',
-        previewUrl: '/courses/derma-planning',
-    },
-];
 
 export interface CourseCatalogListProps {
     tag?: string;
@@ -130,10 +28,19 @@ export interface CourseCatalogListProps {
 export default function CourseCatalogList({
     tag = 'COURSES CATOLOG LIST',
     title = "Let's explore the course together!",
-    courses = DEFAULT_COURSES,
+    courses = [],
     seeMoreHref = '/courses',
 }: CourseCatalogListProps) {
     const [activeTab, setActiveTab] = useState<string>('cert');
+
+    const tabs = React.useMemo(() => {
+        const list = [];
+        list.push({ id: 'all', label: `ALL COURSE (${courses.length})` });
+        list.push({ id: 'cert', label: `CERTIFICATE TRAINING (${courses.filter((c) => c.category === 'cert').length})` });
+        list.push({ id: 'laser', label: `LASER TRAINING COURSES (${courses.filter((c) => c.category === 'laser').length})` });
+        list.push({ id: 'pmu', label: `P.M.U TRAINING COURSES (${courses.filter((c) => c.category === 'pmu').length})` });
+        return list;
+    }, [courses]);
 
     const filteredCourses = courses.filter((c) =>
         activeTab === 'all' ? true : c.category === activeTab
@@ -148,7 +55,7 @@ export default function CourseCatalogList({
                 {/* 2. Nav: Filter Tabs & See More Link */}
                 <div className={styles['course-catalog__nav-row']}>
                     <div className={styles['course-catalog__tabs']} role="tablist" aria-label="Course Category Tabs">
-                        {TABS.map((tab) => (
+                        {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 type="button"

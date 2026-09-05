@@ -11,34 +11,6 @@ interface InternalPartnerLogo {
     src: string;
 }
 
-const DEFAULT_PARTNER_LOGOS: InternalPartnerLogo[] = [
-    {
-        id: 'young-nails',
-        name: 'Young Nails',
-        src: '/images/logos/young-nails.png',
-    },
-    {
-        id: 'perma-blend',
-        name: 'Perma Blend',
-        src: '/images/logos/perma-blend.png',
-    },
-    {
-        id: 'mehron-makeup',
-        name: 'Mehron Makeup',
-        src: '/images/logos/mehron-makeup.png',
-    },
-    {
-        id: 'aacs',
-        name: 'American Association of Cosmetology Schools',
-        src: '/images/logos/aacs.png',
-    },
-    {
-        id: 'quantum-pmu-colors',
-        name: 'Quantum PMU Colors',
-        src: '/images/logos/quantum-pmu-colors.png',
-    },
-];
-
 const getDisplayLogos = (items: InternalPartnerLogo[], minCount: number = 15): InternalPartnerLogo[] => {
     if (!items || items.length === 0) return [];
     const repeatCount = Math.ceil(minCount / items.length);
@@ -46,13 +18,15 @@ const getDisplayLogos = (items: InternalPartnerLogo[], minCount: number = 15): I
 };
 
 export default function Partner({ logos }: PartnerProps = {}) {
-    const rawList: InternalPartnerLogo[] = (logos && logos.length > 0)
-        ? logos.map((item, index) => ({
-            id: `partner-${index}`,
-            name: item.name || `Partner ${index + 1}`,
-            src: typeof item.logo === 'string' ? item.logo : (item.logo?.sourceUrl || DEFAULT_PARTNER_LOGOS[index % DEFAULT_PARTNER_LOGOS.length].src),
-        }))
-        : DEFAULT_PARTNER_LOGOS;
+    if (!logos || logos.length === 0) return null;
+
+    const rawList: InternalPartnerLogo[] = logos.map((item, index) => ({
+        id: `partner-${index}`,
+        name: item.name || `Partner ${index + 1}`,
+        src: typeof item.logo === 'string' ? item.logo : (item.logo?.sourceUrl || ''),
+    })).filter(item => item.src !== '');
+
+    if (rawList.length === 0) return null;
 
     const displayLogos = getDisplayLogos(rawList, 15);
     return (

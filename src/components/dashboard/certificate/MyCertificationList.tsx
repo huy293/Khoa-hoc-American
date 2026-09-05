@@ -58,7 +58,7 @@ const ChevronDownIcon = () => (
     </svg>
 );
 
-/* ── Certificate Data Interface & Mock List ── */
+/* ── Certificate Data Interface Definitions ── */
 export interface CertificateItem {
     id: string;
     title: string;
@@ -70,106 +70,6 @@ export interface CertificateItem {
     recipientName?: string;
 }
 
-const TABS = [
-    { id: 'all', label: 'ALL COURSE (20)' },
-    { id: 'cert', label: 'CERTIFICATE TRAINING (12)' },
-    { id: 'laser', label: 'LASER TRAINING COURSES (5)' },
-    { id: 'pmu', label: 'P.M.U TRAINING COURSES (3)' },
-];
-
-const INITIAL_CERTIFICATES: CertificateItem[] = [
-    {
-        id: 'cert-1',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'cert',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3930',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-2',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'cert',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3931',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-3',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'cert',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3932',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-4',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'laser',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3933',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-5',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'laser',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3934',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-6',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'pmu',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3935',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-7',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'cert',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3936',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-8',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'cert',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3937',
-        recipientName: 'Arjun Choudhary',
-    },
-    {
-        id: 'cert-9',
-        title: 'Certification HydraFacial Professional',
-        courseName: 'HydraFacial Professional Training',
-        category: 'pmu',
-        image: '/images/mau-certificate.jpg',
-        issuedDate: '29/09/2026',
-        certificateNumber: 'CBA-2026-902FH-3938',
-        recipientName: 'Arjun Choudhary',
-    },
-];
-
 export interface MyCertificationListProps {
     tag?: string;
     title?: string;
@@ -180,7 +80,7 @@ export interface MyCertificationListProps {
 export default function MyCertificationList({
     tag = 'MY CERTIFICATE LIST',
     title = 'Certificates that have been issued',
-    initialCertificates = INITIAL_CERTIFICATES,
+    initialCertificates = [],
     limit = 6,
 }: MyCertificationListProps) {
     const [activeTab, setActiveTab] = useState<string>('all');
@@ -188,6 +88,15 @@ export default function MyCertificationList({
     const [visibleCount, setVisibleCount] = useState<number>(limit);
     const [previewCert, setPreviewCert] = useState<CertificateItem | null>(null);
     const searchInputId = useId();
+
+    const tabs = React.useMemo(() => {
+        const list = [];
+        list.push({ id: 'all', label: `ALL COURSE (${initialCertificates.length})` });
+        list.push({ id: 'cert', label: `CERTIFICATE TRAINING (${initialCertificates.filter((c) => c.category === 'cert').length})` });
+        list.push({ id: 'laser', label: `LASER TRAINING COURSES (${initialCertificates.filter((c) => c.category === 'laser').length})` });
+        list.push({ id: 'pmu', label: `P.M.U TRAINING COURSES (${initialCertificates.filter((c) => c.category === 'pmu').length})` });
+        return list;
+    }, [initialCertificates]);
 
     // Filter logic based on tab and search keyword
     const filteredCertificates = initialCertificates.filter((item) => {
@@ -225,7 +134,7 @@ export default function MyCertificationList({
                 {/* 2. Nav: Filter Tabs & Search Bar */}
                 <div className={styles['my-certifications__nav-row']}>
                     <div className={styles['my-certifications__tabs']} role="tablist" aria-label="Certificate Categories">
-                        {TABS.map((tab) => (
+                        {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 type="button"

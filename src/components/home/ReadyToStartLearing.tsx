@@ -16,25 +16,6 @@ interface LearningItem {
     linkUrl: string;
 }
 
-const DEFAULT_LEARNING_ITEMS: LearningItem[] = [
-    {
-        id: 1,
-        title: "Shop professional supplies",
-        description: "Professional skincare, PMU and lash supplies - the same lines we train on.",
-        image: "/images/home/shop-professional-supplies.jpg",
-        linkText: "VISIT THE SHOP",
-        linkUrl: "/shop",
-    },
-    {
-        id: 2,
-        title: "For salons & professionals",
-        description: "Continuing education, group certifications, and advanced specialty workshops.",
-        image: "/images/home/for-salons-and-professionals.jpg",
-        linkText: "TALK TO Admissions",
-        linkUrl: "/contact",
-    },
-];
-
 export default function ReadyToStartLearing({ data }: ReadyToStartLearingProps = {}) {
     const eyebrow = data?.ready_eyebrow || "READY TO START LEARNING?";
     const title = data?.ready_title || "Find the Beauty Course <br />That Fits Your Craft.";
@@ -44,11 +25,13 @@ export default function ReadyToStartLearing({ data }: ReadyToStartLearingProps =
             id: idx + 1,
             title: c.title,
             description: c.description,
-            image: typeof c.image === 'string' ? c.image : (c.image?.sourceUrl || DEFAULT_LEARNING_ITEMS[idx % DEFAULT_LEARNING_ITEMS.length].image),
-            linkText: c.link_text || DEFAULT_LEARNING_ITEMS[idx % DEFAULT_LEARNING_ITEMS.length].linkText,
-            linkUrl: c.link_url || DEFAULT_LEARNING_ITEMS[idx % DEFAULT_LEARNING_ITEMS.length].linkUrl,
+            image: typeof c.image === 'string' ? c.image : (c.image?.sourceUrl || "/images/home/shop-professional-supplies.jpg"),
+            linkText: c.link_text || "EXPLORE",
+            linkUrl: c.link_url || "/shop",
         }))
-        : DEFAULT_LEARNING_ITEMS;
+        : [];
+
+    if (cards.length === 0) return null;
     return (
         <section className={styles['ready-to-start-learning']}>
             <img

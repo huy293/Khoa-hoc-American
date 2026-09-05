@@ -75,28 +75,35 @@ interface BenefitItem {
     description: string;
 }
 
-const BENEFITS_DATA: BenefitItem[] = [
-    {
-        id: 'benefit-1',
-        title: 'Master Advanced Applications Technology Facial',
-        description:
-            'You will gain access to and become proficient in a leading global skincare technology, elevating your skills and reputation in the industry.',
-    },
-    {
-        id: 'benefit-2',
-        title: 'Increase Income and Career Opportunities',
-        description:
-            'Earning a HydraFacial certification makes it easier to secure positions at high-end spas and clinics or to start your own business.',
-    },
-    {
-        id: 'benefit-3',
-        title: 'Address a Wide Range of Skin Concerns',
-        description:
-            'The course provides the knowledge to address various skin issues, giving you confidence in consulting and treating clients.',
-    },
-];
+interface CourseBenefitsProps {
+    benefits?: Array<string | { id?: string; title: string; description?: string }>;
+    courseTitle?: string;
+}
 
-export default function CourseBenefits() {
+export default function CourseBenefits({ benefits, courseTitle }: CourseBenefitsProps) {
+    const items: BenefitItem[] = React.useMemo(() => {
+        if (Array.isArray(benefits) && benefits.length > 0) {
+            return benefits.map((b, idx) => {
+                if (typeof b === 'string') {
+                    return {
+                        id: `benefit-${idx + 1}`,
+                        title: b,
+                        description: `Kiến thức thực chiến và kỹ năng chuyên sâu được trang bị trong suốt khóa học.`,
+                    };
+                }
+                return {
+                    id: b.id || `benefit-${idx + 1}`,
+                    title: b.title || `Lợi ích khóa học ${idx + 1}`,
+                    description: b.description || 'Nắm vững kiến thức và kỹ năng thực hành chuyên sâu chuẩn quốc tế.',
+                };
+            });
+        }
+
+        return [];
+    }, [benefits]);
+
+    if (items.length === 0) return null;
+
     return (
         <section className={styles['benefits-section']}>
             {/* ── 1. Header (Eyebrow, Gradient Line, Title) ── */}
@@ -112,9 +119,9 @@ export default function CourseBenefits() {
                 </h2>
             </div>
 
-            {/* ── 2. Benefits Row / Grid (3 Items) ── */}
+            {/* ── 2. Benefits Row / Grid ── */}
             <div className={styles['benefits-section__content']}>
-                {BENEFITS_DATA.map((item, index) => (
+                {items.map((item, index) => (
                     <div key={item.id} className={styles['benefit-card']}>
                         <BenefitBadgeIcon id={`${index + 1}`} />
                         <div className={styles['benefit-card__text-wrap']}>

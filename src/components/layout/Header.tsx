@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from '@/styles/layout/Header.module.css';
+import { useCart } from '@/context/CartContext';
 
 /* ── SVG Icons ── */
 const SearchIcon = () => (
@@ -54,26 +55,37 @@ const CloseIcon = () => (
     </svg>
 );
 
-interface NavItem {
+export interface NavItem {
     label: string;
     href: string;
 }
 
-const NAV_ITEMS: NavItem[] = [
-    { label: 'HOME', href: '/' },
-    { label: 'COURSES', href: '/courses' },
-    { label: 'SHOP', href: '/shop' },
-    { label: 'ABOUT', href: '/about-us' },
-    { label: 'RESOURCES', href: '/resources' },
-    { label: 'CONTACT', href: '/contact' },
-];
+export interface HeaderProps {
+    menuItems?: NavItem[];
+}
 
-export const Header = () => {
+const toNavItems = (items: Array<[string, string]>): NavItem[] => items.map(([label, href]) => ({ label, href }));
+
+function getDefaultNavItems(): NavItem[] {
+    return toNavItems([
+        ['HOME', '/'],
+        ['COURSES', '/courses'],
+        ['SHOP', '/shop'],
+        ['ABOUT', '/about-us'],
+        ['RESOURCES', '/resources'],
+        ['CONTACT', '/contact'],
+    ]);
+}
+
+export const Header = ({ menuItems }: HeaderProps = {}) => {
+    const navItems = menuItems && menuItems.length > 0 ? menuItems : getDefaultNavItems();
     const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [userHref, setUserHref] = useState('/login');
+
+    const { cartCount } = useCart();
 
     useEffect(() => {
         setMounted(true);
@@ -138,7 +150,7 @@ export const Header = () => {
                 {/* 2. Center: Desktop Navigation Links */}
                 <nav className={styles['header__nav']} aria-label="Main Navigation">
                     <ul className={styles['header__nav-list']}>
-                        {NAV_ITEMS.map((item) => {
+                        {navItems.map((item) => {
                             const isActive =
                                 item.href === '/'
                                     ? pathname === '/'
@@ -177,6 +189,11 @@ export const Header = () => {
                         aria-label="Shopping Cart"
                     >
                         <CartIcon />
+                        {mounted && cartCount > 0 && (
+                            <span className={styles['header__cart-badge']}>
+                                {cartCount > 99 ? '99+' : cartCount}
+                            </span>
+                        )}
                     </Link>
 
                     <Link
@@ -226,7 +243,7 @@ export const Header = () => {
                     </div>
 
                     <ul className={styles['header__mobile-nav-list']}>
-                        {NAV_ITEMS.map((item) => {
+                        {navItems.map((item) => {
                             const isActive =
                                 item.href === '/'
                                     ? pathname === '/'

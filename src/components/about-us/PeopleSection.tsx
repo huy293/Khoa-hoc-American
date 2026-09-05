@@ -6,35 +6,14 @@ interface PeopleSectionProps {
     data?: Partial<WPAboutFields>;
 }
 
-const PEOPLE_DATA: WPInstructorCard[] = [
-    {
-        quote_text: "Where experience becomes artistry, and artistry becomes a career.",
-        quote_author: "KATHLEEN",
-        name: "Thomas Nguyen",
-        role: "Master Trainer",
-        bio: "Trained at PhiBrows, Extreme Lash and Will Anthony Permanent Makeup Academy",
-        tags: ["Artistry", "Expertise", "Mentorship"],
-        image: "/images/thomas-nguyen.png",
-    },
-    {
-        quote_text: "Confidence grows through practice, creativity, and experience",
-        quote_author: "KATHLEEN",
-        name: "Kathleen",
-        role: "Master Trainer",
-        bio: "Trained at PhiBrows, Extreme Lash and Will Anthony Permanent Makeup Academy",
-        tags: ["20+ Experience", "Versatility", "Creativity"],
-        image: "/images/kathleen.png",
-    },
-];
-
 export default function PeopleSection({ data }: PeopleSectionProps = {}) {
     const eyebrow = data?.instructor_eyebrow || data?.about_instructors_eyebrow || "MEET YOUR INSTRUCTOR";
     const title = data?.instructor_title || data?.about_instructors_title || "Meet Teaching & Training Team";
     const description = data?.instructor_desc || data?.about_instructors_desc || "Advanced Skincare · Facial Techniques · Beauty Aesthetics · Professional Practice";
     const rawCards = data?.instructor_cards || data?.about_instructors;
-    const cards: WPInstructorCard[] = (rawCards && rawCards.length > 0)
-        ? rawCards
-        : PEOPLE_DATA;
+    const cards: WPInstructorCard[] = (rawCards && rawCards.length > 0) ? rawCards : [];
+
+    if (cards.length === 0) return null;
 
     return (
         <section className={styles["about-people"]}>

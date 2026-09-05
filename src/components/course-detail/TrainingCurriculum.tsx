@@ -111,148 +111,55 @@ interface CurriculumModule {
     lessons: ModuleLesson[];
 }
 
-const MODULES_DATA: CurriculumModule[] = [
-    {
-        id: 'module-01',
-        moduleNumber: 'Module 01: Theory',
-        title: 'Theory',
-        lessonsCount: '3 lessons',
-        lessons: [
-            {
-                id: 'l1',
-                number: '01',
-                title: 'Introduction to HydraFacial Technology',
-                videos: 2,
-                exercises: 1,
-                duration: '45 min',
-                isLocked: false,
-            },
-            {
-                id: 'l2',
-                number: '02',
-                title: 'Structure & Working Principles of HydraFacial Machine',
-                videos: 3,
-                exercises: 1,
-                duration: '60 min',
-                isLocked: true,
-            },
-            {
-                id: 'l3',
-                number: '03',
-                title: "HydraFacial's Exclusive Serums and Specialized Tips",
-                videos: 2,
-                exercises: 2,
-                duration: '50 min',
-                isLocked: true,
-            },
-        ],
-    },
-    {
-        id: 'module-02',
-        moduleNumber: 'Module 02: Professional Practice',
-        title: 'Professional Practice',
-        lessonsCount: '4 lessons',
-        lessons: [
-            {
-                id: 'l4',
-                number: '04',
-                title: 'Sterilization Protocols & Machine Setup',
-                videos: 2,
-                exercises: 1,
-                duration: '40 min',
-                isLocked: true,
-            },
-            {
-                id: 'l5',
-                number: '05',
-                title: 'Live Model Step-by-Step Execution',
-                videos: 4,
-                exercises: 2,
-                duration: '90 min',
-                isLocked: true,
-            },
-        ],
-    },
-    {
-        id: 'module-03',
-        moduleNumber: 'Module 03: Advanced Applications',
-        title: 'Advanced Applications',
-        lessonsCount: '3 lessons',
-        lessons: [
-            {
-                id: 'l6',
-                number: '06',
-                title: 'Customized Treatment for Sensitive & Acne Skin',
-                videos: 3,
-                exercises: 1,
-                duration: '55 min',
-                isLocked: true,
-            },
-        ],
-    },
-    {
-        id: 'module-04',
-        moduleNumber: 'Module 04: Business & Consultation',
-        title: 'Business',
-        lessonsCount: '2 lessons',
-        lessons: [
-            {
-                id: 'l7',
-                number: '07',
-                title: 'Client Consultation & Menu Pricing Strategy',
-                videos: 2,
-                exercises: 1,
-                duration: '45 min',
-                isLocked: true,
-            },
-        ],
-    },
-];
-
 export interface TrainingCurriculumProps {
     course?: WPCourse | null;
 }
 
 export default function TrainingCurriculum({ course }: TrainingCurriculumProps = {}) {
-    // 🎯 Ưu tiên lấy trực tiếp danh sách Module (Section) từ mảng sections của LearnPress (GET /wp-json/learnpress/v1/courses/{id})
+    // 🎯 Ưu tiên lấy trực tiếp danh sách Module (Section) từ mảng sections của LearnPress
     const wpSections = course?.sections || course?.courseFields?.sections;
 
-    let dynamicModules: CurriculumModule[] = MODULES_DATA;
-    if (Array.isArray(wpSections) && wpSections.length > 0) {
-        dynamicModules = wpSections.map((sec, sIdx) => {
-            const modId = `module-${sec.id || sIdx + 1}`;
-            const modTitle = sec.title || sec.name || `Module 0${sIdx + 1}`;
-            const modNum = `Module 0${sIdx + 1}: ${modTitle}`;
-            const items = Array.isArray(sec.items) ? sec.items : [];
-            const lessonsCount = `${items.length} lessons`;
-            const lessons: ModuleLesson[] = items.map((it, lIdx) => ({
-                id: String(it.id || `${modId}-l${lIdx + 1}`),
-                number: lIdx + 1 < 10 ? `0${lIdx + 1}` : `${lIdx + 1}`,
-                title: it.title || 'Lesson',
-                videos: 2,
-                exercises: 1,
-                duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 min',
-                isLocked: it.locked !== undefined ? Boolean(it.locked) : lIdx > 0,
-            }));
+    const dynamicModules: CurriculumModule[] = React.useMemo(() => {
+        if (Array.isArray(wpSections) && wpSections.length > 0) {
+            return wpSections.map((sec, sIdx) => {
+                const modId = `module-${sec.id || sIdx + 1}`;
+                const modTitle = sec.title || sec.name || `Module 0${sIdx + 1}`;
+                const modNum = `Module 0${sIdx + 1}: ${modTitle}`;
+                const items = Array.isArray(sec.items) ? sec.items : [];
+                const lessonsCount = `${items.length} bài học`;
+                const lessons: ModuleLesson[] = items.map((it, lIdx) => ({
+                    id: String(it.id || `${modId}-l${lIdx + 1}`),
+                    number: lIdx + 1 < 10 ? `0${lIdx + 1}` : `${lIdx + 1}`,
+                    title: it.title || 'Bài học',
+                    videos: 1,
+                    exercises: 1,
+                    duration: (typeof it.duration === 'string' && it.duration) ? it.duration : '45 phút',
+                    isLocked: it.locked !== undefined ? Boolean(it.locked) : lIdx > 0,
+                }));
 
-            return {
-                id: modId,
-                moduleNumber: modNum,
-                title: modTitle,
-                lessonsCount,
-                lessons,
-            };
-        });
-    }
+                return {
+                    id: modId,
+                    moduleNumber: modNum,
+                    title: modTitle,
+                    lessonsCount,
+                    lessons,
+                };
+            });
+        }
 
-    const [openModuleId, setOpenModuleId] = useState<string>(dynamicModules[0]?.id || 'module-01');
+        return [];
+    }, [wpSections]);
+
+    const [openModuleId, setOpenModuleId] = useState<string>(dynamicModules[0]?.id || '');
 
     const toggleModule = (id: string) => {
         setOpenModuleId(prev => (prev === id ? '' : id));
     };
 
+    if (dynamicModules.length === 0) return null;
+
     return (
-        <section className={styles['training-section']}>
+        <section id="preview-class" className={styles['training-section']}>
             <div className={styles['training-section__container']}>
                 {/* ── LEFT BOX: Timeline Card with gradient and drop shadow ── */}
                 <div className={styles['training-left']}>

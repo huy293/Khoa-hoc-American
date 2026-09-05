@@ -220,17 +220,23 @@ export default function CourseDetailHero({
     };
 
     const cf = (course?.courseFields || {}) as any;
-    const title = course?.title || "HYDRA FACIAL";
+    const title = course?.title || "Course Details";
     const courseCats = Array.isArray((course as any)?.categories) ? (course as any).categories : (Array.isArray(cf.categories) ? cf.categories : []);
     const firstCat = courseCats[0];
-    const category = cf.category || (typeof firstCat === 'string' ? firstCat : (firstCat?.name || 'CERTIFICATE TRAINING'));
-    const lessons = cf.lessons || (course?.sections ? `${course.sections.reduce((acc: number, s: any) => acc + (s.items?.length || 0), 0)} lessons` : '') || "12 lessons";
-    const duration = cf.duration || "3 weeks";
-    const description = cf.subtitle || (course?.excerpt ? course.excerpt.replace(/<[^>]*>/g, '').trim() : '') || "Master professional HydraFacial techniques through theory, hands-on practice, live-model training, and advanced treatment protocols.";
-    const rating = cf.rating || "4.9/5.0";
-    const traineeCount = cf.traineeCount || "(2.700+ trainee)";
-    const trainerName = cf.trainer?.name || "Kathleen trainer";
-    const trainerAvatar = cf.trainer?.avatar || "/images/home/kathleen.png";
+    const category = cf.category || (typeof firstCat === 'string' ? firstCat : (firstCat?.name || 'TRAINING PROGRAM'));
+    const lessons = cf.lessons || (course?.sections ? `${course.sections.reduce((acc: number, s: any) => acc + (s.items?.length || 0), 0)} lessons` : '') || (cf.totalLessons ? `${cf.totalLessons} lessons` : 'Comprehensive curriculum');
+    const duration = cf.duration || cf.schedule || "Flexible duration";
+    const description = cf.subtitle || (course?.excerpt ? course.excerpt.replace(/<[^>]*>/g, '').trim() : '') || (course?.content ? course.content.replace(/<[^>]*>/g, '').slice(0, 180).trim() + '...' : 'Chương trình đào tạo chuyên sâu chuẩn quốc tế Hoa Kỳ.');
+    const rating = cf.rating || (course?.rating ? `${course.rating}/5.0` : '5.0/5.0');
+    const traineeCount = cf.traineeCount || (course?.studentsCount ? `(${course.studentsCount} trainees)` : '(Đang tuyển sinh)');
+    const trainerName = cf.trainer?.name || (course as any)?.author?.name || "American Master Trainer";
+    const trainerAvatar = cf.trainer?.avatar || (course as any)?.author?.avatar || "/images/home/kathleen.png";
+    const courseSchedule = cf.duration ? `${cf.duration}` : (cf.schedule || "Lịch học linh hoạt");
+    const courseStartDate = cf.startDate ? `Start: ${cf.startDate}` : (cf.start_date ? `Start: ${cf.start_date}` : "Tuyển sinh liên tục");
+    const courseLevelPrimary = cf.level || "Beginner";
+    const courseLevelSecondary = cf.secondaryLevel || "Advanced";
+    const coursePlacePrimary = cf.place || (cf.isOnline ? "Online Class" : "Onsite Studio");
+    const coursePlaceSecondary = cf.secondaryPlace || (cf.isOnline ? "Video LMS" : "Online Support");
 
     return (
         <section className={styles['detail-hero']}>
@@ -323,8 +329,8 @@ export default function CourseDetailHero({
                         </div>
                         <div className={styles['overview-banner__divider']} />
                         <div className={styles['overview-banner__body']}>
-                            <p className={styles['overview-banner__text-gray']}>4 hours / 3 weeks</p>
-                            <p className={styles['overview-banner__text-gold']}>Start: 25 July, 2026</p>
+                            <p className={styles['overview-banner__text-gray']}>{courseSchedule}</p>
+                            <p className={styles['overview-banner__text-gold']}>{courseStartDate}</p>
                         </div>
                     </div>
 
@@ -338,8 +344,8 @@ export default function CourseDetailHero({
                         </div>
                         <div className={styles['overview-banner__divider']} />
                         <div className={styles['overview-banner__body']}>
-                            <p className={styles['overview-banner__text-gray']}>Beginner</p>
-                            <p className={styles['overview-banner__text-gray']}>Advanced</p>
+                            <p className={styles['overview-banner__text-gray']}>{courseLevelPrimary}</p>
+                            <p className={styles['overview-banner__text-gray']}>{courseLevelSecondary}</p>
                         </div>
                     </div>
 
@@ -353,8 +359,8 @@ export default function CourseDetailHero({
                         </div>
                         <div className={styles['overview-banner__divider']} />
                         <div className={styles['overview-banner__body']}>
-                            <p className={styles['overview-banner__text-gray']}>Onsite</p>
-                            <p className={styles['overview-banner__text-gray']}>Online</p>
+                            <p className={styles['overview-banner__text-gray']}>{coursePlacePrimary}</p>
+                            <p className={styles['overview-banner__text-gray']}>{coursePlaceSecondary}</p>
                         </div>
                     </div>
 

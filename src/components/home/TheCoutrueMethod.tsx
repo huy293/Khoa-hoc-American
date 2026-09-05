@@ -5,29 +5,12 @@ interface TheCoutrueMethodProps {
     data?: Partial<WPHomeFields>;
 }
 
-const DEFAULT_STEPS = [
-    {
-        title: "We teach in the room",
-        desc: "Every course is taught in person, in our Houston classrooms.",
-    },
-    {
-        title: "We teach on live models",
-        desc: "Students practise on real skin under supervision",
-    },
-    {
-        title: "No certificate without assessment",
-        desc: "Every course is taught in person, in our classrooms.",
-    },
-    {
-        title: "Professional line training",
-        desc: "Students learn on the same professional lines",
-    },
-];
-
 export default function TheCoutrueMethod({ data }: TheCoutrueMethodProps = {}) {
     const title = data?.method_title || "THE COUTURE METHOD";
     const videoUrl = data?.method_video || "/videos/Gold_line_drawing_animation.mp4";
-    const steps = (data?.method_steps && data.method_steps.length > 0) ? data.method_steps : DEFAULT_STEPS;
+    const steps = (data?.method_steps && data.method_steps.length > 0) ? data.method_steps : [];
+
+    if (steps.length === 0) return null;
 
     return (
         <section className={styles['the-coutrue-method']}>

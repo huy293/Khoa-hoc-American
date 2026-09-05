@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Product } from "./ProductCard";
+import { useCart } from "@/context/CartContext";
 import styles from "@/styles/shop/QuickViewProduct.module.css";
 
 export interface QuickViewProductProps {
@@ -13,9 +14,11 @@ export interface QuickViewProductProps {
 export default function QuickViewProduct({ product, onClose }: QuickViewProductProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const { addToCart } = useCart();
     const isStudent = pathname?.startsWith("/student");
     const cartUrl = isStudent ? "/student/cart" : "/cart";
     const [quantity, setQuantity] = useState(1);
+    const [addedNotice, setAddedNotice] = useState(false);
 
     useEffect(() => {
         if (product) {
@@ -127,16 +130,21 @@ export default function QuickViewProduct({ product, onClose }: QuickViewProductP
                                 type="button"
                                 className={styles["shop-quickview__add-to-cart-btn"]}
                                 onClick={() => {
-                                    onClose();
-                                    router.push(cartUrl);
+                                    addToCart(product, { quantity });
+                                    setAddedNotice(true);
+                                    setTimeout(() => {
+                                        setAddedNotice(false);
+                                        onClose();
+                                    }, 600);
                                 }}
                             >
-                                ADD TO CART
+                                {addedNotice ? "ADDED TO CART ✓" : "ADD TO CART"}
                             </button>
                             <button
                                 type="button"
                                 className={styles["shop-quickview__buy-now-btn"]}
                                 onClick={() => {
+                                    addToCart(product, { quantity });
                                     onClose();
                                     router.push(cartUrl);
                                 }}

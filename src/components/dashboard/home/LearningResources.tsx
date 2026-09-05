@@ -14,8 +14,8 @@ const ChevronRightIcon = () => (
     </svg>
 );
 
-/* ── Types & Mock Data ── */
-interface ResourceItem {
+/* ── Types & Interface Definitions ── */
+export interface ResourceItem {
     id: string;
     image: string;
     title: string;
@@ -25,105 +25,8 @@ interface ResourceItem {
         avatar: string;
         date: string;
     };
+    category?: string;
 }
-
-const TABS = [
-    { id: 'all', label: 'ALL COURSE (20)' },
-    { id: 'cert', label: 'CERTIFICATE TRAINING (12)' },
-    { id: 'laser', label: 'LASER TRAINING COURSES (5)' },
-    { id: 'pmu', label: 'P.M.U TRAINING COURSES (3)' },
-];
-
-const RESOURCES: ResourceItem[] = [
-    {
-        id: '1',
-        image: '/images/gallery/image-1.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '2',
-        image: '/images/gallery/image-2.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '3',
-        image: '/images/gallery/image-3.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '4',
-        image: '/images/gallery/image-4.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '5',
-        image: '/images/gallery/image-5.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '6',
-        image: '/images/gallery/image-6.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '7',
-        image: '/images/gallery/image-7.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-    {
-        id: '8',
-        image: '/images/gallery/image-8.jpg',
-        title: '5 HydraFacial Techniques Every Esthetician Should Know',
-        description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-        author: {
-            name: 'Thy Anh Pham Nguyen',
-            avatar: '/images/thomas-nguyen.png',
-            date: 'Dec 28, 2026',
-        },
-    },
-];
 
 interface LearningResourcesProps {
     tag?: string;
@@ -131,6 +34,7 @@ interface LearningResourcesProps {
     filterTab?: boolean;
     seemore?: boolean;
     limit?: number;
+    resources?: ResourceItem[];
 }
 
 export default function LearningResources({
@@ -139,10 +43,11 @@ export default function LearningResources({
     filterTab = true,
     seemore = true,
     limit = 4,
+    resources = [],
 }: LearningResourcesProps = {}) {
     const pathname = usePathname();
     const resourcesUrl = pathname?.startsWith('/teacher') ? '/teacher/resources' : '/student/resources';
-    const [activeTab, setActiveTab] = useState('cert');
+    const [activeTab, setActiveTab] = useState('all');
     const [likedIds, setLikedIds] = useState<string[]>([]);
 
     const toggleLike = (id: string) => {
@@ -151,7 +56,21 @@ export default function LearningResources({
         );
     };
 
-    const displayedResources = typeof limit === 'number' ? RESOURCES.slice(0, limit) : RESOURCES;
+    const tabs = React.useMemo(() => {
+        const list = [];
+        list.push({ id: 'all', label: `TẤT CẢ (${resources.length})` });
+        list.push({ id: 'cert', label: `CHỨNG CHỈ (${resources.filter(r => r.category === 'cert').length})` });
+        list.push({ id: 'laser', label: `LASER (${resources.filter(r => r.category === 'laser').length})` });
+        list.push({ id: 'pmu', label: `P.M.U (${resources.filter(r => r.category === 'pmu').length})` });
+        return list;
+    }, [resources]);
+
+    const filteredResources = React.useMemo(() => {
+        if (activeTab === 'all') return resources;
+        return resources.filter(r => r.category === activeTab);
+    }, [resources, activeTab]);
+
+    const displayedResources = typeof limit === 'number' ? filteredResources.slice(0, limit) : filteredResources;
 
     return (
         <section className={styles['learning-resources']} aria-label="Learning Resources Section">
@@ -167,7 +86,7 @@ export default function LearningResources({
                 <div className={styles['learning-resources__nav-row']}>
                     {filterTab ? (
                         <div className={styles['learning-resources__tabs']} role="tablist">
-                            {TABS.map((tab) => (
+                            {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     type="button"

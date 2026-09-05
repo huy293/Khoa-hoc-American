@@ -16,56 +16,7 @@ interface LessonDetailContentProps {
     basePath?: string;
 }
 
-const defaultLessonsList: Array<{
-    id: string;
-    number: number;
-    title: string;
-    videos: number;
-    exercises: number;
-    duration: string;
-    lesson_videos?: string;
-}> = [
-        {
-            id: '1',
-            number: 1,
-            title: 'Introduction to HydraFacial Technology',
-            videos: 2,
-            exercises: 1,
-            duration: '45 min',
-        },
-        {
-            id: '2',
-            number: 2,
-            title: 'Skin Anatomy & Skin Types',
-            videos: 2,
-            exercises: 1,
-            duration: '45 min',
-        },
-        {
-            id: '3',
-            number: 3,
-            title: 'How the HydraFacial System Works',
-            videos: 2,
-            exercises: 1,
-            duration: '45 min',
-        },
-        {
-            id: '4',
-            number: 4,
-            title: 'Understanding HydraFacial Tips',
-            videos: 2,
-            exercises: 1,
-            duration: '45 min',
-        },
-        {
-            id: '5',
-            number: 5,
-            title: 'Serums & Active Ingredients',
-            videos: 2,
-            exercises: 1,
-            duration: '45 min',
-        },
-    ];
+
 
 export default function LessonDetailContent({
     course,
@@ -115,14 +66,16 @@ export default function LessonDetailContent({
     const trainerName =
         (typeof trainerObj?.name === 'string' && trainerObj.name) ||
         (typeof course?.courseFields?.instructor === 'string' && course.courseFields.instructor) ||
-        'Kathleen trainer';
+        (course as any)?.author?.name ||
+        'American Master Trainer';
     const trainerAvatar =
         (typeof trainerObj?.avatar === 'string' && trainerObj.avatar) ||
+        (course as any)?.author?.avatar ||
         '/images/kathleen.png';
     const trainerRating =
         (typeof trainerObj?.rating === 'string' && trainerObj.rating) ||
         (typeof course?.courseFields?.rating === 'string' && course.courseFields.rating) ||
-        '4.9/5.0';
+        (course?.rating ? `${course.rating}/5.0` : '5.0/5.0');
 
     // 🎯 Extract sections & active module
     const sections: WPCourseSection[] = Array.isArray(course?.sections)
@@ -175,7 +128,16 @@ export default function LessonDetailContent({
                 lesson_videos: it.lesson_videos || it.acf?.lesson_videos || (it as any).meta?.lesson_videos || it.video_url,
             };
         })
-        : defaultLessonsList.map((d) => ({ ...d, slug: toSlug(d.title) || d.id }));
+        : (lesson ? [{
+            id: String(lesson.id || '1'),
+            slug: lessonSlug,
+            number: 1,
+            title: lesson.title || 'Lesson 1',
+            videos: 1,
+            exercises: 1,
+            duration: '45 min',
+            lesson_videos: lesson.video_url || (lesson as any).acf?.lesson_videos,
+        }] : []);
 
     // Find current lesson title and details
     const currentLessonItem = lessonsList.find(
@@ -186,7 +148,7 @@ export default function LessonDetailContent({
         ? lesson.title
         : (typeof (lesson?.title as any)?.rendered === 'string'
             ? (lesson?.title as any).rendered
-            : (currentLessonItem?.title || 'Introduction to HydraFacial Technology'));
+            : (currentLessonItem?.title || 'Lesson Details'));
 
     const displayTitle = rawLessonTitle.toUpperCase().startsWith('INTRODUCTION')
         ? rawLessonTitle.toUpperCase()

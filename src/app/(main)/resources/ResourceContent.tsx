@@ -81,60 +81,7 @@ export default function ResourceContent({ initialPosts, data }: ResourceContentP
                 readTime: `${readMinutes} min read`,
             };
         })
-        : [
-            {
-                id: '1',
-                slug: '5-hydrafacial-techniques-every-esthetician-should-know',
-                image: '/images/courses/card-hydra.jpg',
-                title: '5 HydraFacial Techniques Every Esthetician Should Know',
-                description: 'Practical advice from experienced beauty educators to help you assess client needs and recommend the right treatment.',
-                author: {
-                    name: 'Thy Anh Pham Nguyen',
-                    avatar: '/images/home/coutrue-beauty-academy_member.png',
-                    date: 'Dec 28, 2026',
-                },
-                readTime: '1 min read',
-            },
-            {
-                id: '2',
-                slug: 'microneedling-vs-microdermabrasion',
-                image: '/images/courses/card-derma.jpg',
-                title: 'Microneedling vs Microdermabrasion: Which is Right for Your Clients?',
-                description: 'Explore the key clinical differences and treatment selection protocols for optimal client skin rejuvenation.',
-                author: {
-                    name: 'Thy Anh Pham Nguyen',
-                    avatar: '/images/home/coutrue-beauty-academy_member.png',
-                    date: 'Dec 28, 2026',
-                },
-                readTime: '2 min read',
-            },
-            {
-                id: '3',
-                slug: 'towel-sanitization-protocols',
-                image: '/images/courses/card-towel.jpg',
-                title: 'Essential Hygiene and Towel Sanitization Protocols in Spa Settings',
-                description: 'Master strict medical-grade sterilization and hygiene workflows to elevate clinic safety standards.',
-                author: {
-                    name: 'Thy Anh Pham Nguyen',
-                    avatar: '/images/home/coutrue-beauty-academy_member.png',
-                    date: 'Dec 28, 2026',
-                },
-                readTime: '1 min read',
-            },
-            {
-                id: '4',
-                slug: 'advanced-skin-peeling-science',
-                image: '/images/courses/card-advance.jpg',
-                title: 'Advanced Chemical Peeling: pH, Concentrations, and Layering Rules',
-                description: 'A comprehensive scientific guide for managing acids, depth of penetration, and client post-care.',
-                author: {
-                    name: 'Thy Anh Pham Nguyen',
-                    avatar: '/images/home/coutrue-beauty-academy_member.png',
-                    date: 'Dec 28, 2026',
-                },
-                readTime: '3 min read',
-            },
-        ];
+        : [];
 
     const visiblePosts = postsList.slice(0, visibleCount);
 
