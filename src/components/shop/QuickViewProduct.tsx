@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Product } from "./ProductCard";
 import styles from "@/styles/shop/QuickViewProduct.module.css";
 
@@ -10,6 +11,10 @@ export interface QuickViewProductProps {
 }
 
 export default function QuickViewProduct({ product, onClose }: QuickViewProductProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const isStudent = pathname?.startsWith("/student");
+    const cartUrl = isStudent ? "/student/cart" : "/cart";
     const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
@@ -118,10 +123,24 @@ export default function QuickViewProduct({ product, onClose }: QuickViewProductP
 
                         {/* Nút Add to Cart và Buy Now */}
                         <div className={styles["shop-quickview__actions"]}>
-                            <button type="button" className={styles["shop-quickview__add-to-cart-btn"]}>
+                            <button
+                                type="button"
+                                className={styles["shop-quickview__add-to-cart-btn"]}
+                                onClick={() => {
+                                    onClose();
+                                    router.push(cartUrl);
+                                }}
+                            >
                                 ADD TO CART
                             </button>
-                            <button type="button" className={styles["shop-quickview__buy-now-btn"]}>
+                            <button
+                                type="button"
+                                className={styles["shop-quickview__buy-now-btn"]}
+                                onClick={() => {
+                                    onClose();
+                                    router.push(cartUrl);
+                                }}
+                            >
                                 BUY NOW
                             </button>
                         </div>

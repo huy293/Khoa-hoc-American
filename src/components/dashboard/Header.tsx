@@ -204,14 +204,13 @@ export default function Header({ onToggleSidebar, title, description }: HeaderPr
                     >
                         <BellIcon />
                     </button>
-                    <button
-                        type="button"
+                    <Link
+                        href={`${basePath}/cart`}
                         className={styles['header__action-btn']}
                         aria-label="Shopping Cart"
-                        onClick={() => console.log('Cart clicked')}
                     >
                         <CartIcon />
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Quick Account Pill */}
