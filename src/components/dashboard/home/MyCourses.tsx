@@ -457,10 +457,28 @@ export default function MyCourses({
                     })
                 ) : (
                     !loading && (
-                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0', color: '#8A7043' }}>
-                            <p style={{ fontSize: '1rem', fontStyle: 'italic', margin: 0 }}>
-                                Không tìm thấy khóa học nào phù hợp.
+                        <div className={styles['my-courses__empty-state']}>
+                            <div className={styles['my-courses__empty-icon']}>
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#AF8861" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                    <line x1="12" y1="6" x2="12" y2="12" />
+                                    <line x1="9" y1="9" x2="15" y2="9" />
+                                </svg>
+                            </div>
+                            <h3 className={styles['my-courses__empty-title']}>
+                                {searchTerm ? 'Không tìm thấy khóa học phù hợp' : 'Bạn chưa đăng ký khóa học nào'}
+                            </h3>
+                            <p className={styles['my-courses__empty-desc']}>
+                                {searchTerm
+                                    ? `Không có khóa học nào khớp với từ khóa "${searchTerm}". Vui lòng thử tìm kiếm khác.`
+                                    : 'Hãy khám phá danh sách các khóa học chuyên nghiệp để bắt đầu lộ trình đào tạo và cấp bằng của bạn.'}
                             </p>
+                            {!searchTerm && (
+                                <Link href="/courses" className={styles['my-courses__empty-btn']}>
+                                    Khám phá khóa học ngay &rarr;
+                                </Link>
+                            )}
                         </div>
                     )
                 )}

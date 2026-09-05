@@ -356,6 +356,15 @@ export interface WPLesson {
     node?: WPImage;
   };
   seo?: WPSeo;
+  /** Quiz nhúng từ plugin lp-embed-quiz-in-lesson */
+  quiz?: {
+    id: number;
+    title: string;
+    slug?: string;
+    permalink: string;
+  } | null;
+  quiz_id?: number | null;
+  require_pass?: boolean;
   [key: string]: unknown;
 }
 
@@ -475,3 +484,60 @@ export interface FetchOptions extends RequestInit {
   tags?: string[];
   retries?: number;
 }
+
+export interface WPAuthUser {
+  id?: number | string;
+  username?: string;
+  email?: string;
+  displayName?: string;
+  name?: string;
+  role?: 'student' | 'teacher' | 'instructor' | 'administrator' | string;
+  avatar?: string;
+  phone?: string;
+  redirectUrl?: string;
+}
+
+export interface WPQuizOption {
+  id: string;
+  title: string;
+}
+
+export interface WPQuizQuestion {
+  id: number;
+  title: string;
+  content?: string;
+  type?: 'single_choice' | 'multi_choice' | 'true_or_false' | string;
+  options: WPQuizOption[];
+}
+
+export interface WPQuizDetail {
+  id: number;
+  slug?: string;
+  title: string;
+  content?: string;
+  duration_seconds: number;
+  passing_grade: number;
+  questions_count: number;
+  questions: WPQuizQuestion[];
+  seo?: any;
+}
+
+export interface WPQuizQuestionResult {
+  question_id: number;
+  selected_answer_id: string;
+  correct_answer_id?: string | null;
+  is_correct: boolean;
+}
+
+export interface WPQuizSubmitResponse {
+  success: boolean;
+  quiz_id: number;
+  score: number;
+  passing_grade: number;
+  passed: boolean;
+  correct_count: number;
+  total_questions: number;
+  results: WPQuizQuestionResult[];
+}
+
+

@@ -186,6 +186,8 @@ export async function fetchWpRest<T = any>(
   }
 
   const {
+    method = options.method || 'GET',
+    body = options.body,
     revalidate = DEFAULT_REVALIDATE,
     tags,
     headers: customHeaders,
@@ -204,18 +206,23 @@ export async function fetchWpRest<T = any>(
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const fetchOptions: RequestInit = {
-        method: 'GET',
+        method,
         headers,
         signal: AbortSignal.timeout(timeoutMs),
+        ...(body ? { body } : {}),
       };
 
-      if (revalidate === 0) {
-        fetchOptions.cache = 'no-store';
+      if (method === 'GET') {
+        if (revalidate === 0) {
+          fetchOptions.cache = 'no-store';
+        } else {
+          fetchOptions.next = {
+            revalidate,
+            ...(tags && tags.length > 0 ? { tags } : {}),
+          };
+        }
       } else {
-        fetchOptions.next = {
-          revalidate,
-          ...(tags && tags.length > 0 ? { tags } : {}),
-        };
+        fetchOptions.cache = 'no-store';
       }
 
       const res = await fetch(fullUrl, fetchOptions);

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useAuthUser } from '@/lib/auth-client';
 import styles from '@/styles/dashboard/Sidebar.module.css';
 
 /* ── SVG Icons ── */
@@ -262,9 +263,18 @@ export default function Sidebar({
 }: SidebarProps) {
     const pathname = usePathname();
     const [isMobile, setIsMobile] = useState(false);
+    const { displayName, email, avatar: userAvatar, initials, basePath: userBasePath } = useAuthUser();
+    const [avatarError, setAvatarError] = useState(false);
+
+    useEffect(() => {
+        setAvatarError(false);
+    }, [userAvatar]);
+
+    const activeAvatar = userAvatar || '/images/kathleen.png';
+    const isRemote = activeAvatar.startsWith('http');
 
     const isTeacher = pathname?.startsWith('/teacher');
-    const basePath = isTeacher ? '/teacher' : '/student';
+    const basePath = isTeacher ? '/teacher' : userBasePath || '/student';
 
     // Resolved Nav Sections
     const navSections =
@@ -438,23 +448,31 @@ export default function Sidebar({
                     <Link
                         href={`${basePath}/profile`}
                         className={styles['sidebar__profile']}
-                        title={showCollapsed ? 'Lalisa Moban (lalisa382931@gmail.com)' : undefined}
+                        title={showCollapsed ? `${displayName} (${email || 'Tài khoản'})` : undefined}
                         onClick={handleNavClick}
                     >
                         <div className={styles['sidebar__avatar-wrap']}>
-                            <Image
-                                src="/images/kathleen.png"
-                                alt="Lalisa Moban"
-                                width={36}
-                                height={36}
-                                className={styles['sidebar__avatar-img']}
-                            />
+                            {!avatarError ? (
+                                <Image
+                                    src={activeAvatar}
+                                    alt={displayName}
+                                    width={36}
+                                    height={36}
+                                    className={styles['sidebar__avatar-img']}
+                                    onError={() => setAvatarError(true)}
+                                    unoptimized={isRemote}
+                                />
+                            ) : (
+                                <span className={styles['sidebar__avatar-fallback']}>
+                                    {initials}
+                                </span>
+                            )}
                         </div>
                         {!showCollapsed && (
                             <>
                                 <div className={styles['sidebar__profile-details']}>
-                                    <span className={styles['sidebar__profile-name']}>Lalisa Moban</span>
-                                    <span className={styles['sidebar__profile-email']}>lalisa382931@gmail.com</span>
+                                    <span className={styles['sidebar__profile-name']}>{displayName}</span>
+                                    <span className={styles['sidebar__profile-email']}>{email || 'Học viên'}</span>
                                 </div>
                                 <span className={styles['sidebar__profile-action']}>
                                     <ExternalIcon />

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from '@/styles/dashboard/courses/LessonDetailContent.module.css';
@@ -12,6 +12,8 @@ interface LessonDetailContentProps {
     lesson?: WPLesson | null;
     slug: string;
     lessonSlug: string;
+    isStudent?: boolean;
+    basePath?: string;
 }
 
 const defaultLessonsList: Array<{
@@ -70,7 +72,38 @@ export default function LessonDetailContent({
     lesson,
     slug,
     lessonSlug,
+    isStudent = true,
+    basePath: customBasePath,
 }: LessonDetailContentProps) {
+    const [showQuiz, setShowQuiz] = useState(false);
+
+    const basePath = customBasePath || (isStudent ? `/student/courses/${slug}` : `/courses/${slug}`);
+
+    // 🎯 Quiz data từ plugin lp-embed-quiz-in-lesson
+    const embeddedQuiz = lesson?.quiz ?? null;
+    const hasQuiz = Boolean(embeddedQuiz?.id || lesson?.quiz_id || slug?.includes('hydra'));
+
+    // Xác định quizSlug: ưu tiên slug từ backend, fallback trích xuất từ permalink, title hoặc ID
+    let quizSlug = 'quiz-1-introduction-to-hydrafacial-technology';
+    if (embeddedQuiz?.slug) {
+        quizSlug = embeddedQuiz.slug;
+    } else if (embeddedQuiz?.permalink) {
+        const cleanPerm = embeddedQuiz.permalink.replace(/\/+$/, '');
+        const seg = cleanPerm.split('/').pop();
+        if (seg) quizSlug = seg;
+    } else if (embeddedQuiz?.title) {
+        quizSlug = toSlug(embeddedQuiz.title);
+    } else if (lesson?.quiz_id || embeddedQuiz?.id) {
+        quizSlug = String(lesson?.quiz_id || embeddedQuiz?.id);
+    }
+
+    const quizUrl = `${basePath}/quizzes/${quizSlug}?lesson=${lessonSlug}`;
+
+    // Tạo URL quiz có thể render trong Next.js Headless context
+    // Plugin trả về permalink dạng: https://course-amc.homenest.edu.vn/quizzes/ten-quiz
+    // Chúng ta render thẳng qua iframe vì quiz cần LearnPress JS chạy trên WP domain
+    const quizIframeSrc = embeddedQuiz?.permalink || '';
+    const quizTitle = embeddedQuiz?.title || 'Lesson Quiz';
     // 🎯 Extract course trainer info
     const trainerObj = course?.courseFields?.trainer;
     const trainerName =
@@ -192,26 +225,26 @@ export default function LessonDetailContent({
         (l) => l.slug === lessonSlug || toSlug(l.title) === lessonSlug || String(l.id) === lessonSlug
     );
 
-    let nextLessonUrl = `/student/courses/${slug}`;
+    let nextLessonUrl = basePath;
     if (currentLessonIdx !== -1 && currentLessonIdx < lessonsList.length - 1) {
         const nextItem = lessonsList[currentLessonIdx + 1];
-        nextLessonUrl = `/student/courses/${slug}/lessons/${nextItem.slug}`;
+        nextLessonUrl = `${basePath}/lessons/${nextItem.slug}`;
     } else if (sections.length > activeSectionIndex + 1) {
         const nextSec = sections[activeSectionIndex + 1];
         const nextSecFirstItem = (nextSec.items && nextSec.items.length > 0) ? nextSec.items[0] : null;
         if (nextSecFirstItem) {
             const nextSecSlug = nextSecFirstItem.slug || toSlug(nextSecFirstItem.title || '') || String(nextSecFirstItem.id);
-            nextLessonUrl = `/student/courses/${slug}/lessons/${nextSecSlug}`;
+            nextLessonUrl = `${basePath}/lessons/${nextSecSlug}`;
         }
     }
 
-    let nextModuleUrl = `/student/courses/${slug}`;
+    let nextModuleUrl = basePath;
     if (sections.length > activeSectionIndex + 1) {
         const nextSec = sections[activeSectionIndex + 1];
         const nextSecFirstItem = (nextSec.items && nextSec.items.length > 0) ? nextSec.items[0] : null;
         if (nextSecFirstItem) {
             const nextSecSlug = nextSecFirstItem.slug || toSlug(nextSecFirstItem.title || '') || String(nextSecFirstItem.id);
-            nextModuleUrl = `/student/courses/${slug}/lessons/${nextSecSlug}`;
+            nextModuleUrl = `${basePath}/lessons/${nextSecSlug}`;
         }
     }
 
@@ -223,7 +256,7 @@ export default function LessonDetailContent({
                     <div className={styles['lesson-header__left']}>
                         <div className={styles['lesson-header__title-row']}>
                             <Link
-                                href={`/student/courses/${slug}`}
+                                href={basePath}
                                 className={styles['lesson-header__back-btn']}
                                 aria-label="Back to Course Details"
                             >
@@ -342,13 +375,54 @@ export default function LessonDetailContent({
                                 <span>→</span>
                             </Link>
 
-                            <button
-                                type="button"
-                                className={styles['lesson-actions__quiz-btn']}
-                            >
-                                TAKE QIZZ
-                            </button>
+                            {hasQuiz && (
+                                <Link
+                                    href={quizUrl}
+                                    className={styles['lesson-actions__quiz-btn']}
+                                >
+                                    <span>TAKE QUIZ</span>
+                                    <span>→</span>
+                                </Link>
+                            )}
                         </div>
+
+                        {/* 🎓 Quiz Panel nhúng từ plugin lp-embed-quiz-in-lesson */}
+                        {hasQuiz && showQuiz && (
+                            <div className={styles['quiz-panel']}>
+                                <div className={styles['quiz-panel__header']}>
+                                    <div className={styles['quiz-panel__icon']}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                                        </svg>
+                                    </div>
+                                    <h3 className={styles['quiz-panel__title']}>{quizTitle}</h3>
+                                    <button
+                                        type="button"
+                                        className={styles['quiz-panel__close']}
+                                        onClick={() => setShowQuiz(false)}
+                                        aria-label="Close quiz"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                {quizIframeSrc ? (
+                                    <iframe
+                                        src={quizIframeSrc}
+                                        title={quizTitle}
+                                        className={styles['quiz-panel__iframe']}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media"
+                                        allowFullScreen
+                                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                                    />
+                                ) : (
+                                    <div className={styles['quiz-panel__no-url']}>
+                                        <p>Không thể tải quiz. Vui lòng thử lại sau.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Column: Module & Lessons Sidebar */}
@@ -381,7 +455,7 @@ export default function LessonDetailContent({
                                 return (
                                     <Link
                                         key={item.id}
-                                        href={`/student/courses/${slug}/lessons/${item.slug}`}
+                                        href={`${basePath}/lessons/${item.slug}`}
                                         className={`${styles['sidebar-lesson-item']} ${isActive ? styles['sidebar-lesson-item--active'] : ''
                                             }`}
                                     >
