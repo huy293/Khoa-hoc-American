@@ -12,25 +12,107 @@ const ChevronDownIcon = () => (
     </svg>
 );
 
+export interface CourseCategoryOption {
+    id?: number | string;
+    name: string;
+    slug?: string;
+}
+
 export interface CourseSelectionProps {
     eyebrow?: string;
     title?: string;
     courses?: WPCourse[];
+    categories?: CourseCategoryOption[];
+}
+
+interface ExtractedCategory {
+    name: string;
+    slug: string;
+}
+
+/**
+ * 🎯 Trích xuất chính xác toàn bộ danh mục từ taxonomy=course_category của LearnPress / WordPress
+ */
+function extractCourseCategories(c: WPCourse): ExtractedCategory[] {
+    const cf = (c.courseFields || {}) as any;
+    const catMap = new Map<string, ExtractedCategory>();
+
+    const addCat = (name?: string, slug?: string) => {
+        if (!name || typeof name !== 'string') return;
+        const cleanName = name
+            .replace(/&#038;/g, '&')
+            .replace(/&amp;/g, '&')
+            .replace(/&#8211;/g, '-')
+            .replace(/&#8217;/g, "'")
+            .trim();
+        if (!cleanName) return;
+
+        const cleanSlug = (slug && typeof slug === 'string' && slug.trim())
+            ? slug.trim().toLowerCase()
+            : cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+        const key = cleanSlug || cleanName.toLowerCase();
+        if (!catMap.has(key)) {
+            catMap.set(key, { name: cleanName, slug: cleanSlug });
+        }
+    };
+
+    // 1. Lấy từ terms _embedded['wp:term'] (taxonomy: course_category hoặc lp_course_category)
+    const terms: any[] = (c as any)._embedded?.['wp:term'] ? (c as any)._embedded['wp:term'].flat() : [];
+    terms.forEach((t: any) => {
+        if (t && (t.taxonomy === 'course_category' || t.taxonomy === 'lp_course_category')) {
+            addCat(t.name, t.slug);
+        }
+    });
+
+    // 2. Lấy từ c.categories (LearnPress REST API hoặc parseWpCourse)
+    if (Array.isArray(c.categories) && c.categories.length > 0) {
+        c.categories.forEach((cat: any) => {
+            if (typeof cat === 'string') {
+                addCat(cat);
+            } else if (cat && typeof cat === 'object') {
+                addCat(cat.name, cat.slug);
+            }
+        });
+    }
+
+    // 3. Lấy từ cf.categories
+    if (Array.isArray(cf.categories) && cf.categories.length > 0) {
+        cf.categories.forEach((cat: any) => {
+            if (typeof cat === 'string') {
+                addCat(cat);
+            } else if (cat && typeof cat === 'object') {
+                addCat(cat.name, cat.slug);
+            }
+        });
+    }
+
+    // 4. Fallback từ cf.category hoặc c.category
+    if (catMap.size === 0) {
+        if (typeof cf.category === 'string' && cf.category.trim()) {
+            addCat(cf.category);
+        } else if (typeof (c as any).category === 'string' && (c as any).category.trim()) {
+            addCat((c as any).category);
+        }
+    }
+
+    return Array.from(catMap.values());
 }
 
 export default function CourseSelection({
     eyebrow = "SELECTION OF COURSE",
     title = "Master Your Craft. <br />Build Your Beauty Career.",
     courses = [],
+    categories = [],
 }: CourseSelectionProps = {}) {
-    const [activeTab, setActiveTab] = useState('ALL COURSE');
+    const [activeTab, setActiveTab] = useState<string>('all');
 
     // Chuyển đổi trực tiếp 100% dữ liệu từ WordPress LearnPress (lp_course)
     const mappedCourses = (courses || []).map((c) => {
         const cf = (c.courseFields || {}) as any;
-        const featuredImg = c.featuredImage?.node?.sourceUrl || '/images/courses/card-hydra.jpg';
+        const featuredImg = c.featuredImage?.node?.sourceUrl || (c as any).featured_image_url || '/images/courses/card-hydra.jpg';
         
-        // 🎯 Lấy trực tiếp danh sách Module (Section) từ mảng sections của LearnPress (GET /wp-json/learnpress/v1/courses/{id})
+        // 🎯 Lấy trực tiếp danh sách Module (Section) từ LearnPress
         const sectionsData = (Array.isArray(c.sections) && c.sections.length > 0)
             ? c.sections
             : ((Array.isArray(cf.sections) && cf.sections.length > 0)
@@ -44,41 +126,76 @@ export default function CourseSelection({
             );
         }
 
+        const courseCats = extractCourseCategories(c);
+        const primaryCat = courseCats[0]?.name || '';
+
         return {
             id: c.id || c.slug,
             slug: c.slug,
             image: featuredImg,
-            tag: (typeof cf.tag === 'string' ? cf.tag : '') || 'Facial class',
-            rating: (typeof cf.rating === 'string' ? cf.rating : '') || '4.9/5.0',
-            traineeCount: (typeof cf.traineeCount === 'string' ? cf.traineeCount : '') || '(2.700+ trainee)',
+            tag: (typeof cf.tag === 'string' && cf.tag.trim()) ? cf.tag.trim() : primaryCat,
+            rating: (typeof cf.rating === 'string' && cf.rating.trim()) ? cf.rating.trim() : undefined,
+            traineeCount: (typeof cf.traineeCount === 'string' && cf.traineeCount.trim()) ? cf.traineeCount.trim() : undefined,
             title: c.title,
-            subtitle: (typeof cf.subtitle === 'string' ? cf.subtitle : (c.excerpt ? c.excerpt.replace(/<[^>]*>/g, '').trim() : '')) || '',
-            module: (typeof cf.module === 'string' ? cf.module : '') || `${currList.length || 4} modules`,
-            lessons: (typeof cf.lessons === 'string' ? cf.lessons : '') || '12 lessons',
-            quizzes: (typeof cf.quizzes === 'string' ? cf.quizzes : '') || '3 quizzes',
-            curriculum: currList,
+            subtitle: (typeof cf.subtitle === 'string' && cf.subtitle.trim())
+                ? cf.subtitle.trim()
+                : (c.excerpt ? c.excerpt.replace(/<[^>]*>/g, '').trim() : ''),
+            module: (typeof cf.module === 'string' && cf.module.trim())
+                ? cf.module.trim()
+                : (currList.length > 0 ? `${currList.length} modules` : undefined),
+            lessons: (typeof cf.lessons === 'string' && cf.lessons.trim()) ? cf.lessons.trim() : undefined,
+            quizzes: (typeof cf.quizzes === 'string' && cf.quizzes.trim()) ? cf.quizzes.trim() : undefined,
+            curriculum: currList.length > 0 ? currList : undefined,
             sections: (Array.isArray(c.sections) && c.sections.length > 0) ? c.sections : cf.sections,
-            trainer: {
-                name: cf.trainer?.name || 'Kathleen trainer',
-                avatar: cf.trainer?.avatar || '/images/home/kathleen.png',
-                rating: cf.trainer?.rating || '4.9/5.0',
-            },
-            category: (typeof cf.category === 'string' ? cf.category : '') || 'CERTIFICATE TRAINING',
+            trainer: cf.trainer?.name ? {
+                name: cf.trainer.name,
+                avatar: cf.trainer.avatar || undefined,
+                rating: cf.trainer.rating || undefined,
+            } : undefined,
+            categories: courseCats,
         };
     });
 
-    // Tự động sinh danh sách Tabs từ Category thực tế của LearnPress
-    const uniqueCategories = Array.from(
-        new Set(mappedCourses.map(c => c.category).filter(Boolean))
-    );
-    const tabs = ['ALL COURSE', ...uniqueCategories];
+    // 🎯 Tự động sinh danh sách Tabs chuẩn từ taxonomy course_category của LearnPress Headless
+    const allCategoriesMap = new Map<string, ExtractedCategory>();
 
-    const filteredCourses = activeTab === 'ALL COURSE'
+    // 1. Nạp từ categories truyền từ prop (nếu có từ getWpCourseCategories)
+    if (Array.isArray(categories) && categories.length > 0) {
+        categories.forEach(cat => {
+            if (cat && cat.name) {
+                const cleanName = cat.name.trim();
+                const cleanSlug = cat.slug || cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                const key = cleanSlug || cleanName.toLowerCase();
+                if (!allCategoriesMap.has(key)) {
+                    allCategoriesMap.set(key, { name: cleanName, slug: cleanSlug });
+                }
+            }
+        });
+    }
+
+    // 2. Nạp thêm các category có trong danh sách khóa học thực tế
+    mappedCourses.forEach(c => {
+        c.categories.forEach(cat => {
+            const key = cat.slug || cat.name.toLowerCase();
+            if (!allCategoriesMap.has(key)) {
+                allCategoriesMap.set(key, cat);
+            }
+        });
+    });
+
+    const categoryTabs: ExtractedCategory[] = [
+        { name: 'ALL COURSE', slug: 'all' },
+        ...Array.from(allCategoriesMap.values()),
+    ];
+
+    // 🎯 Lọc khóa học chính xác theo taxonomy course_category
+    const filteredCourses = activeTab === 'all'
         ? mappedCourses
         : mappedCourses.filter(c =>
-            c.category.trim().toLowerCase() === activeTab.trim().toLowerCase() ||
-            c.category.toLowerCase().includes(activeTab.toLowerCase()) ||
-            activeTab.toLowerCase().includes(c.category.toLowerCase())
+            c.categories.some(cat =>
+                cat.slug.toLowerCase() === activeTab.toLowerCase() ||
+                cat.name.trim().toLowerCase() === activeTab.trim().toLowerCase()
+            )
         );
 
     return (
@@ -97,19 +214,22 @@ export default function CourseSelection({
                 />
 
                 {/* 3. Category Filter Tabs */}
-                {tabs.length > 1 && (
+                {categoryTabs.length > 1 && (
                     <div className={styles['selection__tabs']}>
-                        {tabs.map((tab) => {
-                            const isActive = activeTab.toLowerCase() === tab.toLowerCase();
+                        {categoryTabs.map((tab) => {
+                            const isActive =
+                                activeTab === tab.slug ||
+                                activeTab.toLowerCase() === tab.name.toLowerCase();
                             return (
                                 <button
-                                    key={tab}
+                                    key={tab.slug || tab.name}
                                     type="button"
-                                    className={`${styles['selection__tab']} ${isActive ? styles['selection__tab--active'] : ''
-                                        }`}
-                                    onClick={() => setActiveTab(tab)}
+                                    className={`${styles['selection__tab']} ${
+                                        isActive ? styles['selection__tab--active'] : ''
+                                    }`}
+                                    onClick={() => setActiveTab(tab.slug)}
                                 >
-                                    {tab}
+                                    {tab.name}
                                 </button>
                             );
                         })}

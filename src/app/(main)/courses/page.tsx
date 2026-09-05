@@ -5,7 +5,7 @@ import OurImpact from '@/components/home/OurImpact';
 import PeopleSection from '@/components/about-us/PeopleSection';
 import Partner from '@/components/home/Partner';
 import { CtaVisit } from '@/components/sections/CtaVisit';
-import { getWpCourses, getWpPageBySlug } from '@/lib/wordpress-queries';
+import { getWpCourses, getWpPageBySlug, getWpCourseCategories } from '@/lib/wordpress-queries';
 import { generateWpMetadata } from '@/lib/wordpress-seo';
 import { WPCoursesFields } from '@/types/wordpress';
 
@@ -19,9 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CoursePage() {
-    const [page, courses] = await Promise.all([
+    const [page, courses, categories] = await Promise.all([
         getWpPageBySlug<WPCoursesFields>('courses'),
         getWpCourses(30),
+        getWpCourseCategories(),
     ]);
 
     const scf = (page?.scf || page?.acf || {}) as any;
@@ -58,6 +59,7 @@ export default async function CoursePage() {
                 eyebrow={scf.selection_eyebrow}
                 title={scf.selection_title}
                 courses={courses}
+                categories={categories}
             />
             <CtaVisit />
         </main>

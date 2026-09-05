@@ -26,67 +26,108 @@ const ChevronRightIcon = () => (
 export interface FormattedCourseCardItem {
     id: string;
     slug: string;
-    image: string;
-    category: string;
-    rating: string;
-    traineeCount: string;
+    image?: string;
+    category?: string;
+    categories: string[];
+    categorySlugs: string[];
+    rating?: string;
+    traineeCount?: string;
     title: string;
-    subtitle: string;
-    progress: number;
-    module: string;
-    lessons: string;
-    quizzes: string;
+    subtitle?: string;
+    progress?: number;
+    module?: string;
+    lessons?: string;
+    quizzes?: string;
     curriculum: string[];
     sections?: WPCourseSection[];
-    trainer: {
+    trainer?: {
         name: string;
-        avatar: string;
-        rating: string;
+        avatar?: string;
+        rating?: string;
     };
     studentsCount?: number | string;
 }
 
 /**
  * Helper: Chuyển đổi dữ liệu từ WPCourse (post_type: 'lp_course') sang FormattedCourseCardItem
+ * Chỉ lấy dữ liệu thực tế từ API/WordPress, không gán giá trị hardcode giả lập.
  */
 function formatCourse(c: WPCourse | any): FormattedCourseCardItem {
     const cf = (c.courseFields || {}) as any;
     const featuredImg =
         c.featuredImage?.node?.sourceUrl ||
+        c.featured_image_url ||
         c.image ||
-        '/images/courses/card-hydra.jpg';
+        '';
 
-    // 🎯 Lấy danh sách 4 Module (Section) từ mảng sections của LearnPress
+    // 🎯 Lấy danh sách Module (Section) từ mảng sections của LearnPress nếu có
     const sectionsData = (Array.isArray(c.sections) && c.sections.length > 0)
         ? c.sections
         : ((Array.isArray(cf.sections) && cf.sections.length > 0)
             ? cf.sections
-            : (cf.curriculum || c.steps));
+            : (Array.isArray(cf.curriculum) && cf.curriculum.length > 0
+                ? cf.curriculum
+                : (Array.isArray(c.steps) && c.steps.length > 0 ? c.steps : [])));
 
     let currList: string[] = [];
     if (Array.isArray(sectionsData) && sectionsData.length > 0) {
-        currList = sectionsData.map((item: any) =>
-            typeof item === 'string' ? item : (item?.title || item?.name || 'Module')
-        );
-    } else {
-        currList = ['Theory', 'Professional Practice', 'Advanced Applications', 'Business'];
+        currList = sectionsData
+            .map((item: any) =>
+                typeof item === 'string' ? item : (item?.title || item?.name || '')
+            )
+            .filter(Boolean);
     }
 
-    const title = c.title?.rendered || c.title || c.name || 'Hydra Facial';
+    const title = c.title?.rendered || c.title || c.name || '';
     const cleanTitle = typeof title === 'string'
-        ? title.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/&#8211;/g, '-').replace(/&#8217;/g, "'")
-        : String(title);
+        ? title.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/&#8211;/g, '-').replace(/&#8217;/g, "'").trim()
+        : String(title || '');
 
     const subtitle =
-        (typeof cf.subtitle === 'string' ? cf.subtitle : (c.subtitle || (c.excerpt ? c.excerpt.replace(/<[^>]*>/g, '').trim() : ''))) ||
-        'Professional HydraFacial Training';
+        (typeof cf.subtitle === 'string' && cf.subtitle.trim()
+            ? cf.subtitle.trim()
+            : (typeof c.subtitle === 'string' && c.subtitle.trim()
+                ? c.subtitle.trim()
+                : (c.excerpt ? c.excerpt.replace(/<[^>]*>/g, '').trim() : '')));
 
-    const category =
-        (typeof cf.category === 'string' ? cf.category : '') ||
-        (typeof c.category === 'string' ? c.category : '') ||
-        (typeof cf.tag === 'string' ? cf.tag : '') ||
-        (typeof c.tag === 'string' ? c.tag : '') ||
-        'CERTIFICATE TRAINING';
+    // 🎯 Lấy chính xác danh mục từ taxonomy course_category của WordPress
+    const terms: any[] = c._embedded?.['wp:term'] ? c._embedded['wp:term'].flat() : [];
+    const wpCourseCats = terms
+        .filter((t: any) => t && (t.taxonomy === 'course_category' || t.taxonomy === 'lp_course_category'))
+        .map((t: any) => ({
+            name: typeof t.name === 'string' ? t.name.trim() : '',
+            slug: typeof t.slug === 'string' ? t.slug.trim() : '',
+        }))
+        .filter((t: any) => Boolean(t.name));
+
+    const parsedCats = Array.isArray(c.categories) && c.categories.length > 0
+        ? c.categories.map((cat: any) => ({
+            name: typeof cat === 'string' ? cat.trim() : (cat?.name ? String(cat.name).trim() : ''),
+            slug: typeof cat === 'object' && cat?.slug ? String(cat.slug).trim() : '',
+        })).filter((cat: any) => Boolean(cat.name))
+        : (Array.isArray(cf.categories) && cf.categories.length > 0
+            ? cf.categories.map((cat: any) => ({
+                name: typeof cat === 'string' ? cat.trim() : (cat?.name ? String(cat.name).trim() : ''),
+                slug: typeof cat === 'object' && cat?.slug ? String(cat.slug).trim() : '',
+            })).filter((cat: any) => Boolean(cat.name))
+            : []);
+
+    const allCatObjs = wpCourseCats.length > 0 ? wpCourseCats : parsedCats;
+    const categoriesList = allCatObjs.map((cat: any) => String(cat.name || ''));
+    const categorySlugsList = allCatObjs.map((cat: any) => String(cat.slug || cat.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+
+    // Fallback nếu có trường cf.category hoặc c.category mà chưa có trong terms
+    if (categoriesList.length === 0) {
+        const fallbackCat = (typeof cf.category === 'string' && cf.category.trim())
+            ? cf.category.trim()
+            : (typeof c.category === 'string' && c.category.trim() ? c.category.trim() : '');
+        if (fallbackCat) {
+            categoriesList.push(fallbackCat);
+            categorySlugsList.push(fallbackCat.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+        }
+    }
+
+    const primaryCategory = categoriesList[0] || '';
 
     const slug =
         c.slug ||
@@ -95,29 +136,67 @@ function formatCourse(c: WPCourse | any): FormattedCourseCardItem {
             .trim()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)/g, '') ||
-        'hydra-facial';
+        String(c.id || '');
+
+    const rating = (typeof cf.rating === 'string' && cf.rating.trim())
+        ? cf.rating.trim()
+        : (typeof c.rating === 'string' && c.rating.trim() ? c.rating.trim() : '');
+
+    const traineeCount = (typeof cf.traineeCount === 'string' && cf.traineeCount.trim())
+        ? cf.traineeCount.trim()
+        : (typeof c.traineeCount === 'string' && c.traineeCount.trim() ? c.traineeCount.trim() : '');
+
+    const progress = typeof c.progress === 'number'
+        ? c.progress
+        : (typeof cf.progress === 'number' ? cf.progress : undefined);
+
+    const moduleText = (typeof cf.module === 'string' && cf.module.trim())
+        ? cf.module.trim()
+        : (typeof c.module === 'string' && c.module.trim()
+            ? c.module.trim()
+            : (currList.length > 0 ? `${currList.length} modules` : ''));
+
+    const lessonsText = (typeof cf.lessons === 'string' && cf.lessons.trim())
+        ? cf.lessons.trim()
+        : (typeof c.lessons === 'string' && c.lessons.trim() ? c.lessons.trim() : '');
+
+    const quizzesText = (typeof cf.quizzes === 'string' && cf.quizzes.trim())
+        ? cf.quizzes.trim()
+        : (typeof c.quizzes === 'string' && c.quizzes.trim() ? c.quizzes.trim() : '');
+
+    const trainerName = cf.trainer?.name || c.trainer?.name || '';
+    const trainerAvatar = cf.trainer?.avatar || c.trainer?.avatar || '';
+    const trainerRating = cf.trainer?.rating || c.trainer?.rating || '';
+
+    const trainer = trainerName
+        ? {
+            name: trainerName,
+            avatar: trainerAvatar,
+            rating: trainerRating,
+        }
+        : undefined;
+
+    const studentsCount = c.studentsCount ?? cf.studentsCount ?? undefined;
 
     return {
         id: String(c.id || slug),
         slug,
         image: featuredImg,
-        category,
-        rating: (typeof cf.rating === 'string' ? cf.rating : (typeof c.rating === 'string' ? c.rating : '')) || '4.9/5.0',
-        traineeCount: (typeof cf.traineeCount === 'string' ? cf.traineeCount : (typeof c.traineeCount === 'string' ? c.traineeCount : '')) || '(2.700+ trainee)',
+        category: primaryCategory,
+        categories: categoriesList,
+        categorySlugs: categorySlugsList,
+        rating,
+        traineeCount,
         title: cleanTitle,
         subtitle,
-        progress: typeof c.progress === 'number' ? c.progress : 0,
-        module: (typeof cf.module === 'string' ? cf.module : (typeof c.module === 'string' ? c.module : '')) || `${currList.length || 4} modules`,
-        lessons: (typeof cf.lessons === 'string' ? cf.lessons : (typeof c.lessons === 'string' ? c.lessons : '')) || '12 lessons',
-        quizzes: (typeof cf.quizzes === 'string' ? cf.quizzes : (typeof c.quizzes === 'string' ? c.quizzes : '')) || '3 quizzes',
+        progress,
+        module: moduleText,
+        lessons: lessonsText,
+        quizzes: quizzesText,
         curriculum: currList,
         sections: (Array.isArray(c.sections) && c.sections.length > 0) ? c.sections : cf.sections,
-        trainer: {
-            name: cf.trainer?.name || c.trainer?.name || 'Kathleen trainer',
-            avatar: cf.trainer?.avatar || c.trainer?.avatar || '/images/home/kathleen.png',
-            rating: cf.trainer?.rating || c.trainer?.rating || '4.9/5.0',
-        },
-        studentsCount: c.studentsCount || 145,
+        trainer,
+        studentsCount,
     };
 }
 
@@ -218,24 +297,41 @@ export default function MyCourses({
         return loadedCourses.map(formatCourse);
     }, [loadedCourses]);
 
-    // 🎯 Tự động sinh danh sách Tabs từ Category thực tế của LearnPress
+    // 🎯 Tự động sinh danh sách Tabs chính xác từ taxonomy course_category của WordPress
     const dynamicTabs = React.useMemo(() => {
-        const counts: Record<string, number> = {};
-        formattedCourses.forEach((c) => {
-            const cat = c.category.trim();
-            if (cat) {
-                counts[cat] = (counts[cat] || 0) + 1;
-            }
+        const categoryMap = new Map<string, { id: string; label: string; count: number }>();
+
+        formattedCourses.forEach((course) => {
+            const courseCats = course.categories.length > 0
+                ? course.categories
+                : (course.category ? [course.category] : []);
+
+            courseCats.forEach((catName) => {
+                const trimmed = catName.trim();
+                if (!trimmed) return;
+
+                const normalizedKey = trimmed.toLowerCase();
+                const existing = categoryMap.get(normalizedKey);
+                if (existing) {
+                    existing.count += 1;
+                } else {
+                    categoryMap.set(normalizedKey, {
+                        id: normalizedKey,
+                        label: trimmed.toUpperCase(),
+                        count: 1,
+                    });
+                }
+            });
         });
 
         const tabs = [
             { id: 'all', label: `ALL COURSE (${formattedCourses.length})` },
         ];
 
-        Object.entries(counts).forEach(([cat, count]) => {
+        categoryMap.forEach((item) => {
             tabs.push({
-                id: cat.toLowerCase(),
-                label: `${cat.toUpperCase()} (${count})`,
+                id: item.id,
+                label: `${item.label} (${item.count})`,
             });
         });
 
@@ -246,14 +342,19 @@ export default function MyCourses({
         const matchesSearch =
             !searchTerm ||
             course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            course.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            course.category.toLowerCase().includes(searchTerm.toLowerCase());
+            Boolean(course.subtitle && course.subtitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            Boolean(course.category && course.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            course.categories.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase()));
 
+        const currentTab = activeTab.trim().toLowerCase();
+
+        // 🎯 Lọc CHÍNH XÁC theo taxonomy course_category:
+        // - 'all': hiển thị tất cả các khóa học
+        // - tab cụ thể: khóa học PHẢI thuộc taxonomy course_category đó (so khớp exact match name hoặc slug)
         const matchesTab =
-            activeTab === 'all' ||
-            course.category.toLowerCase() === activeTab.toLowerCase() ||
-            course.category.toLowerCase().includes(activeTab.toLowerCase()) ||
-            activeTab.toLowerCase().includes(course.category.toLowerCase());
+            currentTab === 'all' ||
+            course.categories.some((cat) => cat.trim().toLowerCase() === currentTab) ||
+            course.categorySlugs.some((slug) => slug.trim().toLowerCase() === currentTab);
 
         return matchesSearch && matchesTab;
     });
@@ -349,7 +450,7 @@ export default function MyCourses({
                                 courseUrl={courseUrl}
                                 previewUrl={courseUrl}
                                 variant={cardVariant}
-                                studentsCount={course.studentsCount || 145}
+                                studentsCount={course.studentsCount}
                                 onPlay={() => console.log('Continue course:', course.id)}
                             />
                         );
