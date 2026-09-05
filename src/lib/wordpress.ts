@@ -59,13 +59,43 @@ export function getWpAuthHeaders(customHeaders: HeadersInit = {}): HeadersInit {
  * Thay thế domain WordPress Backend thành domain Frontend trong dữ liệu trả về
  */
 export function replaceWordpressURLs<T>(data: T): T {
-  if (!data || !WP_URL || !SITE_URL) return data;
+  if (!data) return data;
   try {
+    let wpHost = 'course-amc.homenest.edu.vn';
+    try {
+      if (WP_URL) {
+        wpHost = new URL(WP_URL).hostname;
+      }
+    } catch {
+      wpHost = 'course-amc.homenest.edu.vn';
+    }
+
+    const targetUrl = SITE_URL || '';
+    const escapedWpHost = wpHost.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    if (typeof data === 'string') {
+      let result = data;
+      // Thay thế https?://course-amc.homenest.edu.vn -> targetUrl
+      const regexPlain = new RegExp(`https?:\\/\\/(?:www\\.)?${escapedWpHost}`, 'gi');
+      result = result.replace(regexPlain, targetUrl);
+
+      // Thay thế escaped slashes: https?:\\\/\\\/(?:www\\.)?course-amc.homenest.edu.vn
+      const regexEscaped = new RegExp(`https?:\\\\\\/\\\\\\/(?:www\\.)?${escapedWpHost}`, 'gi');
+      result = result.replace(regexEscaped, targetUrl.replace(/\//g, '\\/'));
+
+      return result as unknown as T;
+    }
+
     let stringified = JSON.stringify(data);
-    const escapedWpUrl = WP_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Chỉ thay thế URL trang/link, giữ nguyên domain cho hình ảnh & media (/wp-content/, /wp-includes/)
-    const regex = new RegExp(`${escapedWpUrl}(?!\\/(wp-content|wp-includes))`, 'g');
-    stringified = stringified.replace(regex, SITE_URL);
+
+    // 1. Thay thế escaped slashes trong JSON: https:\/\/course-amc.homenest.edu.vn
+    const regexEscaped = new RegExp(`https?:\\\\\\/\\\\\\/(?:www\\.)?${escapedWpHost}`, 'gi');
+    stringified = stringified.replace(regexEscaped, targetUrl.replace(/\//g, '\\/'));
+
+    // 2. Thay thế plain trong JSON: https://course-amc.homenest.edu.vn & http://course-amc.homenest.edu.vn
+    const regexPlain = new RegExp(`https?:\\/\\/(?:www\\.)?${escapedWpHost}`, 'gi');
+    stringified = stringified.replace(regexPlain, targetUrl);
+
     return JSON.parse(stringified);
   } catch (error) {
     console.warn('[wordpress] Lỗi thay thế URLs:', error);
