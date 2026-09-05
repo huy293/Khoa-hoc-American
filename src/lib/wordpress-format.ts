@@ -1,4 +1,4 @@
-import { SITE_URL } from './wordpress';
+import { SITE_URL, replaceWordpressURLs } from './wordpress';
 
 /**
  * Định dạng tiền tệ VND (ví dụ: 15.000.000 đ)
@@ -130,7 +130,9 @@ export function replaceH1WithH2(html?: string | null): string {
  * Làm sạch nội dung Gutenberg HTML từ WordPress
  */
 export function cleanWpContent(html?: string | null): string {
-  return replaceH1WithH2(html);
+  if (!html) return '';
+  const processed = replaceH1WithH2(html);
+  return replaceWordpressURLs(processed);
 }
 
 /**

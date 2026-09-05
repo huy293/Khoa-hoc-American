@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import BannerSection from "@/components/shop/BannerSection";
 import ProductCard, { Product } from "@/components/shop/ProductCard";
 import QuickViewProduct from "@/components/shop/QuickViewProduct";
@@ -22,10 +22,12 @@ const DEFAULT_PRODUCT_IMAGES = [
 ];
 
 export default function ProductDetailContent({ slug, initialProduct, suggestedProducts }: ProductDetailContentProps) {
+    const router = useRouter();
     const pathname = usePathname();
     const isStudent = pathname?.startsWith("/student");
     const isDashboard = pathname?.startsWith("/dashboard");
     const shopUrl = isStudent ? "/student/shop" : isDashboard ? "/dashboard/shop" : "/shop";
+    const cartUrl = isStudent ? "/student/cart" : isDashboard ? "/dashboard/cart" : "/cart";
 
     const [activeTab, setActiveTab] = useState<TabType>("describe");
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -291,7 +293,7 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                                         type="button"
                                         className={styles["product-detail-section__btn-cart"]}
                                         onClick={() => {
-                                            alert(`Đã thêm "${currentProduct.name}" vào giỏ hàng!`);
+                                            router.push(cartUrl);
                                         }}
                                     >
                                         ADD TO CART
@@ -300,7 +302,7 @@ export default function ProductDetailContent({ slug, initialProduct, suggestedPr
                                         type="button"
                                         className={styles["product-detail-section__btn-buy"]}
                                         onClick={() => {
-                                            alert(`Tiến hành thanh toán cho "${currentProduct.name}"!`);
+                                            router.push(cartUrl);
                                         }}
                                     >
                                         BUY NOW

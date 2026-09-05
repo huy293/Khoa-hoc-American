@@ -171,14 +171,13 @@ export const Header = () => {
                         <SearchIcon />
                     </button>
 
-                    <button
-                        type="button"
+                    <Link
+                        href="/cart"
                         className={styles['header__action-btn']}
                         aria-label="Shopping Cart"
-                        onClick={() => console.log('Cart clicked')}
                     >
                         <CartIcon />
-                    </button>
+                    </Link>
 
                     <Link
                         href={mounted ? userHref : '/login'}
