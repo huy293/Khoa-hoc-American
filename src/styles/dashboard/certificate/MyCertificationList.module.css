@@ -291,6 +291,196 @@
     width: 100%;
 }
 
+.my-certifications__empty-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 24px;
+    background: linear-gradient(180deg, rgba(255, 252, 247, 0.9) 0%, rgba(250, 245, 237, 0.6) 100%);
+    border: 1.5px dashed #DFC4A0;
+    border-radius: 20px;
+    margin: 24px 0;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.my-certifications__empty-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(181, 111, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: #B56F00;
+}
+
+.my-certifications__empty-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #2D241E;
+    margin: 0 0 10px;
+    letter-spacing: 0.5px;
+}
+
+.my-certifications__empty-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: #6C5E53;
+    max-width: 580px;
+    line-height: 1.6;
+    margin: 0 0 28px;
+}
+
+.my-certifications__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}
+
+.my-certifications__empty-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #B56F00;
+    color: #FFFFFF !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.25s ease, transform 0.2s ease;
+}
+
+.my-certifications__empty-btn-primary:hover {
+    background: #965B00;
+    transform: translateY(-2px);
+}
+
+.my-certifications__empty-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid #DFC4A0;
+    color: #8A7043 !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.my-certifications__empty-btn-secondary:hover {
+    background: rgba(181, 111, 0, 0.06);
+    border-color: #B56F00;
+    color: #B56F00 !important;
+}
+
+.my-certifications__in-progress-list {
+    margin-top: 36px;
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+}
+
+.my-certifications__in-progress-head {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8A7043;
+    margin-bottom: 4px;
+}
+
+.my-certifications__in-progress-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #FFFFFF;
+    border: 1px solid #EAE0D5;
+    border-radius: 12px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.my-certifications__in-progress-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.my-certifications__in-progress-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2D241E;
+    margin: 0 0 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.my-certifications__progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.my-certifications__progress-track {
+    flex: 1;
+    height: 6px;
+    background: #F0E8DD;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.my-certifications__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #B56F00 0%, #E39C24 100%);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+.my-certifications__progress-pct {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8A7043;
+    min-width: 36px;
+    text-align: right;
+}
+
+.my-certifications__in-progress-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #B56F00;
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 6px 14px;
+    border: 1px solid rgba(181, 111, 0, 0.3);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.my-certifications__in-progress-link:hover {
+    background: #B56F00;
+    color: #FFFFFF !important;
+}
+
 /* ── 7. Certificate Lightbox Modal ── */
 .cert-modal-backdrop {
     position: fixed;

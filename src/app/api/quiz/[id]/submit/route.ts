@@ -26,8 +26,32 @@ export async function POST(
   const quizId = Number(id) || 2188;
 
   try {
-    const body = await request.json();
-    const { answers = {}, questionIds: requestedQuestionIds, userId, courseId, lessonId } = body || {};
+    const body = await request.json().catch(() => ({}));
+    const {
+      answers = {},
+      questionIds: requestedQuestionIds,
+      userId,
+      courseId,
+      lessonId,
+    } = body || {};
+
+    // Đọc thông tin người dùng từ Cookie phiên đăng nhập hn_user_session
+    const sessionCookie = request.cookies.get('hn_user_session')?.value;
+    let authUser: any = null;
+    if (sessionCookie) {
+      try {
+        authUser = JSON.parse(decodeURIComponent(sessionCookie));
+      } catch {
+        try {
+          authUser = JSON.parse(sessionCookie);
+        } catch {
+          authUser = null;
+        }
+      }
+    }
+
+    const effectiveUserId = userId || authUser?.id;
+    const effectiveUserEmail = body?.userEmail || authUser?.email;
 
     if (typeof answers !== 'object') {
       return NextResponse.json(
@@ -36,11 +60,12 @@ export async function POST(
       );
     }
 
-    // 1. Thử chấm điểm qua LearnPress WordPress REST API
+    // 1. Thử chấm điểm qua LearnPress WordPress REST API nếu có
+    let scoredData: WPQuizSubmitResponse | null = null;
     try {
       const wpResult = await submitWpQuiz(quizId, answers, {
-        userId,
-        courseId,
+        userId: effectiveUserId ? Number(effectiveUserId) : undefined,
+        courseId: courseId ? Number(courseId) : undefined,
         lessonId,
       });
       if (wpResult && wpResult.success && Array.isArray(wpResult.results) && wpResult.results.length > 0) {
@@ -66,58 +91,138 @@ export async function POST(
           wpResult.score = Math.round((wpResult.correct_count / allIds.length) * 100);
           wpResult.passed = wpResult.score >= (wpResult.passing_grade || 80);
         }
-
-        return NextResponse.json(wpResult);
+        scoredData = wpResult;
       }
     } catch (wpErr) {
       console.warn('Lỗi kết nối submit WordPress, sử dụng cơ chế chấm điểm cục bộ:', wpErr);
     }
 
-    // 2. Fallback: Chấm điểm đầy đủ cho toàn bộ câu hỏi của bài quiz
-    const questionIdsToGrade: number[] = Array.isArray(requestedQuestionIds) && requestedQuestionIds.length > 0
-      ? requestedQuestionIds.map(Number)
-      : (Object.keys(answers).length > 0
-        ? Array.from(new Set([...Object.keys(answers).map(Number), ...ALL_QUIZ_QUESTION_IDS]))
-        : ALL_QUIZ_QUESTION_IDS);
+    // 2. Chấm điểm dự phòng đầy đủ nếu WordPress chưa hỗ trợ endpoint chấm điểm trực tiếp
+    if (!scoredData) {
+      const questionIdsToGrade: number[] = Array.isArray(requestedQuestionIds) && requestedQuestionIds.length > 0
+        ? requestedQuestionIds.map(Number)
+        : (Object.keys(answers).length > 0
+          ? Array.from(new Set([...Object.keys(answers).map(Number), ...ALL_QUIZ_QUESTION_IDS]))
+          : ALL_QUIZ_QUESTION_IDS);
 
-    const totalQuestions = questionIdsToGrade.length || 10;
-    let correctCount = 0;
+      const totalQuestions = questionIdsToGrade.length || 10;
+      let correctCount = 0;
 
-    const results = questionIdsToGrade.map((qId) => {
-      const selected = String(answers[qId] || '');
-      const correctConfig = FALLBACK_CORRECT_MAP[qId];
-      const correctId = correctConfig ? correctConfig.correctId : '';
-      const isCorrect = Boolean(
-        selected &&
-        correctConfig &&
-        correctConfig.validIds.some((v) => v.toLowerCase() === selected.toLowerCase())
-      );
-      if (isCorrect) correctCount++;
+      const results = questionIdsToGrade.map((qId) => {
+        const selected = String(answers[qId] || '');
+        const correctConfig = FALLBACK_CORRECT_MAP[qId];
+        const correctId = correctConfig ? correctConfig.correctId : '';
+        const isCorrect = Boolean(
+          selected &&
+          correctConfig &&
+          correctConfig.validIds.some((v) => v.toLowerCase() === selected.toLowerCase())
+        );
+        if (isCorrect) correctCount++;
 
-      return {
-        question_id: qId,
-        selected_answer_id: selected,
-        correct_answer_id: correctId,
-        is_correct: isCorrect,
+        return {
+          question_id: qId,
+          selected_answer_id: selected,
+          correct_answer_id: correctId,
+          is_correct: isCorrect,
+        };
+      });
+
+      const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+      const passingGrade = 80;
+      const passed = score >= passingGrade;
+
+      scoredData = {
+        success: true,
+        quiz_id: quizId,
+        score,
+        passing_grade: passingGrade,
+        passed,
+        correct_count: correctCount,
+        total_questions: totalQuestions,
+        results,
       };
-    });
+    }
 
-    const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-    const passingGrade = 80;
-    const passed = score >= passingGrade;
+    // 3. ĐỒNG BỘ VÀ LƯU CHÍNH THỨC VÀO LEARNPRESS TRÊN WORDPRESS
+    // Đảm bảo dữ liệu xuất hiện đầy đủ trong NEXT_PUBLIC_WORDPRESS_URL/wp-admin/admin.php?page=lp-view-quiz-results
+    // Chỉ đồng bộ khi có thông tin học viên hợp lệ (tránh tạo bản ghi rác user_id = 0)
+    if (effectiveUserId || effectiveUserEmail) {
+      try {
+        const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://course-amc.homenest.edu.vn';
+        const wpSecret = process.env.HN_API_SECRET || '';
 
-    const responseData: WPQuizSubmitResponse = {
-      success: true,
-      quiz_id: quizId,
-      score,
-      passing_grade: passingGrade,
-      passed,
-      correct_count: correctCount,
-      total_questions: totalQuestions,
-      results,
-    };
+        const syncPayload = {
+          quizId,
+          quizSlug: body?.quizSlug || '',
+          courseId: courseId ? Number(courseId) : undefined,
+          courseSlug: body?.courseSlug || '',
+          userId: effectiveUserId ? Number(effectiveUserId) : undefined,
+          userEmail: effectiveUserEmail || '',
+          score: scoredData.score,
+          question_correct: scoredData.correct_count,
+          question_wrong: Math.max(0, scoredData.total_questions - scoredData.correct_count),
+          question_empty: Math.max(0, scoredData.total_questions - Object.keys(answers).length),
+          total_questions: scoredData.total_questions,
+          time_spend: body?.timeSpend || '00:00',
+          time_spent_seconds: body?.timeSpentSeconds || 0,
+          start_time: body?.startTime || undefined,
+          end_time: body?.endTime || undefined,
+          graduation: scoredData.passed ? 'passed' : 'failed',
+          status: 'completed',
+          answers,
+        };
 
-    return NextResponse.json(responseData);
+        const wpSaveRes = await fetch(`${wpUrl}/wp-json/homenest/v1/quiz/submit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-secret-key': wpSecret,
+            ...(wpSecret ? { Authorization: `Bearer ${wpSecret}` } : {}),
+          },
+          body: JSON.stringify(syncPayload),
+        });
+
+        if (wpSaveRes.ok) {
+          const wpData = await wpSaveRes.json().catch(() => null);
+          if (wpData?.user_item_id) {
+            scoredData.user_item_id = wpData.user_item_id;
+          }
+          if (typeof wpData?.can_retake !== 'undefined') {
+            scoredData.can_retake = Boolean(wpData.can_retake);
+          }
+          if (typeof wpData?.retake_count !== 'undefined') {
+            scoredData.retake_count = Number(wpData.retake_count);
+          }
+          if (typeof wpData?.retakes_left !== 'undefined') {
+            scoredData.retakes_left = Number(wpData.retakes_left);
+          }
+          if (typeof wpData?.attempts_count !== 'undefined') {
+            scoredData.attempts_count = Number(wpData.attempts_count);
+          }
+          if (wpData?.time_spend) {
+            scoredData.time_spend = wpData.time_spend;
+          }
+        } else {
+          const errText = await wpSaveRes.text().catch(() => '');
+          console.warn('[Quiz Submit] WordPress trả về lỗi khi lưu kết quả:', wpSaveRes.status, errText);
+        }
+      } catch (syncErr) {
+        console.warn('[Quiz Submit] Không thể kết nối đồng bộ sang WordPress:', syncErr);
+      }
+    }
+
+    if (!scoredData.time_spend && body?.timeSpend) {
+      scoredData.time_spend = body.timeSpend;
+    }
+
+    // Mặc định: không có giá trị retake thì không cho phép học viên làm lại bài quiz
+    if (typeof scoredData.can_retake === 'undefined') {
+      scoredData.can_retake = false;
+      scoredData.retake_count = 0;
+      scoredData.retakes_left = 0;
+    }
+
+    return NextResponse.json(scoredData);
   } catch (error: any) {
     console.error('Lỗi xử lý nộp quiz:', error);
     return NextResponse.json(
@@ -125,4 +230,8 @@ export async function POST(
       { status: 500 }
     );
   }
+}
+
+function currentMysqlTime(): string {
+  return new Date().toISOString().slice(0, 19).replace('T', ' ');
 }

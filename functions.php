@@ -1153,6 +1153,447 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true'
     ]);
 
+    // E.4. NỘP BÀI VÀ LƯU KẾT QUẢ QUIZ LEARNPRESS (POST /wp-json/homenest/v1/quiz/submit)
+    // Lưu chính thức vào database LearnPress để hiển thị trên page=lp-view-quiz-results
+    register_rest_route('homenest/v1', '/quiz/submit', [
+        'methods' => 'POST',
+        'callback' => function ($request) {
+            global $wpdb;
+            $params = $request->get_json_params() ?: [];
+
+            $quiz_id        = (int)($params['quizId'] ?? $params['quiz_id'] ?? $params['id'] ?? 0);
+            $quiz_slug      = sanitize_text_field($params['quizSlug'] ?? $params['quiz_slug'] ?? '');
+            $course_id      = (int)($params['courseId'] ?? $params['course_id'] ?? 0);
+            $course_slug    = sanitize_text_field($params['courseSlug'] ?? $params['course_slug'] ?? '');
+            $user_id        = (int)($params['userId'] ?? $params['user_id'] ?? 0);
+            $user_email     = sanitize_email($params['userEmail'] ?? $params['user_email'] ?? '');
+            $score          = isset($params['score']) ? floatval($params['score']) : (isset($params['result']) ? floatval($params['result']) : 0);
+            $correct_count  = (int)($params['question_correct'] ?? $params['correct_count'] ?? 0);
+            $wrong_count    = (int)($params['question_wrong'] ?? $params['wrong_count'] ?? 0);
+            $empty_count    = (int)($params['question_empty'] ?? $params['empty_count'] ?? 0);
+            $total_q        = (int)($params['total_questions'] ?? ($correct_count + $wrong_count + $empty_count));
+            $time_spend     = sanitize_text_field($params['time_spend'] ?? $params['timeSpend'] ?? '');
+            $time_spend_sec = 0;
+            if (!empty($params['time_spent_seconds']) || !empty($params['timeSpentSeconds'])) {
+                $time_spend_sec = (int)($params['time_spent_seconds'] ?? $params['timeSpentSeconds']);
+            } elseif (!empty($time_spend) && $time_spend !== 'Not avalable') {
+                $parts = array_map('intval', explode(':', $time_spend));
+                if (count($parts) === 2) {
+                    $time_spend_sec = $parts[0] * 60 + $parts[1];
+                } elseif (count($parts) === 3) {
+                    $time_spend_sec = $parts[0] * 3600 + $parts[1] * 60 + $parts[2];
+                }
+            }
+
+            if ($time_spend_sec <= 0 && !empty($params['start_time']) && !empty($params['end_time'])) {
+                $diff = strtotime($params['end_time']) - strtotime($params['start_time']);
+                if ($diff > 0) {
+                    $time_spend_sec = $diff;
+                }
+            }
+
+            if ($time_spend_sec <= 0) {
+                $time_spend_sec = 1;
+            }
+
+            $time_spend = sprintf('%02d:%02d', floor($time_spend_sec / 60), $time_spend_sec % 60);
+
+            // Đồng bộ thời gian bắt đầu và kết thúc chuẩn theo WordPress timezone
+            $end_time   = current_time('mysql');
+            $start_time = date('Y-m-d H:i:s', strtotime($end_time) - $time_spend_sec);
+            $graduation = !empty($params['graduation']) ? sanitize_text_field($params['graduation']) : ($score >= 80 ? 'passed' : 'failed');
+            $status     = 'completed';
+
+            // 1. Phân giải User ID
+            if ($user_id <= 0 && !empty($user_email)) {
+                $user_obj = get_user_by('email', $user_email);
+                if ($user_obj) {
+                    $user_id = $user_obj->ID;
+                }
+            }
+            if ($user_id <= 0 && is_user_logged_in()) {
+                $user_id = get_current_user_id();
+            }
+
+            // BẮT BUỘC có học viên hợp lệ. Không ghi nhận kết quả cho user vô danh (user_id = 0)
+            if ($user_id <= 0) {
+                return new WP_Error('missing_user', 'Không xác định được học viên. Vui lòng đăng nhập trước khi nộp bài.', ['status' => 400]);
+            }
+
+            // 2. Phân giải Quiz ID
+            if ($quiz_id <= 0 && !empty($quiz_slug)) {
+                $clean_qslug = trim($quiz_slug, '/');
+                $q_post = get_page_by_path($clean_qslug, OBJECT, 'lp_quiz');
+                if (!$q_post) {
+                    $q_query = new WP_Query([
+                        'post_type'      => 'lp_quiz',
+                        'name'           => $clean_qslug,
+                        'posts_per_page' => 1,
+                        'post_status'    => 'publish',
+                    ]);
+                    $q_post = $q_query->posts[0] ?? null;
+                }
+                if ($q_post) {
+                    $quiz_id = $q_post->ID;
+                }
+            }
+
+            // 3. Phân giải Course ID
+            if ($course_id <= 0 && !empty($course_slug)) {
+                $clean_cslug = trim($course_slug, '/');
+                $c_post = get_page_by_path($clean_cslug, OBJECT, 'lp_course');
+                if (!$c_post) {
+                    $c_query = new WP_Query([
+                        'post_type'      => 'lp_course',
+                        'name'           => $clean_cslug,
+                        'posts_per_page' => 1,
+                        'post_status'    => 'publish',
+                    ]);
+                    $c_post = $c_query->posts[0] ?? null;
+                }
+                if ($c_post) {
+                    $course_id = $c_post->ID;
+                }
+            }
+
+            // Nếu vẫn chưa có Course ID nhưng đã có Quiz ID, truy vấn course chứa quiz này
+            if ($course_id <= 0 && $quiz_id > 0) {
+                $meta_course = get_post_meta($quiz_id, '_lp_course', true);
+                if ($meta_course) {
+                    $course_id = (int)$meta_course;
+                } else {
+                    $sec_table = $wpdb->prefix . 'learnpress_section_items';
+                    $sec_info = $wpdb->prefix . 'learnpress_sections';
+                    if ($wpdb->get_var("SHOW TABLES LIKE '{$sec_table}'") === $sec_table) {
+                        $found_course = $wpdb->get_var($wpdb->prepare(
+                            "SELECT s.section_course_id 
+                             FROM {$sec_table} si 
+                             INNER JOIN {$sec_info} s ON si.section_id = s.section_id 
+                             WHERE si.item_id = %d LIMIT 1",
+                            $quiz_id
+                        ));
+                        if ($found_course) {
+                            $course_id = (int)$found_course;
+                        }
+                    }
+                }
+            }
+
+            if ($quiz_id <= 0) {
+                return new WP_Error('missing_quiz', 'Không tìm thấy thông tin bài Quiz.', ['status' => 400]);
+            }
+
+            $table_user_items   = $wpdb->prefix . 'learnpress_user_items';
+            $table_user_results = $wpdb->prefix . 'learnpress_user_item_results';
+
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$table_user_items}'") !== $table_user_items) {
+                return new WP_Error('db_error', 'Không tìm thấy bảng learnpress_user_items.', ['status' => 500]);
+            }
+
+            // 4. Tìm parent_id (user_item_id của khóa học đã enroll nếu có)
+            $parent_id = 0;
+            if ($user_id > 0 && $course_id > 0) {
+                $parent_item = $wpdb->get_row($wpdb->prepare(
+                    "SELECT user_item_id FROM {$table_user_items} 
+                     WHERE user_id = %d AND item_id = %d AND item_type = 'lp_course' 
+                     ORDER BY user_item_id DESC LIMIT 1",
+                    $user_id,
+                    $course_id
+                ));
+                if ($parent_item) {
+                    $parent_id = (int)$parent_item->user_item_id;
+                }
+            }
+
+            // 5. Chèn bản ghi làm bài Quiz vào learnpress_user_items
+            $wpdb->insert($table_user_items, [
+                'user_id'      => $user_id,
+                'item_id'      => $quiz_id,
+                'start_time'   => $start_time,
+                'end_time'     => $end_time,
+                'item_type'    => 'lp_quiz',
+                'status'       => $status,
+                'graduation'   => $graduation,
+                'access_level' => 50,
+                'ref_id'       => $course_id,
+                'ref_type'     => 'lp_course',
+                'parent_id'    => $parent_id,
+            ]);
+            $user_item_id = (int)$wpdb->insert_id;
+
+            if (!$user_item_id) {
+                return new WP_Error('insert_failed', 'Không thể tạo bản ghi kết quả bài làm Quiz.', ['status' => 500]);
+            }
+
+            // 6. Chuẩn bị kết quả JSON tương thích tuyệt đối với cấu trúc lp_view_quiz_results_page
+            $result_data = [
+                'result'           => round($score, 2),
+                'question_correct' => $correct_count,
+                'question_wrong'   => $wrong_count,
+                'question_empty'   => $empty_count,
+                'time_spend'       => (string)$time_spend,
+                'status'           => $status,
+                'graduation'       => $graduation,
+            ];
+
+            // 7. Lưu vào learnpress_user_item_results
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$table_user_results}'") === $table_user_results) {
+                $wpdb->replace($table_user_results, [
+                    'user_item_id' => $user_item_id,
+                    'result'       => wp_json_encode($result_data),
+                ]);
+            }
+
+            // 8. Lưu fallback meta nếu LearnPress Core có hàm
+            if (function_exists('learn_press_update_user_item_meta')) {
+                learn_press_update_user_item_meta($user_item_id, 'results', $result_data);
+            }
+
+            // 9. Kích hoạt Action Hooks của LearnPress
+            do_action('learnpress/user/quiz-finished', $user_item_id, $quiz_id, $user_id);
+            do_action('learn_press_user_finish_quiz', $quiz_id, $user_id, $user_item_id);
+
+            // NẾU HỌC VIÊN ĐẠT BÀI QUIZ (PASSED): TỰ ĐỘNG XÁC NHẬN HOÀN THÀNH KHÓA HỌC & TIẾN ĐỘ 100%
+            if ($graduation === 'passed' && $course_id > 0 && $user_id > 0) {
+                if (function_exists('homenest_sync_completed_course')) {
+                    homenest_sync_completed_course($course_id, $user_id);
+                }
+            }
+
+            // 10. Lấy cấu hình Retake từ LearnPress và tính toán quyền làm lại
+            $retake_raw = get_post_meta($quiz_id, '_lp_retake_count', true);
+            if ($retake_raw === '' || $retake_raw === false || $retake_raw === null) {
+                $retake_raw = get_post_meta($quiz_id, '_lp_retake', true);
+            }
+            if ($retake_raw === '' || $retake_raw === false || $retake_raw === null) {
+                $retake_raw = get_post_meta($quiz_id, 'retake_count', true);
+            }
+
+            // Mặc định không có giá trị retake thì không cho phép làm lại bài quiz (retake_count = 0)
+            $retake_count = 0;
+            if ($retake_raw !== '' && $retake_raw !== false && $retake_raw !== null) {
+                $parsed = intval($retake_raw);
+                if ($parsed === -1 || $parsed > 0) {
+                    $retake_count = $parsed;
+                }
+            }
+
+            $attempts_count = 1;
+            if ($user_id > 0) {
+                $attempts_count = (int)$wpdb->get_var($wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$table_user_items} 
+                     WHERE user_id = %d AND item_id = %d AND item_type = 'lp_quiz' AND status = 'completed'",
+                    $user_id,
+                    $quiz_id
+                ));
+            }
+
+            $can_retake = false;
+            $retakes_left = 0;
+            if ($retake_count === -1) {
+                $can_retake = true;
+                $retakes_left = -1;
+            } elseif ($retake_count > 0) {
+                $retakes_used = max(0, $attempts_count - 1);
+                $retakes_left = max(0, $retake_count - $retakes_used);
+                $can_retake = $retakes_left > 0;
+            } else {
+                $can_retake = false;
+                $retakes_left = 0;
+            }
+
+            return rest_ensure_response([
+                'success'        => true,
+                'user_item_id'   => $user_item_id,
+                'quiz_id'        => $quiz_id,
+                'course_id'      => $course_id,
+                'user_id'        => $user_id,
+                'score'          => $score,
+                'time_spend'     => $time_spend,
+                'graduation'     => $graduation,
+                'retake_count'   => $retake_count,
+                'attempts_count' => $attempts_count,
+                'retakes_left'   => $retakes_left,
+                'can_retake'     => $can_retake,
+                'message'        => 'Đã lưu kết quả Quiz vào LearnPress thành công!',
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // E.5. KIỂM TRA QUYỀN LÀM LẠI QUIZ (RETAKE) TRONG LEARNPRESS (GET /wp-json/homenest/v1/quiz/{id})
+    register_rest_route('homenest/v1', '/quiz/(?P<id>\d+)', [
+        'methods' => 'GET',
+        'callback' => function ($request) {
+            global $wpdb;
+            $quiz_id   = (int)$request['id'];
+            $user_id   = (int)($request->get_param('userId') ?: $request->get_param('user_id'));
+            $user_email = sanitize_email($request->get_param('userEmail') ?: $request->get_param('user_email') ?: '');
+
+            if ($user_id <= 0 && !empty($user_email)) {
+                $user_obj = get_user_by('email', $user_email);
+                if ($user_obj) $user_id = $user_obj->ID;
+            }
+            if ($user_id <= 0 && is_user_logged_in()) {
+                $user_id = get_current_user_id();
+            }
+
+            // Lấy giá trị Retake từ LearnPress
+            $retake_raw = get_post_meta($quiz_id, '_lp_retake_count', true);
+            if ($retake_raw === '' || $retake_raw === false || $retake_raw === null) {
+                $retake_raw = get_post_meta($quiz_id, '_lp_retake', true);
+            }
+            if ($retake_raw === '' || $retake_raw === false || $retake_raw === null) {
+                $retake_raw = get_post_meta($quiz_id, 'retake_count', true);
+            }
+
+            // Mặc định nếu không có giá trị retake thì không cho phép làm lại bài quiz (retake_count = 0)
+            $retake_count = 0;
+            if ($retake_raw !== '' && $retake_raw !== false && $retake_raw !== null) {
+                $parsed = intval($retake_raw);
+                if ($parsed === -1 || $parsed > 0) {
+                    $retake_count = $parsed;
+                }
+            }
+
+            $attempts_count = 0;
+            $last_result = null;
+            $table_user_items   = $wpdb->prefix . 'learnpress_user_items';
+            $table_user_results = $wpdb->prefix . 'learnpress_user_item_results';
+
+            if ($user_id > 0 && $wpdb->get_var("SHOW TABLES LIKE '{$table_user_items}'") === $table_user_items) {
+                $attempts_count = (int)$wpdb->get_var($wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$table_user_items} 
+                     WHERE user_id = %d AND item_id = %d AND item_type = 'lp_quiz' AND status = 'completed'",
+                    $user_id,
+                    $quiz_id
+                ));
+
+                // Lấy kết quả bài làm gần nhất nếu có
+                $last_item = $wpdb->get_row($wpdb->prepare(
+                    "SELECT user_item_id, status, graduation, start_time, end_time 
+                     FROM {$table_user_items} 
+                     WHERE user_id = %d AND item_id = %d AND item_type = 'lp_quiz' AND status = 'completed' 
+                     ORDER BY user_item_id DESC LIMIT 1",
+                    $user_id,
+                    $quiz_id
+                ));
+
+                if ($last_item && $wpdb->get_var("SHOW TABLES LIKE '{$table_user_results}'") === $table_user_results) {
+                    $res_json = $wpdb->get_var($wpdb->prepare(
+                        "SELECT result FROM {$table_user_results} WHERE user_item_id = %d LIMIT 1",
+                        $last_item->user_item_id
+                    ));
+                    if ($res_json) {
+                        $last_result = json_decode($res_json, true) ?: null;
+                    }
+                }
+            }
+
+            $can_retake = false;
+            $retakes_left = 0;
+            if ($retake_count === -1) {
+                $can_retake = true;
+                $retakes_left = -1;
+            } elseif ($retake_count > 0) {
+                $retakes_used = max(0, $attempts_count - 1);
+                $retakes_left = max(0, $retake_count - $retakes_used);
+                $can_retake = $retakes_left > 0;
+            } else {
+                $can_retake = false;
+                $retakes_left = 0;
+            }
+
+            return rest_ensure_response([
+                'quiz_id'        => $quiz_id,
+                'retake_count'   => $retake_count,
+                'attempts_count' => $attempts_count,
+                'retakes_left'   => $retakes_left,
+                'can_retake'     => $can_retake,
+                'last_result'    => $last_result,
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // E.6. DỌN DẸP BẢN GHI RÁC QUIZ (POST /wp-json/homenest/v1/quiz/cleanup)
+    register_rest_route('homenest/v1', '/quiz/cleanup', [
+        'methods' => 'POST',
+        'callback' => function ($request) {
+            global $wpdb;
+            $table_items   = $wpdb->prefix . 'learnpress_user_items';
+            $table_results = $wpdb->prefix . 'learnpress_user_item_results';
+
+            $deleted_items = $wpdb->query( "DELETE FROM {$table_items} WHERE (user_id <= 0 OR user_id IS NULL) AND item_type = 'lp_quiz'" );
+            $deleted_results = 0;
+            if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table_results}'" ) === $table_results ) {
+                $deleted_results = $wpdb->query( "DELETE FROM {$table_results} WHERE user_item_id NOT IN (SELECT user_item_id FROM {$table_items})" );
+            }
+
+            return rest_ensure_response([
+                'success'         => true,
+                'deleted_items'   => (int)$deleted_items,
+                'deleted_results' => (int)$deleted_results,
+                'message'         => 'Đã dọn dẹp các bản ghi rác User ID <= 0 thành công!',
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // E.7. HOÀN THÀNH KHÓA HỌC TRONG LEARNPRESS (POST /wp-json/homenest/v1/courses/finish)
+    register_rest_route('homenest/v1', '/courses/finish', [
+        'methods' => 'POST',
+        'callback' => function ($request) {
+            global $wpdb;
+            $params = $request->get_json_params() ?: [];
+
+            $course_id   = (int)($params['course_id'] ?? $params['courseId'] ?? $params['id'] ?? 0);
+            $course_slug = sanitize_text_field($params['course_slug'] ?? $params['courseSlug'] ?? '');
+            $user_id     = (int)($params['user_id'] ?? $params['userId'] ?? 0);
+            $user_email  = sanitize_email($params['user_email'] ?? $params['userEmail'] ?? '');
+
+            if ($user_id <= 0 && !empty($user_email)) {
+                $user_obj = get_user_by('email', $user_email);
+                if ($user_obj) $user_id = $user_obj->ID;
+            }
+            if ($user_id <= 0 && is_user_logged_in()) {
+                $user_id = get_current_user_id();
+            }
+
+            if ($course_id <= 0 && !empty($course_slug)) {
+                $clean_cslug = trim(str_replace(' ', '-', strtolower($course_slug)), '/');
+                $c_post = get_page_by_path($clean_cslug, OBJECT, 'lp_course');
+                if (!$c_post) {
+                    $c_query = new WP_Query([
+                        'post_type'      => 'lp_course',
+                        'name'           => $clean_cslug,
+                        'posts_per_page' => 1,
+                        'post_status'    => 'publish',
+                    ]);
+                    $c_post = $c_query->posts[0] ?? null;
+                }
+                if ($c_post) {
+                    $course_id = $c_post->ID;
+                }
+            }
+
+            if ($course_id <= 0 || $user_id <= 0) {
+                return new WP_Error('invalid_params', 'Thiếu thông tin khóa học hoặc học viên.', ['status' => 400]);
+            }
+
+            $success = homenest_sync_completed_course($course_id, $user_id);
+
+            return rest_ensure_response([
+                'success'   => $success,
+                'status'    => 'completed',
+                'course_id' => $course_id,
+                'user_id'   => $user_id,
+                'message'   => 'Đã xác nhận hoàn thành khóa học trong LearnPress thành công!',
+            ]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
     // F. TIẾP NHẬN FORM LIÊN HỆ / TƯ VẤN (POST /wp-json/homenest/v1/lead)
     register_rest_route('homenest/v1', '/lead', [
         'methods' => 'POST',
@@ -1332,6 +1773,26 @@ add_action('rest_api_init', function () {
             'schema' => null,
         ]);
     }
+
+    // Expose trường retake_count cho bài thi lp_quiz
+    register_rest_field('lp_quiz', 'retake_count', [
+        'get_callback' => function ($object) {
+            $post_id = $object['id'] ?? 0;
+            if (!$post_id) return 0;
+            $val = get_post_meta($post_id, '_lp_retake_count', true);
+            if ($val === '' || $val === false || $val === null) {
+                $val = get_post_meta($post_id, '_lp_retake', true);
+            }
+            if ($val === '' || $val === false || $val === null) {
+                $val = get_post_meta($post_id, 'retake_count', true);
+            }
+            if ($val === '' || $val === false || $val === null) {
+                return 0; // không có giá trị retake mặc định không cho phép học viên làm lại bài quiz
+            }
+            return intval($val);
+        },
+        'schema' => null,
+    ]);
 
     // I. CHI TIẾT BÀI HỌC LEARNPRESS (GET /wp-json/homenest/v1/lesson/{slug})
     register_rest_route('homenest/v1', '/lesson/(?P<slug>[a-zA-Z0-9-]+)', [
@@ -1703,6 +2164,65 @@ add_action('rest_api_init', function () {
         },
         'permission_callback' => '__return_true'
     ]);
+    // O. HOÀN THÀNH BÀI HỌC VÀ CẬP NHẬT TIẾN ĐỘ KHÓA HỌC (POST /wp-json/homenest/v1/lessons/complete)
+    register_rest_route('homenest/v1', '/lessons/complete', [
+        'methods'  => 'POST',
+        'callback' => function ($request) {
+            $params      = $request->get_json_params() ?: [];
+            $course_id   = (int)($params['courseId'] ?? $params['course_id'] ?? 0);
+            $lesson_id   = (int)($params['lessonId'] ?? $params['lesson_id'] ?? 0);
+            $user_id     = (int)($params['userId'] ?? $params['user_id'] ?? 0);
+            $user_email  = sanitize_email($params['userEmail'] ?? $params['user_email'] ?? '');
+            $course_slug = sanitize_text_field($params['courseSlug'] ?? $params['course_slug'] ?? '');
+            $lesson_slug = sanitize_text_field($params['lessonSlug'] ?? $params['lesson_slug'] ?? '');
+
+            if ($user_id <= 0 && !empty($user_email)) {
+                $user_obj = get_user_by('email', $user_email);
+                if ($user_obj) $user_id = $user_obj->ID;
+            }
+            if ($user_id <= 0 && is_user_logged_in()) {
+                $user_id = get_current_user_id();
+            }
+
+            if ($course_id <= 0 && !empty($course_slug)) {
+                $clean_cslug = trim(str_replace(' ', '-', strtolower($course_slug)), '/');
+                $c_post = get_page_by_path($clean_cslug, OBJECT, 'lp_course');
+                if (!$c_post) {
+                    $c_query = new WP_Query([
+                        'post_type'      => 'lp_course',
+                        'name'           => $clean_cslug,
+                        'posts_per_page' => 1,
+                        'post_status'    => 'publish',
+                    ]);
+                    $c_post = $c_query->posts[0] ?? null;
+                }
+                if ($c_post) $course_id = $c_post->ID;
+            }
+
+            if ($lesson_id <= 0 && !empty($lesson_slug)) {
+                $clean_lslug = trim(str_replace(' ', '-', strtolower($lesson_slug)), '/');
+                $l_post = get_page_by_path($clean_lslug, OBJECT, 'lp_lesson');
+                if (!$l_post) {
+                    $l_query = new WP_Query([
+                        'post_type'      => ['lp_lesson', 'lesson'],
+                        'name'           => $clean_lslug,
+                        'posts_per_page' => 1,
+                        'post_status'    => 'publish',
+                    ]);
+                    $l_post = $l_query->posts[0] ?? null;
+                }
+                if ($l_post) $lesson_id = $l_post->ID;
+            }
+
+            if ($course_id <= 0 || $lesson_id <= 0 || $user_id <= 0) {
+                return new WP_Error('missing_params', 'Thiếu courseId, lessonId hoặc userId.', ['status' => 400]);
+            }
+
+            $res = homenest_sync_completed_lesson($course_id, $lesson_id, $user_id);
+            return rest_ensure_response($res);
+        },
+        'permission_callback' => '__return_true'
+    ]);
 });
 
 // 3. ĐẢM BẢO LEARNPRESS POST TYPES LUÔN ĐƯỢC MỞ TRONG REST API
@@ -1713,8 +2233,815 @@ add_filter('register_post_type_args', function ($args, $post_type) {
     return $args;
 }, 10, 2);
 
+/**
+ * 🎓 HÀM ĐỒNG BỘ HOÀN THÀNH BÀI HỌC VÀ CẬP NHẬT TIẾN ĐỘ KHÓA HỌC TRONG LEARNPRESS
+ * Khi học viên hoàn thành 1 bài học (lesson), thanh tiến trình sẽ tăng tương ứng
+ * Ví dụ: 5 bài học, xong 1 bài = 20%, xong 2 bài = 40%...
+ * Trạng thái là 'enrolled' / 'in-progress' (khi chưa đủ 100%), hoặc 'completed' / 'passed' (khi 100%), TUYỆT ĐỐI KHÔNG BỊ 'failed'.
+ */
+function homenest_sync_completed_lesson($course_id, $lesson_id, $user_id) {
+    global $wpdb;
+    $course_id = (int)$course_id;
+    $lesson_id = (int)$lesson_id;
+    $user_id   = (int)$user_id;
+
+    if ($course_id <= 0 || $lesson_id <= 0 || $user_id <= 0) {
+        return false;
+    }
+
+    $table_items   = $wpdb->prefix . 'learnpress_user_items';
+    $table_results = $wpdb->prefix . 'learnpress_user_item_results';
+    $table_sec     = $wpdb->prefix . 'learnpress_sections';
+    $table_sec_it  = $wpdb->prefix . 'learnpress_section_items';
+
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items) {
+        return false;
+    }
+
+    $now = current_time('mysql');
+
+    // 1. Tìm hoặc tạo bản ghi ghi danh khóa học (lp_course) trong learnpress_user_items
+    $course_item = $wpdb->get_row($wpdb->prepare(
+        "SELECT user_item_id, status, graduation FROM {$table_items} 
+         WHERE user_id = %d AND item_id = %d AND item_type = 'lp_course' 
+         ORDER BY user_item_id DESC LIMIT 1",
+        $user_id,
+        $course_id
+    ));
+
+    $course_user_item_id = 0;
+    if ($course_item) {
+        $course_user_item_id = (int)$course_item->user_item_id;
+        // Nếu trước đó bị gán nhầm thành 'failed', sửa ngay thành 'in-progress'
+        if ($course_item->graduation === 'failed') {
+            $wpdb->update(
+                $table_items,
+                [
+                    'status'     => 'enrolled',
+                    'graduation' => 'in-progress',
+                ],
+                ['user_item_id' => $course_user_item_id]
+            );
+        }
+    } else {
+        $wpdb->insert($table_items, [
+            'user_id'      => $user_id,
+            'item_id'      => $course_id,
+            'start_time'   => $now,
+            'item_type'    => 'lp_course',
+            'status'       => 'enrolled',
+            'graduation'   => 'in-progress',
+            'access_level' => 50,
+            'ref_id'       => 0,
+            'ref_type'     => 'lp_order',
+            'parent_id'    => 0,
+        ]);
+        $course_user_item_id = (int)$wpdb->insert_id;
+    }
+
+    if (!$course_user_item_id) {
+        return false;
+    }
+
+    // 2. Đánh dấu bài học này là 'completed'
+    $existing_lesson = $wpdb->get_row($wpdb->prepare(
+        "SELECT user_item_id FROM {$table_items} 
+         WHERE user_id = %d AND item_id = %d AND item_type = 'lp_lesson' 
+         ORDER BY user_item_id DESC LIMIT 1",
+        $user_id,
+        $lesson_id
+    ));
+
+    if ($existing_lesson) {
+        $wpdb->update(
+            $table_items,
+            [
+                'status'     => 'completed',
+                'graduation' => 'passed',
+                'ref_id'     => $course_id,
+                'ref_type'   => 'lp_course',
+                'parent_id'  => $course_user_item_id,
+                'end_time'   => $now,
+            ],
+            ['user_item_id' => $existing_lesson->user_item_id]
+        );
+    } else {
+        $wpdb->insert($table_items, [
+            'user_id'      => $user_id,
+            'item_id'      => $lesson_id,
+            'item_type'    => 'lp_lesson',
+            'status'       => 'completed',
+            'graduation'   => 'passed',
+            'access_level' => 50,
+            'ref_id'       => $course_id,
+            'ref_type'     => 'lp_course',
+            'parent_id'    => $course_user_item_id,
+            'start_time'   => $now,
+            'end_time'     => $now,
+        ]);
+    }
+
+    // 3. Lấy tất cả item của khóa học để tính % tiến độ chuẩn xác
+    $all_item_ids = [];
+    if (function_exists('learn_press_get_course')) {
+        $lp_c = learn_press_get_course($course_id);
+        if ($lp_c && method_exists($lp_c, 'get_item_ids')) {
+            $all_item_ids = $lp_c->get_item_ids();
+        }
+    }
+    if (empty($all_item_ids) && $wpdb->get_var("SHOW TABLES LIKE '{$table_sec}'") === $table_sec && $wpdb->get_var("SHOW TABLES LIKE '{$table_sec_it}'") === $table_sec_it) {
+        $all_item_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT si.item_id 
+             FROM {$table_sec_it} si 
+             INNER JOIN {$table_sec} s ON si.section_id = s.section_id 
+             WHERE s.section_course_id = %d OR s.course_id = %d",
+            $course_id, $course_id
+        ));
+    }
+
+    $total_items_count = max(1, count($all_item_ids));
+
+    // Đếm số item đã hoàn thành của user trong khóa học này
+    $completed_items_count = 0;
+    if (!empty($all_item_ids)) {
+        $in_clause = implode(',', array_map('intval', $all_item_ids));
+        $completed_items_count = (int)$wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(DISTINCT item_id) FROM {$table_items} 
+             WHERE user_id = %d AND status = 'completed' AND item_id IN ({$in_clause})",
+            $user_id
+        ));
+    } else {
+        $completed_items_count = 1;
+    }
+
+    $progress = min(100, max(0, round(($completed_items_count / $total_items_count) * 100)));
+    $is_all_completed = ($progress >= 100);
+
+    $final_status     = $is_all_completed ? 'completed' : 'enrolled';
+    $final_graduation = $is_all_completed ? 'passed' : 'in-progress';
+
+    // 4. Cập nhật bảng learnpress_user_items cho khóa học (Đảm bảo KHÔNG BAO GIỜ bị 'failed')
+    $wpdb->update(
+        $table_items,
+        [
+            'status'     => $final_status,
+            'graduation' => $final_graduation,
+            'end_time'   => $is_all_completed ? $now : null,
+        ],
+        ['user_item_id' => $course_user_item_id]
+    );
+
+    // 5. Cập nhật bảng learnpress_user_item_results (Để thanh tiến trình hiển thị đúng %)
+    $course_result_data = [
+        'result'          => $progress,
+        'count_items'     => $total_items_count,
+        'completed_items' => $completed_items_count,
+        'status'          => $final_status,
+        'graduation'      => $final_graduation,
+    ];
+
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_results}'") === $table_results) {
+        $wpdb->replace($table_results, [
+            'user_item_id' => $course_user_item_id,
+            'result'       => wp_json_encode($course_result_data),
+        ]);
+    }
+
+    // 6. Cập nhật meta cho LearnPress Core
+    if (function_exists('learn_press_update_user_item_meta')) {
+        learn_press_update_user_item_meta($course_user_item_id, 'results', $course_result_data);
+        learn_press_update_user_item_meta($course_user_item_id, '_course_progress', $progress);
+        learn_press_update_user_item_meta($course_user_item_id, 'grade', $final_graduation);
+        learn_press_update_user_item_meta($course_user_item_id, 'status', $final_status);
+    }
+
+    // 7. Gọi hook LearnPress
+    do_action('learnpress/user/course/item-completed', $lesson_id, $course_id, $user_id);
+    if ($is_all_completed) {
+        do_action('learnpress/user/course-finished', $course_user_item_id, $course_id, $user_id);
+        do_action('learn_press_user_finish_course', $course_id, $user_id, $course_user_item_id);
+    }
+
+    return [
+        'success'         => true,
+        'course_id'       => $course_id,
+        'lesson_id'       => $lesson_id,
+        'user_id'         => $user_id,
+        'progress'        => $progress,
+        'completed_items' => $completed_items_count,
+        'total_items'     => $total_items_count,
+        'status'          => $final_status,
+        'graduation'      => $final_graduation,
+    ];
+}
+
+/**
+ * 🎓 HÀM ĐỒNG BỘ HOÀN THÀNH KHÓA HỌC CHO HỌC VIÊN TRONG LEARNPRESS
+ * Cập nhật chuẩn vào learnpress_user_items và learnpress_user_item_results
+ * để page=learn-press-students-enrolled hiển thị Status: Passed / Completed, Progress: 100%
+ */
+function homenest_sync_completed_course($course_id, $user_id) {
+    global $wpdb;
+    $course_id = (int)$course_id;
+    $user_id   = (int)$user_id;
+
+    if ($course_id <= 0 || $user_id <= 0) {
+        return false;
+    }
+
+    $table_items   = $wpdb->prefix . 'learnpress_user_items';
+    $table_results = $wpdb->prefix . 'learnpress_user_item_results';
+    $table_sec     = $wpdb->prefix . 'learnpress_sections';
+    $table_sec_it  = $wpdb->prefix . 'learnpress_section_items';
+
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items) {
+        return false;
+    }
+
+    $now = current_time('mysql');
+
+    // 1. Tìm hoặc tạo bản ghi ghi danh khóa học (lp_course) trong learnpress_user_items
+    $course_item = $wpdb->get_row($wpdb->prepare(
+        "SELECT user_item_id, status, graduation, ref_id FROM {$table_items} 
+         WHERE user_id = %d AND item_id = %d AND item_type = 'lp_course' 
+         ORDER BY user_item_id DESC LIMIT 1",
+        $user_id,
+        $course_id
+    ));
+
+    $course_user_item_id = 0;
+    if ($course_item) {
+        $course_user_item_id = (int)$course_item->user_item_id;
+        $wpdb->update(
+            $table_items,
+            [
+                'status'     => 'completed',
+                'graduation' => 'passed',
+                'end_time'   => $now,
+            ],
+            ['user_item_id' => $course_user_item_id]
+        );
+    } else {
+        $wpdb->insert($table_items, [
+            'user_id'      => $user_id,
+            'item_id'      => $course_id,
+            'start_time'   => $now,
+            'end_time'     => $now,
+            'item_type'    => 'lp_course',
+            'status'       => 'completed',
+            'graduation'   => 'passed',
+            'access_level' => 50,
+            'ref_id'       => 0,
+            'ref_type'     => 'lp_order',
+            'parent_id'    => 0,
+        ]);
+        $course_user_item_id = (int)$wpdb->insert_id;
+    }
+
+    if (!$course_user_item_id) {
+        return false;
+    }
+
+    // 2. Lấy tất cả các bài học (lp_lesson) và bài quiz (lp_quiz) thuộc khóa học này
+    $all_item_ids = [];
+    if (function_exists('learn_press_get_course')) {
+        $lp_c = learn_press_get_course($course_id);
+        if ($lp_c && method_exists($lp_c, 'get_item_ids')) {
+            $all_item_ids = $lp_c->get_item_ids();
+        }
+    }
+    if (empty($all_item_ids) && $wpdb->get_var("SHOW TABLES LIKE '{$table_sec}'") === $table_sec && $wpdb->get_var("SHOW TABLES LIKE '{$table_sec_it}'") === $table_sec_it) {
+        $all_item_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT si.item_id 
+             FROM {$table_sec_it} si 
+             INNER JOIN {$table_sec} s ON si.section_id = s.section_id 
+             WHERE s.section_course_id = %d OR s.course_id = %d",
+            $course_id, $course_id
+        ));
+    }
+
+    $total_count = max(1, count($all_item_ids));
+
+    if (!empty($all_item_ids)) {
+        foreach ($all_item_ids as $item_id) {
+            $item_id   = (int)$item_id;
+            $item_type = get_post_type($item_id) ?: 'lp_lesson';
+
+            $existing_it = $wpdb->get_row($wpdb->prepare(
+                "SELECT user_item_id, status FROM {$table_items} 
+                 WHERE user_id = %d AND item_id = %d AND item_type = %s 
+                 ORDER BY user_item_id DESC LIMIT 1",
+                $user_id,
+                $item_id,
+                $item_type
+            ));
+
+            if ($existing_it) {
+                $wpdb->update(
+                    $table_items,
+                    [
+                        'status'     => 'completed',
+                        'graduation' => 'passed',
+                        'ref_id'     => $course_id,
+                        'ref_type'   => 'lp_course',
+                        'parent_id'  => $course_user_item_id,
+                        'end_time'   => $now,
+                    ],
+                    ['user_item_id' => $existing_it->user_item_id]
+                );
+            } else {
+                $wpdb->insert($table_items, [
+                    'user_id'      => $user_id,
+                    'item_id'      => $item_id,
+                    'item_type'    => $item_type,
+                    'status'       => 'completed',
+                    'graduation'   => 'passed',
+                    'access_level' => 50,
+                    'ref_id'       => $course_id,
+                    'ref_type'     => 'lp_course',
+                    'parent_id'    => $course_user_item_id,
+                    'start_time'   => $now,
+                    'end_time'     => $now,
+                ]);
+            }
+        }
+    }
+
+    // 3. Cập nhật tiến độ 100% trong bảng learnpress_user_item_results
+    $course_result_data = [
+        'result'          => 100,
+        'count_items'     => $total_count,
+        'completed_items' => $total_count,
+        'status'          => 'completed',
+        'graduation'      => 'passed',
+    ];
+
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_results}'") === $table_results) {
+        $wpdb->replace($table_results, [
+            'user_item_id' => $course_user_item_id,
+            'result'       => wp_json_encode($course_result_data),
+        ]);
+    }
+
+    // 4. Lưu meta cho LearnPress Core
+    if (function_exists('learn_press_update_user_item_meta')) {
+        learn_press_update_user_item_meta($course_user_item_id, 'results', $course_result_data);
+        learn_press_update_user_item_meta($course_user_item_id, '_course_progress', 100);
+        learn_press_update_user_item_meta($course_user_item_id, 'grade', 'passed');
+        learn_press_update_user_item_meta($course_user_item_id, 'status', 'completed');
+    }
+
+    // 5. Khóa chặt kết quả passed, tránh LearnPress Core ghi đè failed
+    $wpdb->update(
+        $table_items,
+        [
+            'status'     => 'completed',
+            'graduation' => 'passed',
+            'end_time'   => $now,
+        ],
+        ['user_item_id' => $course_user_item_id]
+    );
+
+    // 6. Kích hoạt Action Hooks của LearnPress
+    do_action('learnpress/user/course-finished', $course_user_item_id, $course_id, $user_id);
+    do_action('learn_press_user_finish_course', $course_id, $user_id, $course_user_item_id);
+
+    // 7. Cập nhật User Meta _completed_courses
+    $completed_meta = get_user_meta($user_id, '_completed_courses', true) ?: [];
+    if (!is_array($completed_meta)) $completed_meta = [];
+    if (!in_array($course_id, $completed_meta)) {
+        $completed_meta[] = $course_id;
+        update_user_meta($user_id, '_completed_courses', $completed_meta);
+    }
+
+    return true;
+}
+
+// 4. TỰ ĐỘNG SỬA CÁC BẢN GHI BỊ LỖI 'FAILED' VÀ TIẾN TRÌNH '0%' TRÊN ADMIN LEARNPRESS
+function homenest_repair_failed_students_enrolled() {
+    global $wpdb;
+    $table_items   = $wpdb->prefix . 'learnpress_user_items';
+    $table_results = $wpdb->prefix . 'learnpress_user_item_results';
+    $table_sec     = $wpdb->prefix . 'learnpress_sections';
+    $table_sec_it  = $wpdb->prefix . 'learnpress_section_items';
+
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") !== $table_items) {
+        return;
+    }
+
+    // A. Tự động đồng bộ các học viên đã vượt qua bài quiz
+    $passed_quiz_rows = $wpdb->get_results(
+        "SELECT DISTINCT ref_id AS course_id, user_id 
+         FROM {$table_items} 
+         WHERE item_type = 'lp_quiz' AND graduation = 'passed' AND status = 'completed' AND ref_id > 0 AND user_id > 0"
+    );
+
+    if (!empty($passed_quiz_rows)) {
+        foreach ($passed_quiz_rows as $pr) {
+            $c_status = $wpdb->get_row($wpdb->prepare(
+                "SELECT status, graduation FROM {$table_items} 
+                 WHERE user_id = %d AND item_id = %d AND item_type = 'lp_course' LIMIT 1",
+                $pr->user_id,
+                $pr->course_id
+            ));
+            if (!$c_status || $c_status->status !== 'completed' || $c_status->graduation !== 'passed') {
+                homenest_sync_completed_course($pr->course_id, $pr->user_id);
+            }
+        }
+    }
+
+    // B. Quét và sửa ngay tất cả các bản ghi lp_course đang bị dính 'failed'
+    $failed_courses = $wpdb->get_results(
+        "SELECT user_item_id, user_id, item_id AS course_id, status, graduation 
+         FROM {$table_items} 
+         WHERE item_type = 'lp_course' AND (graduation = 'failed' OR (status = 'completed' AND graduation != 'passed'))"
+    );
+
+    if (!empty($failed_courses)) {
+        $now = current_time('mysql');
+        foreach ($failed_courses as $fc) {
+            $course_id = (int)$fc->course_id;
+            $user_id   = (int)$fc->user_id;
+
+            $all_item_ids = [];
+            if (function_exists('learn_press_get_course')) {
+                $lp_c = learn_press_get_course($course_id);
+                if ($lp_c && method_exists($lp_c, 'get_item_ids')) {
+                    $all_item_ids = $lp_c->get_item_ids();
+                }
+            }
+            if (empty($all_item_ids) && $wpdb->get_var("SHOW TABLES LIKE '{$table_sec}'") === $table_sec && $wpdb->get_var("SHOW TABLES LIKE '{$table_sec_it}'") === $table_sec_it) {
+                $all_item_ids = $wpdb->get_col($wpdb->prepare(
+                    "SELECT si.item_id 
+                     FROM {$table_sec_it} si 
+                     INNER JOIN {$table_sec} s ON si.section_id = s.section_id 
+                     WHERE s.section_course_id = %d OR s.course_id = %d",
+                    $course_id, $course_id
+                ));
+            }
+
+            $total_count = max(1, count($all_item_ids));
+
+            $completed_count = 0;
+            if (!empty($all_item_ids)) {
+                $in_clause = implode(',', array_map('intval', $all_item_ids));
+                $completed_count = (int)$wpdb->get_var($wpdb->prepare(
+                    "SELECT COUNT(DISTINCT item_id) FROM {$table_items} 
+                     WHERE user_id = %d AND status = 'completed' AND item_id IN ({$in_clause})",
+                    $user_id
+                ));
+            }
+
+            $has_passed_quiz = (bool)$wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table_items} 
+                 WHERE user_id = %d AND ref_id = %d AND item_type = 'lp_quiz' AND graduation = 'passed'",
+                $user_id, $course_id
+            ));
+
+            if ($has_passed_quiz || $completed_count >= $total_count || $fc->status === 'completed') {
+                $progress   = 100;
+                $status     = 'completed';
+                $graduation = 'passed';
+            } elseif ($completed_count > 0) {
+                $progress   = min(100, round(($completed_count / $total_count) * 100));
+                $status     = 'enrolled';
+                $graduation = 'in-progress';
+            } else {
+                $progress   = 0;
+                $status     = 'enrolled';
+                $graduation = 'in-progress';
+            }
+
+            $wpdb->update(
+                $table_items,
+                [
+                    'status'     => $status,
+                    'graduation' => $graduation,
+                ],
+                ['user_item_id' => $fc->user_item_id]
+            );
+
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$table_results}'") === $table_results) {
+                $result_data = [
+                    'result'          => $progress,
+                    'count_items'     => $total_count,
+                    'completed_items' => ($progress >= 100 ? $total_count : $completed_count),
+                    'status'          => $status,
+                    'graduation'      => $graduation,
+                ];
+                $wpdb->replace($table_results, [
+                    'user_item_id' => $fc->user_item_id,
+                    'result'       => wp_json_encode($result_data),
+                ]);
+            }
+
+            if (function_exists('learn_press_update_user_item_meta')) {
+                learn_press_update_user_item_meta($fc->user_item_id, '_course_progress', $progress);
+                learn_press_update_user_item_meta($fc->user_item_id, 'grade', $graduation);
+                learn_press_update_user_item_meta($fc->user_item_id, 'status', $status);
+            }
+        }
+    }
+}
+add_action('admin_init', 'homenest_repair_failed_students_enrolled');
+add_action('load-learnpress_page_learn-press-students-enrolled', 'homenest_repair_failed_students_enrolled');
+
+// 5. NẾU KHÓA HỌC KHÔNG CÓ QUIZ, LUÔN ĐÁNH GIÁ TIẾN ĐỘ THEO BÀI HỌC (TRÁNH BỊ 0% QUIZ -> FAILED)
+add_filter('learnpress/course/evaluate-type', function ($evaluate_type, $course_id) {
+    if (function_exists('learn_press_get_course')) {
+        $course = learn_press_get_course($course_id);
+        if ($course) {
+            $quizzes = method_exists($course, 'get_quizzes') ? $course->get_quizzes() : [];
+            if (empty($quizzes)) {
+                return 'evaluate_lesson';
+            }
+        }
+    }
+    return $evaluate_type;
+}, 99, 2);
+
+// 6. BỘ LỌC CHỐNG HIỂN THỊ 'FAILED' CHO KHÓA HỌC ĐANG HỌC HOẶC ĐÃ HOÀN THÀNH
+add_filter('learn-press/user-course-grade', function ($grade, $course_id, $user_id, $course_data) {
+    if ($grade === 'failed') {
+        global $wpdb;
+        $table_items = $wpdb->prefix . 'learnpress_user_items';
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table_items}'") === $table_items) {
+            $row = $wpdb->get_row($wpdb->prepare(
+                "SELECT status, graduation FROM {$table_items} 
+                 WHERE user_id = %d AND item_id = %d AND item_type = 'lp_course' LIMIT 1",
+                $user_id, $course_id
+            ));
+            if ($row && ($row->status === 'completed' || $row->graduation === 'passed')) {
+                return 'passed';
+            }
+            if ($row && $row->status === 'enrolled') {
+                return 'in-progress';
+            }
+        }
+        return 'in-progress';
+    }
+    return $grade;
+}, 99, 4);
 
 
 
 
 
+
+
+/**
+ * =========================================================================
+ * KẾT QUẢ QUIZ LEARNPRESS - ADMIN PAGE (ĐÃ FIX)
+ * =========================================================================
+ */
+
+// 1. Đăng ký menu (ưu tiên submenu LearnPress, fallback top-level nếu LearnPress chưa active)
+add_action( 'admin_menu', 'lp_view_quiz_results_menu', 99 );
+function lp_view_quiz_results_menu() {
+    // Kiểm tra xem menu LearnPress đã tồn tại chưa
+    global $submenu, $menu;
+    $learnpress_exists = false;
+
+    if ( ! empty( $menu ) ) {
+        foreach ( $menu as $item ) {
+            if ( isset( $item[2] ) && $item[2] === 'learn_press' ) {
+                $learnpress_exists = true;
+                break;
+            }
+        }
+    }
+
+    if ( $learnpress_exists ) {
+        // Gắn dưới menu LearnPress (chuẩn)
+        add_submenu_page(
+            'learn_press',
+            'Kết quả Quiz',
+            'Kết quả Quiz',
+            'manage_options',
+            'lp-view-quiz-results',
+            'lp_view_quiz_results_page'
+        );
+    } else {
+        // Fallback: tạo menu top-level riêng nếu LearnPress chưa active
+        add_menu_page(
+            'Kết quả Quiz LearnPress',
+            'Kết quả Quiz',
+            'manage_options',
+            'lp-view-quiz-results',
+            'lp_view_quiz_results_page',
+            'dashicons-yes-alt',
+            58
+        );
+    }
+}
+
+// 2. Trang hiển thị kết quả (đã tối ưu + bảo mật + phân trang)
+function lp_view_quiz_results_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'Bạn không có quyền truy cập trang này.' );
+    }
+
+    global $wpdb;
+
+    $table_items   = $wpdb->prefix . 'learnpress_user_items';
+    $table_results = $wpdb->prefix . 'learnpress_user_item_results';
+
+    // Kiểm tra bảng có tồn tại không
+    $table_items_exists   = $wpdb->get_var( "SHOW TABLES LIKE '{$table_items}'" ) === $table_items;
+    $table_results_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$table_results}'" ) === $table_results;
+
+    if ( ! $table_items_exists ) {
+        echo '<div class="wrap"><h1>Kết quả Quiz LearnPress</h1>';
+        echo '<div class="notice notice-error"><p>Không tìm thấy bảng <code>learnpress_user_items</code>. Vui lòng kiểm tra lại plugin LearnPress đã được kích hoạt và cập nhật chưa.</p></div></div>';
+        return;
+    }
+
+    // Tự động dọn dẹp các bản ghi rác không có học viên (user_id <= 0 do test API)
+    $wpdb->query( "DELETE FROM {$table_items} WHERE (user_id <= 0 OR user_id IS NULL) AND item_type = 'lp_quiz'" );
+    if ( $table_results_exists ) {
+        $wpdb->query( "DELETE FROM {$table_results} WHERE user_item_id NOT IN (SELECT user_item_id FROM {$table_items})" );
+    }
+
+    // Lấy filter
+    $only_completed = isset( $_GET['only_completed'] ) ? 1 : 0;
+    $paged          = max( 1, intval( $_GET['paged'] ?? 1 ) );
+    $per_page       = 50;
+    $offset         = ( $paged - 1 ) * $per_page;
+
+    // Đếm tổng
+    $count_sql = "SELECT COUNT(*) FROM {$table_items} WHERE item_type = 'lp_quiz' AND user_id > 0";
+    if ( $only_completed ) {
+        $count_sql .= " AND status = 'completed'";
+    }
+    $total_items = (int) $wpdb->get_var( $count_sql );
+    $total_pages = ceil( $total_items / $per_page );
+
+    // Lấy dữ liệu
+    $sql = "
+        SELECT 
+            ui.user_item_id,
+            ui.user_id,
+            ui.item_id AS quiz_id,
+            ui.ref_id AS course_id,
+            ui.status,
+            ui.graduation,
+            ui.start_time,
+            ui.end_time
+        FROM {$table_items} ui
+        WHERE ui.item_type = 'lp_quiz' AND ui.user_id > 0
+    ";
+    if ( $only_completed ) {
+        $sql .= " AND ui.status = 'completed'";
+    }
+    $sql .= " ORDER BY ui.user_item_id DESC LIMIT %d OFFSET %d";
+
+    $rows = $wpdb->get_results( $wpdb->prepare( $sql, $per_page, $offset ) );
+    ?>
+    <div class="wrap">
+        <h1 class="wp-heading-inline">Kết quả Quiz LearnPress</h1>
+        <hr class="wp-header-end">
+
+        <form method="get" style="margin: 15px 0;">
+            <input type="hidden" name="page" value="lp-view-quiz-results">
+            <label style="margin-right: 12px;">
+                <input type="checkbox" name="only_completed" value="1" <?php checked( $only_completed, 1 ); ?>>
+                Chỉ hiện các lần làm đã hoàn thành
+            </label>
+            <button type="submit" class="button button-primary">Lọc</button>
+            <?php if ( $only_completed ) : ?>
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=lp-view-quiz-results' ) ); ?>" class="button">Xóa bộ lọc</a>
+            <?php endif; ?>
+        </form>
+
+        <p>Tổng số bản ghi: <strong><?php echo number_format_i18n( $total_items ); ?></strong>
+            <?php if ( $only_completed ) echo ' (đã hoàn thành)'; ?>
+        </p>
+
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th width="80">User Item ID</th>
+                    <th>User</th>
+                    <th>Quiz</th>
+                    <th>Khóa học</th>
+                    <th>Status</th>
+                    <th>Graduation</th>
+                    <th>Điểm (%)</th>
+                    <th>Đúng / Sai / Trống</th>
+                    <th>Thời gian làm</th>
+                    <th>Bắt đầu</th>
+                    <th>Kết thúc</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ( empty( $rows ) ) : ?>
+                    <tr>
+                        <td colspan="11">Không có dữ liệu.</td>
+                    </tr>
+                <?php else : ?>
+                    <?php foreach ( $rows as $row ) :
+                        $user         = get_userdata( $row->user_id );
+                        $quiz_title   = get_the_title( $row->quiz_id ) ?: '—';
+                        $course_title = $row->course_id ? ( get_the_title( $row->course_id ) ?: '—' ) : '—';
+
+                        // Lấy result
+                        $result_data = [];
+                        if ( $table_results_exists ) {
+                            $result_json = $wpdb->get_var( $wpdb->prepare(
+                                "SELECT result FROM {$table_results} WHERE user_item_id = %d LIMIT 1",
+                                $row->user_item_id
+                            ) );
+                            if ( $result_json ) {
+                                $result_data = json_decode( $result_json, true ) ?: [];
+                            }
+                        }
+
+                        // Fallback meta (LearnPress cũ)
+                        if ( empty( $result_data ) && function_exists( 'learn_press_get_user_item_meta' ) ) {
+                            $meta = learn_press_get_user_item_meta( $row->user_item_id, 'results', true );
+                            if ( is_string( $meta ) ) {
+                                $meta = maybe_unserialize( $meta );
+                                if ( is_string( $meta ) ) {
+                                    $meta = json_decode( $meta, true );
+                                }
+                            }
+                            if ( is_array( $meta ) ) {
+                                $result_data = $meta;
+                            }
+                        }
+
+                        $percent    = isset( $result_data['result'] ) ? round( floatval( $result_data['result'] ), 2 ) . '%' : '—';
+                        $correct    = $result_data['question_correct'] ?? '—';
+                        $wrong      = $result_data['question_wrong'] ?? '—';
+                        $empty      = $result_data['question_empty'] ?? '—';
+                        $time_spend = $result_data['time_spend'] ?? '—';
+
+                        // Fallback tính thời gian làm nếu trong result_data bị trống hoặc 00:00 mà start_time != end_time
+                        if ( ( empty( $time_spend ) || $time_spend === '—' || $time_spend === 'Not avalable' ) && ! empty( $row->start_time ) && ! empty( $row->end_time ) && $row->end_time !== '0000-00-00 00:00:00' ) {
+                            $diff_sec = strtotime( $row->end_time ) - strtotime( $row->start_time );
+                            if ( $diff_sec > 0 ) {
+                                $time_spend = sprintf( '%02d:%02d', floor( $diff_sec / 60 ), $diff_sec % 60 );
+                            }
+                        }
+                        ?>
+                        <tr>
+                            <td><?php echo esc_html( $row->user_item_id ); ?></td>
+                            <td>
+                                <?php if ( $user ) : ?>
+                                    <strong><?php echo esc_html( $user->display_name ); ?></strong><br>
+                                    <small><?php echo esc_html( $user->user_email ); ?></small>
+                                <?php else : ?>
+                                    ID: <?php echo esc_html( $row->user_id ); ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ( $row->quiz_id ) : ?>
+                                    <a href="<?php echo esc_url( get_edit_post_link( $row->quiz_id ) ); ?>" target="_blank">
+                                        <?php echo esc_html( $quiz_title ); ?>
+                                    </a>
+                                    <br><small>ID: <?php echo esc_html( $row->quiz_id ); ?></small>
+                                <?php else : ?>
+                                    —
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ( $row->course_id ) : ?>
+                                    <a href="<?php echo esc_url( get_edit_post_link( $row->course_id ) ); ?>" target="_blank">
+                                        <?php echo esc_html( $course_title ); ?>
+                                    </a>
+                                <?php else : ?>
+                                    —
+                                <?php endif; ?>
+                            </td>
+                            <td><?php echo esc_html( $row->status ); ?></td>
+                            <td><?php echo esc_html( $row->graduation ?: '—' ); ?></td>
+                            <td><strong><?php echo esc_html( $percent ); ?></strong></td>
+                            <td><?php echo esc_html( "$correct / $wrong / $empty" ); ?></td>
+                            <td><?php echo esc_html( $time_spend ); ?></td>
+                            <td><?php echo esc_html( $row->start_time ); ?></td>
+                            <td><?php echo esc_html( $row->end_time ?: '—' ); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
+        <?php if ( $total_pages > 1 ) : ?>
+            <div class="tablenav bottom">
+                <div class="tablenav-pages">
+                    <?php
+                    echo paginate_links( [
+                        'base'      => add_query_arg( 'paged', '%#%' ),
+                        'format'    => '',
+                        'prev_text' => '&laquo;',
+                        'next_text' => '&raquo;',
+                        'total'     => $total_pages,
+                        'current'   => $paged,
+                    ] );
+                    ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php
+}

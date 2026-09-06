@@ -41,6 +41,20 @@ export default async function DashboardCertificatePage() {
         }
     }
 
+    const completedCookie = cookieStore.get('hn_completed_courses')?.value;
+    let completedSlugs: string[] = [];
+    if (completedCookie) {
+        try {
+            completedSlugs = JSON.parse(decodeURIComponent(completedCookie));
+        } catch {
+            try {
+                completedSlugs = JSON.parse(completedCookie);
+            } catch {
+                completedSlugs = [];
+            }
+        }
+    }
+
     const [enrolledCourses, allCourses] = await Promise.all([
         getWpUserEnrolledCourses({
             userId: user?.id,
@@ -55,6 +69,7 @@ export default async function DashboardCertificatePage() {
             user={user}
             enrolledCourses={enrolledCourses}
             allCourses={allCourses}
+            completedSlugs={completedSlugs}
         />
     );
 }

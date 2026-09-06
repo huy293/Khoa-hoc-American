@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import QuizTaking from '@/components/dashboard/courses/QuizTaking';
 import { getWpCourses, getWpCourseBySlug, getWpQuizBySlug, getWpQuizById } from '@/lib/wordpress-queries';
 import { generateWpMetadata } from '@/lib/wordpress-seo';
@@ -83,14 +84,32 @@ export default async function StudentQuizDetailPage({
     const resolvedSearchParams = searchParams ? await searchParams : {};
     const course = await getWpCourseBySlug(slug);
 
+    // Lấy thông tin user hiện tại từ cookie để kiểm tra quyền Retake
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('hn_user_session')?.value;
+    let currentUserId: number | undefined;
+    if (sessionCookie) {
+        try {
+            const parsed = JSON.parse(decodeURIComponent(sessionCookie));
+            currentUserId = parsed?.id ? Number(parsed.id) : undefined;
+        } catch {
+            try {
+                const parsed = JSON.parse(sessionCookie);
+                currentUserId = parsed?.id ? Number(parsed.id) : undefined;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     let quizData: WPQuizDetail = emptyQuiz;
 
     try {
-        const fetchedQuiz = await getWpQuizBySlug(quizSlug, slug);
+        const fetchedQuiz = await getWpQuizBySlug(quizSlug, slug, currentUserId);
         if (fetchedQuiz && fetchedQuiz.questions && fetchedQuiz.questions.length > 0) {
             quizData = fetchedQuiz;
         } else {
-            const defaultQuizFetched = await getWpQuizById(2188);
+            const defaultQuizFetched = await getWpQuizById(2188, currentUserId);
             if (defaultQuizFetched && defaultQuizFetched.questions && defaultQuizFetched.questions.length > 0) {
                 quizData = defaultQuizFetched;
             }
@@ -111,6 +130,7 @@ export default async function StudentQuizDetailPage({
         <QuizTaking
             quiz={quizData}
             courseSlug={slug}
+            courseId={course?.id}
             lessonSlug={resolvedSearchParams.lesson}
             backUrl={backUrl}
         />

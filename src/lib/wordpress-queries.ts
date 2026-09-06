@@ -398,6 +398,10 @@ export async function getWpUserEnrolledCourses(
   });
 
   const progressMap: Record<string, number> = {};
+  const statusMap: Record<string, string> = {};
+  const graduationMap: Record<string, string> = {};
+  const completedMap: Record<string, boolean> = {};
+  const completedDateMap: Record<string, string> = {};
   let rawCoursesFound: any[] = [];
 
   // 1. Thử gọi API từ WordPress Headless LearnPress để lấy danh sách khóa học đã đăng ký
@@ -426,9 +430,27 @@ export async function getWpUserEnrolledCourses(
             if (rc.slug) enrolledIdentifiers.add(String(rc.slug).trim());
             if (rc.databaseId) enrolledIdentifiers.add(String(rc.databaseId).trim());
 
-            const prog = rc.progress ?? rc.courseFields?.progress ?? 0;
-            if (rc.id) progressMap[String(rc.id)] = prog;
-            if (rc.slug) progressMap[String(rc.slug)] = prog;
+            const prog = Number(rc.progress ?? rc.courseFields?.progress ?? 0);
+            const status = String(rc.status || '').toLowerCase();
+            const graduation = String(rc.graduation || '').toLowerCase();
+            const isCompleted =
+              prog >= 100 ||
+              status === 'completed' ||
+              status === 'finished' ||
+              graduation === 'passed' ||
+              graduation === 'completed' ||
+              Boolean(rc.completed || rc.is_completed);
+
+            const compDate = rc.completed_date || rc.graduation_date || rc.end_time || rc.date || '';
+
+            const keys = [String(rc.id), String(rc.slug), String(rc.databaseId)].filter(Boolean);
+            keys.forEach((k) => {
+              progressMap[k] = prog;
+              if (rc.status) statusMap[k] = rc.status;
+              if (rc.graduation) graduationMap[k] = rc.graduation;
+              if (isCompleted) completedMap[k] = true;
+              if (compDate) completedDateMap[k] = compDate;
+            });
           });
           break;
         }
@@ -455,10 +477,25 @@ export async function getWpUserEnrolledCourses(
       });
 
       if (matchedCourses.length > 0) {
-        return matchedCourses.map((c) => ({
-          ...c,
-          progress: progressMap[String(c.id)] ?? progressMap[String(c.slug)] ?? c.progress ?? 0,
-        }));
+        return matchedCourses.map((c) => {
+          const key1 = String(c.id);
+          const key2 = String(c.slug);
+          const key3 = String(c.databaseId || '');
+          const prog = progressMap[key1] ?? progressMap[key2] ?? progressMap[key3] ?? (typeof c.progress === 'number' ? c.progress : 0);
+          const stat = statusMap[key1] ?? statusMap[key2] ?? statusMap[key3] ?? (typeof c.status === 'string' ? c.status : 'enrolled');
+          const grad = graduationMap[key1] ?? graduationMap[key2] ?? graduationMap[key3] ?? (typeof c.graduation === 'string' ? c.graduation : '');
+          const isComp = completedMap[key1] || completedMap[key2] || completedMap[key3] || prog >= 100 || stat === 'completed' || stat === 'finished' || grad === 'passed' || grad === 'completed';
+          const compDate = completedDateMap[key1] || completedDateMap[key2] || completedDateMap[key3] || '';
+
+          return {
+            ...c,
+            progress: prog,
+            status: stat,
+            graduation: grad,
+            isCompleted: isComp,
+            completedDate: compDate,
+          };
+        });
       }
     } catch {
       // Bỏ qua lỗi, chuyển sang fallback
@@ -471,6 +508,112 @@ export async function getWpUserEnrolledCourses(
   }
 
   return [];
+}
+
+/**
+ * 🎓 Hoàn thành khóa học trong LearnPress Headless WordPress
+ */
+export async function finishWpCourse(
+  courseId: number | string,
+  options: { userId?: number | string; userEmail?: string; courseSlug?: string } = {}
+): Promise<{ success: boolean; message?: string; data?: any }> {
+  try {
+    const endpoints = [
+      '/wp-json/homenest/v1/courses/finish',
+      '/wp-json/learnpress/v1/courses/finish',
+      '/wp-json/lp/v1/courses/finish-course',
+    ];
+
+    for (const ep of endpoints) {
+      try {
+        const res = await fetchWpRest<any>(ep, {
+          method: 'POST',
+          body: JSON.stringify({
+            id: Number(courseId) || courseId,
+            course_id: Number(courseId) || courseId,
+            courseSlug: options.courseSlug || '',
+            course_slug: options.courseSlug || '',
+            userId: options.userId,
+            user_id: options.userId,
+            userEmail: options.userEmail,
+            user_email: options.userEmail,
+          }),
+        });
+
+        if (res && (res.status === 'success' || res.success || res.status === 200 || !res.status)) {
+          return { success: true, data: res };
+        }
+      } catch (err) {
+        console.warn(`Attempt finish course on ${ep} failed:`, err);
+      }
+    }
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error?.message || 'Không thể hoàn thành khóa học trên WordPress' };
+  }
+}
+
+/**
+ * 🎓 Hoàn thành bài học và cập nhật thanh tiến trình trong LearnPress Headless
+ */
+export async function completeWpLesson(
+  lessonId: number | string,
+  courseId: number | string,
+  options: { userId?: number | string; userEmail?: string; courseSlug?: string; lessonSlug?: string } = {}
+): Promise<{
+  success: boolean;
+  progress?: number;
+  completed_items?: number;
+  total_items?: number;
+  status?: string;
+  graduation?: string;
+  message?: string;
+}> {
+  try {
+    const endpoints = [
+      '/wp-json/homenest/v1/lessons/complete',
+      '/wp-json/learnpress/v1/lessons/finish',
+      '/wp-json/lp/v1/lessons/finish-lesson',
+    ];
+
+    for (const ep of endpoints) {
+      try {
+        const res = await fetchWpRest<any>(ep, {
+          method: 'POST',
+          body: JSON.stringify({
+            lessonId: Number(lessonId) || lessonId,
+            lesson_id: Number(lessonId) || lessonId,
+            courseId: Number(courseId) || courseId,
+            course_id: Number(courseId) || courseId,
+            lessonSlug: options.lessonSlug || '',
+            lesson_slug: options.lessonSlug || '',
+            courseSlug: options.courseSlug || '',
+            course_slug: options.courseSlug || '',
+            userId: options.userId,
+            user_id: options.userId,
+            userEmail: options.userEmail,
+            user_email: options.userEmail,
+          }),
+        });
+
+        if (res && (res.success || res.status === 'enrolled' || res.status === 'completed' || typeof res.progress === 'number')) {
+          return {
+            success: true,
+            progress: res.progress,
+            completed_items: res.completed_items,
+            total_items: res.total_items,
+            status: res.status,
+            graduation: res.graduation,
+          };
+        }
+      } catch (err) {
+        console.warn(`Attempt complete lesson on ${ep} failed:`, err);
+      }
+    }
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error?.message || 'Không thể hoàn thành bài học trên WordPress' };
+  }
 }
 
 
@@ -526,15 +669,20 @@ export async function getWpCourseCategories(): Promise<WPCourseCategoryItem[]> {
  */
 export async function getWpCourseBySlug(slug: string): Promise<WPCourse | null> {
   const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
+  const normalizedSlug = toSlug(cleanSlug);
+  const slugsToTry = Array.from(new Set([cleanSlug, normalizedSlug]));
 
   // 1. Thử REST API endpoints
-  const endpoints = [
-    `/wp-json/learnpress/v1/courses/${cleanSlug}`,
-    `/wp-json/wp/v2/lp_course?slug=${cleanSlug}&_embed=1`,
-    `/wp-json/lp/v1/courses/${cleanSlug}`,
-    `/wp-json/wp/v2/courses?slug=${cleanSlug}&_embed=1`,
-    `/wp-json/wp/v2/course?slug=${cleanSlug}&_embed=1`,
-  ];
+  const endpoints: string[] = [];
+  slugsToTry.forEach((s) => {
+    endpoints.push(
+      `/wp-json/learnpress/v1/courses/${s}`,
+      `/wp-json/wp/v2/lp_course?slug=${s}&_embed=1`,
+      `/wp-json/lp/v1/courses/${s}`,
+      `/wp-json/wp/v2/courses?slug=${s}&_embed=1`,
+      `/wp-json/wp/v2/course?slug=${s}&_embed=1`
+    );
+  });
 
   for (const ep of endpoints) {
     try {
@@ -1159,13 +1307,41 @@ export async function getWpProductBySlug(slug: string): Promise<WPProduct | null
 /**
  * Lấy thông tin bài Quiz theo ID từ LearnPress REST API
  */
-export async function getWpQuizById(quizId: number | string): Promise<WPQuizDetail | null> {
+export async function getWpQuizById(quizId: number | string, userId?: number | string): Promise<WPQuizDetail | null> {
   if (!quizId) return null;
   try {
     const res = await fetchWpRest<WPQuizDetail>(`/wp-json/lp-eqil/v1/quiz/${quizId}`, {
       revalidate: 60,
     });
     if (res && res.id) {
+      // Mặc định không có giá trị retake thì không cho phép học viên làm lại bài quiz
+      res.retake_count = 0;
+      res.can_retake = false;
+      res.retakes_left = 0;
+      res.attempts_count = 0;
+
+      // Lấy cấu hình Retake thực tế từ WordPress LearnPress
+      try {
+        const queryParams = userId ? `?userId=${userId}` : '';
+        const retakeInfo = await fetchWpRest<any>(`/wp-json/homenest/v1/quiz/${quizId}${queryParams}`);
+        if (retakeInfo && typeof retakeInfo.retake_count !== 'undefined') {
+          res.retake_count = Number(retakeInfo.retake_count);
+          res.can_retake = Boolean(retakeInfo.can_retake);
+          res.retakes_left = typeof retakeInfo.retakes_left !== 'undefined' ? Number(retakeInfo.retakes_left) : 0;
+          res.attempts_count = Number(retakeInfo.attempts_count) || 0;
+        } else {
+          // Fallback thử qua REST field wp/v2/lp_quiz
+          const lpMeta = await fetchWpRest<any>(`/wp-json/wp/v2/lp_quiz/${quizId}`);
+          if (lpMeta && typeof lpMeta.retake_count !== 'undefined') {
+            res.retake_count = Number(lpMeta.retake_count);
+            res.can_retake = res.retake_count === -1 || res.retake_count > 0;
+            res.retakes_left = res.retake_count;
+          }
+        }
+      } catch {
+        // Giữ mặc định retake_count = 0, can_retake = false
+      }
+
       return res;
     }
   } catch (error) {
@@ -1204,11 +1380,46 @@ export async function submitWpQuiz(
 }
 
 /**
+ * 🎓 Lưu kết quả Quiz trực tiếp vào LearnPress WordPress Database
+ */
+export async function saveWpQuizResult(payload: {
+  quizId: number | string;
+  quizSlug?: string;
+  courseId?: number | string;
+  courseSlug?: string;
+  userId?: number | string;
+  userEmail?: string;
+  score: number;
+  question_correct: number;
+  question_wrong: number;
+  question_empty: number;
+  total_questions: number;
+  time_spend?: string;
+  start_time?: string;
+  end_time?: string;
+  graduation?: string;
+  status?: string;
+  answers?: Record<string, any>;
+}): Promise<{ success: boolean; user_item_id?: number; message?: string } | null> {
+  try {
+    const res = await fetchWpRest<any>('/wp-json/homenest/v1/quiz/submit', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return res || null;
+  } catch (err) {
+    console.warn('[saveWpQuizResult] Lỗi lưu kết quả quiz sang WordPress:', err);
+    return null;
+  }
+}
+
+/**
  * Lấy thông tin bài Quiz theo Slug hoặc ID
  */
 export async function getWpQuizBySlug(
   quizSlug: string,
-  courseSlug?: string
+  courseSlug?: string,
+  userId?: number | string
 ): Promise<WPQuizDetail | null> {
   if (!quizSlug) return null;
 
@@ -1216,14 +1427,14 @@ export async function getWpQuizBySlug(
 
   // 1. Nếu quizSlug là ID số (ví dụ: '2188' hoặc 2188)
   if (/^\d+$/.test(cleanSlug)) {
-    return getWpQuizById(cleanSlug);
+    return getWpQuizById(cleanSlug, userId);
   }
 
   // 2. Thử truy vấn qua endpoint chuẩn wp/v2/lp_quiz?slug=...
   try {
     const list = await fetchWpRest<any[]>(`/wp-json/wp/v2/lp_quiz?slug=${encodeURIComponent(cleanSlug)}`);
     if (Array.isArray(list) && list.length > 0 && list[0]?.id) {
-      const quiz = await getWpQuizById(list[0].id);
+      const quiz = await getWpQuizById(list[0].id, userId);
       if (quiz) {
         quiz.slug = list[0].slug || cleanSlug;
         return quiz;
@@ -1235,7 +1446,7 @@ export async function getWpQuizBySlug(
 
   // 3. Thử trực tiếp endpoint của plugin nếu backend đã hỗ trợ query theo slug
   try {
-    const directQuiz = await getWpQuizById(cleanSlug);
+    const directQuiz = await getWpQuizById(cleanSlug, userId);
     if (directQuiz && directQuiz.id) {
       directQuiz.slug = cleanSlug;
       return directQuiz;
@@ -1254,7 +1465,7 @@ export async function getWpQuizBySlug(
             for (const item of sec.items) {
               const itemSlug = item.slug || toSlug(item.title || '');
               if (itemSlug === cleanSlug && (item.id || (item as any).quiz_id)) {
-                return getWpQuizById(item.id || (item as any).quiz_id);
+                return getWpQuizById(item.id || (item as any).quiz_id, userId);
               }
             }
           }
@@ -1267,7 +1478,7 @@ export async function getWpQuizBySlug(
 
   // 5. Fallback thông minh: nếu slug chứa 'hydra' hoặc 'quiz-1' hoặc '2188'
   if (cleanSlug.includes('hydra') || cleanSlug.includes('quiz-1') || cleanSlug.includes('2188')) {
-    const fallbackQuiz = await getWpQuizById(2188);
+    const fallbackQuiz = await getWpQuizById(2188, userId);
     if (fallbackQuiz) {
       fallbackQuiz.slug = cleanSlug;
       return fallbackQuiz;

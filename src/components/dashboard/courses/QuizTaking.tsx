@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { WPQuizDetail, WPQuizSubmitResponse } from '@/types/wordpress';
+import { getStoredUserSession } from '@/lib/auth-client';
 import styles from '@/styles/dashboard/courses/QuizTaking.module.css';
 
 // Bản đồ đáp án đúng dự phòng cho 10 câu hỏi HydraFacial
@@ -22,6 +23,7 @@ const FALLBACK_CORRECT_MAP: Record<number, { correctId: string; validIds: string
 interface QuizTakingProps {
     quiz: WPQuizDetail;
     courseSlug: string;
+    courseId?: number | string;
     lessonSlug?: string;
     lessonTitle?: string;
     backUrl?: string;
@@ -30,6 +32,7 @@ interface QuizTakingProps {
 export default function QuizTaking({
     quiz,
     courseSlug,
+    courseId,
     lessonSlug,
     lessonTitle,
     backUrl,
@@ -43,6 +46,36 @@ export default function QuizTaking({
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
     const [isReviewMode, setIsReviewMode] = useState<boolean>(false);
     const [result, setResult] = useState<WPQuizSubmitResponse | null>(null);
+    const [showPreview, setShowPreview] = useState<boolean>(false);
+    const [expandedQuestionIds, setExpandedQuestionIds] = useState<Record<number, boolean>>({});
+
+    const toggleQuestionExpand = (qId: number) => {
+        setExpandedQuestionIds((prev) => ({
+            ...prev,
+            [qId]: !prev[qId],
+        }));
+    };
+
+    // Dùng Ref để tính chính xác thời gian làm bài, không bị stale closure hay lệch setInterval
+    const quizStartTimeRef = React.useRef<number>(Date.now());
+
+    // Khởi tạo và đồng bộ thời gian bắt đầu làm quiz (tránh mất khi refresh trang)
+    useEffect(() => {
+        if (!quiz?.id) return;
+        const key = `lp_quiz_start_${quiz.id}`;
+        const stored = typeof window !== 'undefined' ? sessionStorage.getItem(key) : null;
+        if (stored && !isSubmitted) {
+            const parsed = Number(stored);
+            if (!isNaN(parsed) && parsed > 0 && parsed <= Date.now()) {
+                quizStartTimeRef.current = parsed;
+                return;
+            }
+        }
+        if (!isSubmitted && typeof window !== 'undefined') {
+            sessionStorage.setItem(key, String(Date.now()));
+            quizStartTimeRef.current = Date.now();
+        }
+    }, [quiz?.id, isSubmitted]);
 
     const questions = useMemo(() => quiz?.questions || [], [quiz?.questions]);
     const totalQuestions = questions.length;
@@ -78,6 +111,14 @@ export default function QuizTaking({
         if (isSubmitting || isSubmitted) return;
         setIsSubmitting(true);
 
+        const user = getStoredUserSession();
+        const duration = quiz?.duration_seconds || 1800;
+        const now = Date.now();
+        const elapsedSec = Math.max(1, Math.min(duration, Math.round((now - quizStartTimeRef.current) / 1000)));
+        const timeSpend = formatTime(elapsedSec);
+        const startTimeStr = new Date(quizStartTimeRef.current).toISOString().slice(0, 19).replace('T', ' ');
+        const targetCourseId = courseId || (quiz as any)?.course_id || (quiz as any)?.courseId || 0;
+
         try {
             const res = await fetch(`/api/quiz/${quiz.id}/submit`, {
                 method: 'POST',
@@ -88,14 +129,50 @@ export default function QuizTaking({
                     answers,
                     questionIds: questions.map((q) => q.id),
                     courseSlug,
+                    courseId: targetCourseId,
+                    quizSlug: quiz.slug || '',
                     lessonSlug: lessonSlug || '',
+                    userId: user?.id,
+                    userEmail: user?.email,
+                    timeSpend,
+                    timeSpentSeconds: elapsedSec,
+                    startTime: startTimeStr,
                 }),
             });
 
             if (res.ok) {
                 const data: WPQuizSubmitResponse = await res.json();
+                if (!data.time_spend) {
+                    data.time_spend = timeSpend;
+                }
                 setResult(data);
                 setIsSubmitted(true);
+                if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem(`lp_quiz_start_${quiz.id}`);
+                }
+                if (data.passed) {
+                    try {
+                        const saved = localStorage.getItem('lp_completed_courses');
+                        let list: string[] = [];
+                        if (saved) {
+                            try { list = JSON.parse(saved); } catch { list = []; }
+                        }
+                        if (courseSlug && !list.includes(courseSlug)) list.push(courseSlug);
+                        localStorage.setItem('lp_completed_courses', JSON.stringify(list));
+
+                        const finalCourseId = targetCourseId || data.course_id || (quiz as any)?.course_id || (quiz as any)?.courseId;
+                        fetch('/api/courses/complete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                courseSlug,
+                                courseId: finalCourseId,
+                            }),
+                        }).catch(() => null);
+                    } catch {
+                        // ignore
+                    }
+                }
             } else {
                 throw new Error('Lỗi từ server khi nộp bài');
             }
@@ -118,17 +195,40 @@ export default function QuizTaking({
             });
 
             const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+            const isPassed = score >= (quiz.passing_grade || 80);
             setResult({
                 success: true,
                 quiz_id: quiz.id,
                 score,
                 passing_grade: quiz.passing_grade || 80,
-                passed: score >= (quiz.passing_grade || 80),
+                passed: isPassed,
                 correct_count: correctCount,
                 total_questions: totalQuestions,
                 results: fallbackResults,
             });
             setIsSubmitted(true);
+            if (isPassed) {
+                try {
+                    const saved = localStorage.getItem('lp_completed_courses');
+                    let list: string[] = [];
+                    if (saved) {
+                        try { list = JSON.parse(saved); } catch { list = []; }
+                    }
+                    if (courseSlug && !list.includes(courseSlug)) list.push(courseSlug);
+                    localStorage.setItem('lp_completed_courses', JSON.stringify(list));
+
+                    fetch('/api/courses/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            courseSlug,
+                            courseId: (quiz as any).course_id || (quiz as any).courseId,
+                        }),
+                    }).catch(() => null);
+                } catch {
+                    // ignore
+                }
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -177,13 +277,47 @@ export default function QuizTaking({
         }
     };
 
+    // Xác định quyền Retake (Làm lại bài thi) theo chuẩn LearnPress
+    // Quy tắc: Không có giá trị retake mặc định không cho phép học viên làm lại bài quiz
+    const canRetake = useMemo(() => {
+        if (result && typeof result.can_retake !== 'undefined') {
+            return Boolean(result.can_retake);
+        }
+        if (quiz?.retake_count === -1) return true;
+        if (quiz?.retake_count && quiz.retake_count > 0) {
+            return typeof quiz.can_retake !== 'undefined' ? Boolean(quiz.can_retake) : true;
+        }
+        return false;
+    }, [result, quiz?.retake_count, quiz?.can_retake]);
+
+    const retakesLeft = useMemo(() => {
+        if (result && typeof result.retakes_left !== 'undefined') {
+            return result.retakes_left;
+        }
+        if (quiz && typeof quiz.retakes_left !== 'undefined') {
+            return quiz.retakes_left;
+        }
+        if (quiz?.retake_count === -1) return -1;
+        return 0;
+    }, [result, quiz?.retakes_left, quiz?.retake_count]);
+
     // Làm lại bài quiz
     const handleRetake = () => {
+        if (!canRetake) {
+            alert('Bài kiểm tra này không cho phép làm lại bài thi (Cấu hình Retake LearnPress: 0).');
+            return;
+        }
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem(`lp_quiz_start_${quiz.id}`, String(Date.now()));
+        }
+        quizStartTimeRef.current = Date.now();
         setAnswers({});
         setCurrentIndex(0);
         setTimeLeft(quiz?.duration_seconds || 1800);
         setIsSubmitted(false);
         setIsReviewMode(false);
+        setShowPreview(false);
+        setExpandedQuestionIds({});
         setResult(null);
     };
 
@@ -194,8 +328,42 @@ export default function QuizTaking({
         ? quiz.title.toUpperCase()
         : `QUIZZ 01: ${quiz.title.toUpperCase()}`;
 
-    const displayQuizDesc = quiz.content ||
-        'Learn the essential techniques behind professional deep cleansing and exfoliation. This lesson covers proper skin preparation, product application, handpiece control, and key safety considerations to help you perform the treatment with confidence and precision.';
+    const displayQuizDesc = useMemo(() => {
+        if (!quiz?.content) {
+            return 'Learn the essential techniques behind professional deep cleansing and exfoliation. This lesson covers proper skin preparation, product application, handpiece control, and key safety considerations to help you perform the treatment with confidence and precision.';
+        }
+        const stripped = quiz.content.replace(/<[^>]*>/g, '').trim();
+        return stripped || 'Learn the essential techniques behind professional deep cleansing and exfoliation. This lesson covers proper skin preparation, product application, handpiece control, and key safety considerations to help you perform the treatment with confidence and precision.';
+    }, [quiz?.content]);
+
+    // Số câu trả lời đúng
+    const correctCount = useMemo(() => {
+        if (result && typeof result.correct_count !== 'undefined') {
+            return result.correct_count;
+        }
+        return questions.filter((q) => {
+            const qRes = getQuestionResult(q.id);
+            if (qRes) return Boolean(qRes.is_correct);
+            const selected = answers[q.id];
+            return Boolean(
+                selected &&
+                FALLBACK_CORRECT_MAP[q.id]?.validIds.some(
+                    (v) => v.toLowerCase() === selected.toLowerCase()
+                )
+            );
+        }).length;
+    }, [result, questions, answers, getQuestionResult]);
+
+    // Điểm số hiển thị
+    const displayScore = useMemo(() => {
+        if (result && typeof result.score !== 'undefined') {
+            return result.score;
+        }
+        if (totalQuestions > 0) {
+            return Math.round((correctCount / totalQuestions) * 100);
+        }
+        return 0;
+    }, [result, correctCount, totalQuestions]);
 
     // Kiểm tra trạng thái của câu hỏi hiện tại trong chế độ xem lại
     const currentQResult = currentQuestion ? getQuestionResult(currentQuestion.id) : null;
@@ -227,19 +395,12 @@ export default function QuizTaking({
                         </svg>
                     </Link>
                     <h1 className={styles['quiz-header__title']}>{displayQuizTitle}</h1>
-
-                    {/* Badge hiển thị khi đang trong chế độ Xem lại bài làm */}
-                    {isReviewMode && (
-                        <span className={styles['review-mode-badge']}>
-                            👁 Chế độ xem lại bài làm
-                        </span>
-                    )}
                 </div>
                 <p className={styles['quiz-header__desc']}>{displayQuizDesc}</p>
             </header>
 
-            {/* GIAO DIỆN 2 CỘT: HIỂN THỊ KHI ĐANG LÀM BÀI HOẶC KHI ĐANG TRONG CHẾ ĐỘ XEM LẠI */}
-            {(!isSubmitted || isReviewMode) ? (
+            {/* GIAO DIỆN HIỂN THỊ: ĐANG LÀM BÀI HOẶC ĐÃ NỘP BÀI */}
+            {!isSubmitted ? (
                 <div className={styles['quiz-grid']}>
                     {/* Cột trái: Nội dung câu hỏi và các lựa chọn A/B/C/D */}
                     <main className={styles['quiz-content']}>
@@ -497,147 +658,189 @@ export default function QuizTaking({
                     </aside>
                 </div>
             ) : (
-                /* KHI ĐÃ NỘP BÀI: HIỂN THỊ MÀN HÌNH TỔNG KẾT & XEM LẠI CHI TIẾT */
-                <div className={styles['results-overlay']}>
-                    <div className={styles['results-header']}>
-                        <span
-                            className={`${styles['results-badge']} ${
-                                result?.passed ? styles['results-badge--pass'] : styles['results-badge--fail']
-                            }`}
-                        >
-                            {result?.passed ? 'PASSED (ĐẠT YÊU CẦU)' : 'FAILED (CHƯA ĐẠT)'}
-                        </span>
-                        <h2 className={styles['results-title']}>
-                            {result?.passed ? 'Chúc mừng bạn đã hoàn thành bài thi!' : 'Hãy ôn lại bài học và thử lại nhé!'}
-                        </h2>
-                        <p className={styles['results-subtitle']}>
-                            {result?.passed
-                                ? 'Bạn đã nắm vững các kiến thức cốt lõi của bài học này.'
-                                : 'Bạn cần đạt tối thiểu 80% điểm số để hoàn thành bài học.'}
-                        </p>
-                    </div>
-
-                    <div className={styles['results-stats-grid']}>
-                        <div className={styles['stat-box']}>
-                            <div className={styles['stat-box__value']}>{result?.score}%</div>
-                            <div className={styles['stat-box__label']}>Điểm đạt được</div>
-                        </div>
-                        <div className={styles['stat-box']}>
-                            <div className={styles['stat-box__value']}>
-                                {result?.correct_count} / {result?.total_questions}
+                /* KHI ĐÃ NỘP BÀI: GIAO DIỆN NỘP BÀI THEO MẪU MOCKUP */
+                <div className={styles['results-layout']}>
+                    {/* CỘT TRÁI: TIÊU ĐỀ, DANH SÁCH CÂU HỎI, TỔNG KẾT VÀ NÚT HÀNH ĐỘNG */}
+                    <div className={styles['results-left-col']}>
+                        {/* Banner thông báo đạt điều kiện nhận chứng chỉ nếu có */}
+                        {result?.passed && (
+                            <div className={styles['certificate-banner']}>
+                                <div className={styles['certificate-banner-content']}>
+                                    <span className={styles['certificate-banner-icon']}>🎓</span>
+                                    <div>
+                                        <strong>Chúc mừng bạn đã hoàn thành xuất sắc bài thi!</strong>
+                                        <p>Bạn đã vượt qua bài kiểm tra và đủ điều kiện xem chứng chỉ.</p>
+                                    </div>
+                                </div>
+                                <Link href="/student/certificate" className={styles['certificate-banner-btn']}>
+                                    XEM CHỨNG CHỈ 📜
+                                </Link>
                             </div>
-                            <div className={styles['stat-box__label']}>Số câu trả lời đúng</div>
-                        </div>
-                        <div className={styles['stat-box']}>
-                            <div className={styles['stat-box__value']}>{result?.passing_grade}%</div>
-                            <div className={styles['stat-box__label']}>Điểm chuẩn yêu cầu</div>
-                        </div>
-                    </div>
+                        )}
 
-                    {/* Hàng nút hành động: QUAY LẠI BÀI HỌC, XEM LẠI BÀI LÀM, LÀM LẠI BÀI THI */}
-                    <div className={styles['results-actions']}>
-                        <Link href={returnUrl} className={styles['results-btn-primary']}>
-                            QUAY LẠI BÀI HỌC →
-                        </Link>
-                        <button
-                            type="button"
-                            className={styles['results-btn-review']}
-                            onClick={() => {
-                                setIsReviewMode(true);
-                                setCurrentIndex(0);
-                            }}
-                        >
-                            XEM LẠI BÀI LÀM 👁
-                        </button>
-                        <button
-                            type="button"
-                            className={styles['results-btn-secondary']}
-                            onClick={handleRetake}
-                        >
-                            LÀM LẠI BÀI THI ↺
-                        </button>
-                    </div>
+                        {/* Tiêu đề phần kết quả câu hỏi */}
+                        <h2 className={styles['answers-results-title']}>ANSWERS AND RESULTS</h2>
 
-                    {/* KHU VỰC LIỆT KÊ CHI TIẾT TẤT CẢ CÁC CÂU HỎI TRỰC TIẾP PHÍA DƯỚI BẢNG ĐIỂM */}
-                    <div className={styles['detailed-review-section']}>
-                        <h3 className={styles['detailed-review-title']}>
-                            Chi tiết bài làm từng câu hỏi ({questions.length} câu)
-                        </h3>
-
-                        <div className={styles['detailed-review-list']}>
+                        {/* Danh sách từng câu hỏi theo định dạng Q1: ... kèm icon đúng/sai */}
+                        <div className={styles['result-questions-list']}>
                             {questions.map((q, idx) => {
                                 const qRes = getQuestionResult(q.id);
-                                const isCorrect = Boolean(qRes?.is_correct);
                                 const selectedAnsId = answers[q.id];
+                                const isCorrect = Boolean(
+                                    qRes ? qRes.is_correct : (
+                                        selectedAnsId &&
+                                        FALLBACK_CORRECT_MAP[q.id]?.validIds.some(
+                                            (v) => v.toLowerCase() === selectedAnsId.toLowerCase()
+                                        )
+                                    )
+                                );
+                                const isExpanded = Boolean(expandedQuestionIds[q.id]);
 
                                 return (
-                                    <div key={q.id} className={styles['detailed-review-card']}>
-                                        <div className={styles['detailed-review-card__header']}>
-                                            <h4 className={styles['detailed-review-card__qtitle']}>
-                                                Q{idx + 1}: {q.title}
-                                            </h4>
-                                            <span
-                                                className={`${styles['results-badge']} ${
-                                                    isCorrect ? styles['results-badge--pass'] : styles['results-badge--fail']
-                                                }`}
-                                                style={{ margin: 0, padding: '3px 12px', fontSize: '11px' }}
-                                            >
-                                                {isCorrect ? '✓ Đúng' : selectedAnsId ? '✕ Sai' : '— Chưa chọn'}
-                                            </span>
-                                        </div>
-
-                                        <div className={styles['detailed-review-card__options']}>
-                                            {q.options.map((opt, optIdx) => {
-                                                const letter = String.fromCharCode(65 + optIdx);
-                                                const isUserChoice = selectedAnsId === opt.id;
-                                                const isExpectedChoice = isOptionExpected(q.id, opt.id);
-
-                                                let bg = '#FFFFFF';
-                                                let border = '1px solid #E5E7EB';
-                                                let labelTag = '';
-
-                                                if (isUserChoice && isExpectedChoice) {
-                                                    bg = '#ECFDF5';
-                                                    border = '1.5px solid #10B981';
-                                                    labelTag = '(Lựa chọn của bạn - Chính xác ✓)';
-                                                } else if (isUserChoice && !isExpectedChoice) {
-                                                    bg = '#FEF2F2';
-                                                    border = '1.5px solid #EF4444';
-                                                    labelTag = '(Lựa chọn của bạn - Sai ✕)';
-                                                } else if (!isUserChoice && isExpectedChoice) {
-                                                    bg = '#F0FDF4';
-                                                    border = '1.5px dashed #10B981';
-                                                    labelTag = '(Đáp án chính xác ✓)';
+                                    <div key={q.id} className={styles['result-question-item']}>
+                                        <div
+                                            className={styles['result-question-row']}
+                                            onClick={() => toggleQuestionExpand(q.id)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => {
+                                                if (e.key === ' ' || e.key === 'Enter') {
+                                                    toggleQuestionExpand(q.id);
                                                 }
-
-                                                return (
-                                                    <div
-                                                        key={opt.id}
-                                                        className={styles['detailed-review-card__opt']}
-                                                        style={{ backgroundColor: bg, border }}
+                                            }}
+                                            aria-expanded={showPreview || isExpanded}
+                                            title="Nhấp để xem các lựa chọn và đáp án chi tiết"
+                                        >
+                                            <span className={styles['result-question-title']}>
+                                                Q{idx + 1}: {q.title ? q.title.toUpperCase() : `QUESTION ${idx + 1}`}
+                                            </span>
+                                            <div className={styles['result-question-icon']}>
+                                                {isCorrect ? (
+                                                    <svg
+                                                        className={styles['icon-correct']}
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
                                                     >
-                                                        <span>
-                                                            <strong>{letter}.</strong> {opt.title}
-                                                        </span>
-                                                        {labelTag && (
-                                                            <span
-                                                                style={{
-                                                                    marginLeft: 'auto',
-                                                                    fontSize: '11px',
-                                                                    fontWeight: 600,
-                                                                    color: isExpectedChoice ? '#065F46' : '#991B1B',
-                                                                }}
-                                                            >
-                                                                {labelTag}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
+                                                        <circle cx="12" cy="12" r="9" />
+                                                        <polyline points="8.5 12.5 11 15 15.5 9.5" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        className={styles['icon-wrong']}
+                                                        width="18"
+                                                        height="18"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                                    </svg>
+                                                )}
+                                            </div>
                                         </div>
+
+                                        {/* Chi tiết lựa chọn A/B/C/D khi xem trước (Preview) hoặc nhấp mở rộng */}
+                                        {(showPreview || isExpanded) && (
+                                            <div className={styles['result-question-options']}>
+                                                {q.options.map((opt, optIdx) => {
+                                                    const letter = String.fromCharCode(65 + optIdx);
+                                                    const isSelected = selectedAnsId === opt.id;
+                                                    const isExpected = isOptionExpected(q.id, opt.id);
+
+                                                    let optClass = styles['preview-opt'];
+                                                    if (isSelected && isExpected) optClass += ` ${styles['preview-opt--correct']}`;
+                                                    else if (isSelected && !isExpected) optClass += ` ${styles['preview-opt--wrong']}`;
+                                                    else if (!isSelected && isExpected) optClass += ` ${styles['preview-opt--expected']}`;
+
+                                                    return (
+                                                        <div key={opt.id} className={optClass}>
+                                                            <span className={styles['preview-opt-letter']}>{letter}.</span>
+                                                            <span className={styles['preview-opt-text']}>{opt.title}</span>
+                                                            {isSelected && isExpected && (
+                                                                <span className={styles['preview-opt-tag-correct']}>
+                                                                    Lựa chọn của bạn - Đúng ✓
+                                                                </span>
+                                                            )}
+                                                            {isSelected && !isExpected && (
+                                                                <span className={styles['preview-opt-tag-wrong']}>
+                                                                    Lựa chọn của bạn - Sai ✕
+                                                                </span>
+                                                            )}
+                                                            {!isSelected && isExpected && (
+                                                                <span className={styles['preview-opt-tag-expected']}>
+                                                                    Đáp án đúng ✓
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}
+                        </div>
+
+                        {/* Thanh tổng kết kết quả: SUMMARY RESULTS ------------ 19/25 question */}
+                        <div className={styles['summary-results-bar']}>
+                            <span className={styles['summary-results-label']}>SUMMARY RESULTS</span>
+                            <span className={styles['summary-results-count']}>
+                                {correctCount}/{totalQuestions} question
+                            </span>
+                        </div>
+
+                        {/* Hàng nút hành động: PREVIEW RESULTS | BACK TO COURSES → | NEXT LESSON */}
+                        <div className={styles['results-actions-row']}>
+                            <button
+                                type="button"
+                                className={styles['btn-outline-gold']}
+                                onClick={() => setShowPreview((prev) => !prev)}
+                            >
+                                {showPreview ? 'HIDE DETAILS' : 'PREVIEW RESULTS'}
+                            </button>
+
+                            <div className={styles['results-actions-right']}>
+                                {canRetake && (
+                                    <button
+                                        type="button"
+                                        className={styles['btn-outline-gold']}
+                                        onClick={handleRetake}
+                                        title="Làm lại bài thi"
+                                    >
+                                        RETAKE QUIZ ↺ {retakesLeft > 0 ? `(${retakesLeft})` : ''}
+                                    </button>
+                                )}
+                                <Link href={returnUrl} className={styles['btn-outline-gold']}>
+                                    BACK TO COURSES →
+                                </Link>
+                                <Link href={returnUrl} className={styles['btn-solid-dark']}>
+                                    NEXT LESSON
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* CỘT PHẢI: HUY HIỆU ĐIỂM SỐ HÌNH TRÒN LỒNG NHAU */}
+                    <div className={styles['results-right-col']}>
+                        <div className={styles['score-circle-wrapper']}>
+                            <div className={styles['score-circle-outer']}>
+                                <div className={styles['score-circle-value']}>
+                                    {displayScore}/100
+                                </div>
+                                <div className={styles['score-circle-label']}>
+                                    score
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
