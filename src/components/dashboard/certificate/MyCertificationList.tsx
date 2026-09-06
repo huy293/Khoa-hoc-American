@@ -2,10 +2,18 @@
 
 import React, { useState, useId } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from '@/styles/dashboard/certificate/MyCertificationList.module.css';
 import DashboardHeadings from '@/components/dashboard/common/DashboardHeadings';
 
 /* ── SVG Icons ── */
+const CertificateBadgeIcon = () => (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 15C15.866 15 19 11.866 19 8C19 4.13401 15.866 1 12 1C8.13401 1 5 4.13401 5 8C5 11.866 8.13401 15 12 15Z" stroke="#B56F00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8.21 13.89L7 23L12 20L17 23L15.79 13.88" stroke="#B56F00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
 const ViewEyeIcon = () => (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -74,6 +82,7 @@ export interface MyCertificationListProps {
     tag?: string;
     title?: string;
     initialCertificates?: CertificateItem[];
+    enrolledCourses?: any[];
     limit?: number;
 }
 
@@ -81,6 +90,7 @@ export default function MyCertificationList({
     tag = 'MY CERTIFICATE LIST',
     title = 'Certificates that have been issued',
     initialCertificates = [],
+    enrolledCourses = [],
     limit = 6,
 }: MyCertificationListProps) {
     const [activeTab, setActiveTab] = useState<string>('all');
@@ -228,9 +238,82 @@ export default function MyCertificationList({
                             </article>
                         ))}
                     </div>
+                ) : initialCertificates.length === 0 ? (
+                    <div className={styles['my-certifications__empty-box']}>
+                        <div className={styles['my-certifications__empty-icon']}>
+                            <CertificateBadgeIcon />
+                        </div>
+                        <h3 className={styles['my-certifications__empty-title']}>
+                            Chưa có chứng chỉ nào được cấp
+                        </h3>
+                        <p className={styles['my-certifications__empty-desc']}>
+                            Chứng chỉ tốt nghiệp sẽ tự động được cấp khi bạn hoàn thành 100% bài học và vượt qua bài thi kiểm tra cuối khóa trên hệ thống đào tạo LearnPress của American Plus Beauty Academy.
+                        </p>
+
+                        <div className={styles['my-certifications__empty-actions']}>
+                            {enrolledCourses.length > 0 ? (
+                                <Link
+                                    href={`/student/courses/${enrolledCourses[0]?.slug || ''}`}
+                                    className={styles['my-certifications__empty-btn-primary']}
+                                >
+                                    Tiếp tục học để nhận chứng chỉ →
+                                </Link>
+                            ) : (
+                                <Link
+                                    href="/student/courses"
+                                    className={styles['my-certifications__empty-btn-primary']}
+                                >
+                                    Xem danh sách khóa học →
+                                </Link>
+                            )}
+                            <a
+                                href="#course-catalog"
+                                className={styles['my-certifications__empty-btn-secondary']}
+                            >
+                                Khám phá danh mục khóa học ↓
+                            </a>
+                        </div>
+
+                        {enrolledCourses.length > 0 && (
+                            <div className={styles['my-certifications__in-progress-list']}>
+                                <div className={styles['my-certifications__in-progress-head']}>
+                                    Khóa học đang học ({enrolledCourses.length})
+                                </div>
+                                {enrolledCourses.slice(0, 3).map((ec: any) => {
+                                    const prog = Math.min(100, Math.max(0, Number(ec.progress ?? ec.courseFields?.progress ?? 0)));
+                                    return (
+                                        <div key={ec.id || ec.slug} className={styles['my-certifications__in-progress-item']}>
+                                            <div className={styles['my-certifications__in-progress-info']}>
+                                                <div className={styles['my-certifications__in-progress-name']} title={ec.title}>
+                                                    {ec.title}
+                                                </div>
+                                                <div className={styles['my-certifications__progress-bar-wrap']}>
+                                                    <div className={styles['my-certifications__progress-track']}>
+                                                        <div
+                                                            className={styles['my-certifications__progress-fill']}
+                                                            style={{ width: `${prog}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className={styles['my-certifications__progress-pct']}>
+                                                        {prog}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <Link
+                                                href={`/student/courses/${ec.slug}`}
+                                                className={styles['my-certifications__in-progress-link']}
+                                            >
+                                                Học tiếp →
+                                            </Link>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 ) : (
                     <div className={styles['my-certifications__empty']}>
-                        <p>No certificates found matching your criteria.</p>
+                        <p>Không tìm thấy chứng chỉ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm.</p>
                     </div>
                 )}
 

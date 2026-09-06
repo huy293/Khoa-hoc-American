@@ -37,6 +37,20 @@ export default async function DashboardPage() {
         }
     }
 
+    const completedCookie = cookieStore.get('hn_completed_courses')?.value;
+    let completedSlugs: string[] = [];
+    if (completedCookie) {
+        try {
+            completedSlugs = JSON.parse(decodeURIComponent(completedCookie));
+        } catch {
+            try {
+                completedSlugs = JSON.parse(completedCookie);
+            } catch {
+                completedSlugs = [];
+            }
+        }
+    }
+
     // 🎓 Lấy danh sách khóa học và tài nguyên thực tế từ WordPress Headless
     const [enrolledCourses, wpPosts] = await Promise.all([
         getWpUserEnrolledCourses({
@@ -46,6 +60,23 @@ export default async function DashboardPage() {
         }),
         getWpPosts(4),
     ]);
+
+    // 📜 Chỉ cấp chứng chỉ khi học viên đã thực sự hoàn thành khóa học
+    const completedCertificates = enrolledCourses
+        .filter((c) => {
+            const prog = Number(c.progress ?? c.courseFields?.progress ?? 0);
+            const isWpCompleted = Boolean(c.isCompleted) || prog >= 100 || c.status === 'completed' || c.status === 'finished' || c.graduation === 'passed' || c.graduation === 'completed';
+            const isCookieCompleted = completedSlugs.includes(String(c.slug)) || completedSlugs.includes(String(c.id));
+            return isWpCompleted || isCookieCompleted;
+        })
+        .map((c, idx) => ({
+            id: `cert-${c.id || c.slug || idx}`,
+            type: 'CERTIFICATE',
+            title: `Certification ${c.title}`,
+            issuedDate: c.completedDate
+                ? new Date(c.completedDate).toLocaleDateString('en-GB')
+                : (c.date ? new Date(c.date).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB')),
+        }));
 
     const dynamicResources = wpPosts.map((p) => ({
         id: String(p.id || p.slug),
@@ -62,7 +93,10 @@ export default async function DashboardPage() {
 
     return (
         <div>
-            <ProgressAndCertificate enrolledCourses={enrolledCourses} />
+            <ProgressAndCertificate
+                enrolledCourses={enrolledCourses}
+                certificates={completedCertificates}
+            />
             <MyCourses
                 courses={enrolledCourses}
                 title="My Courses"

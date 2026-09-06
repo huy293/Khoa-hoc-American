@@ -428,6 +428,12 @@ export interface WPCourse {
   sections?: WPCourseSection[];
   courseFields?: WPCourseFields;
   seo?: WPSeo;
+  progress?: number;
+  status?: string;
+  graduation?: string;
+  isCompleted?: boolean;
+  completedDate?: string;
+  certificateNumber?: string;
   [key: string]: unknown;
 }
 
@@ -519,6 +525,10 @@ export interface WPQuizDetail {
   passing_grade: number;
   questions_count: number;
   questions: WPQuizQuestion[];
+  retake_count?: number;
+  can_retake?: boolean;
+  retakes_left?: number;
+  attempts_count?: number;
   seo?: any;
 }
 
@@ -538,6 +548,14 @@ export interface WPQuizSubmitResponse {
   correct_count: number;
   total_questions: number;
   results: WPQuizQuestionResult[];
+  user_item_id?: number;
+  course_id?: number;
+  time_spend?: string;
+  message?: string;
+  retake_count?: number;
+  attempts_count?: number;
+  retakes_left?: number;
+  can_retake?: boolean;
 }
 
 

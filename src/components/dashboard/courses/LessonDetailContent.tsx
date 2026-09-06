@@ -188,11 +188,32 @@ export default function LessonDetailContent({
         parsedVideo = parseLessonVideo(rawContent);
     }
 
+    // 🎯 Hàm gửi yêu cầu đồng bộ hoàn thành bài học sang WordPress để cập nhật thanh tiến trình
+    const syncLessonCompletion = async () => {
+        try {
+            const lId = lesson?.id || currentLessonItem?.id;
+            const cId = course?.id || (course as any)?.databaseId;
+            await fetch('/api/lessons/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    lessonId: lId,
+                    lessonSlug,
+                    courseId: cId,
+                    courseSlug: slug,
+                }),
+            });
+        } catch (err) {
+            console.warn('Không thể đồng bộ hoàn thành bài học sang WordPress:', err);
+        }
+    };
+
     // 🎯 Kiểm tra trạng thái đã xem hết video bài học từ localStorage
     useEffect(() => {
-        // Nếu bài học hoàn toàn không có video, tự động mở khóa
+        // Nếu bài học hoàn toàn không có video, tự động mở khóa và đồng bộ tiến độ
         if (!parsedVideo) {
             setIsVideoCompleted(true);
+            syncLessonCompletion();
             return;
         }
 
@@ -200,6 +221,7 @@ export default function LessonDetailContent({
             const saved = localStorage.getItem(videoStorageKey);
             if (saved === 'true') {
                 setIsVideoCompleted(true);
+                syncLessonCompletion();
             }
         } catch {
             // LocalStorage không khả dụng
@@ -233,6 +255,7 @@ export default function LessonDetailContent({
             } catch {}
             setShowUnlockToast(true);
             setShowLockAlert(false);
+            syncLessonCompletion();
             return true;
         });
     };
@@ -529,10 +552,22 @@ export default function LessonDetailContent({
                                 <Link
                                     href={nextLessonUrl}
                                     className={styles['lesson-actions__next-btn']}
+                                    onClick={() => syncLessonCompletion()}
                                 >
                                     <span>NEXT LESSON</span>
                                     <span>→</span>
                                 </Link>
+
+                                {!hasQuiz && !isVideoCompleted && (
+                                    <button
+                                        type="button"
+                                        onClick={() => markVideoAsCompleted()}
+                                        className={`${styles['lesson-actions__quiz-btn']} ${styles['lesson-actions__quiz-btn--unlocked']}`}
+                                        style={{ backgroundColor: '#D8B068', color: '#0F172A', fontWeight: 600 }}
+                                    >
+                                        <span>✓ ĐÁNH DẤU HOÀN THÀNH BÀI HỌC</span>
+                                    </button>
+                                )}
 
                                 {hasQuiz && (
                                     isVideoCompleted ? (
@@ -570,28 +605,6 @@ export default function LessonDetailContent({
                                         <span>Xem hết video để mở khóa bài kiểm tra (Quiz)</span>
                                     </div>
                                 )
-                            )}
-
-                            {/* Nút kiểm thử nhanh trạng thái video */}
-                            {hasQuiz && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (isVideoCompleted) {
-                                            try {
-                                                localStorage.removeItem(videoStorageKey);
-                                            } catch {}
-                                            setIsVideoCompleted(false);
-                                            setShowUnlockToast(false);
-                                        } else {
-                                            markVideoAsCompleted();
-                                        }
-                                    }}
-                                    className={styles['dev-test-toggle']}
-                                    title="Dành cho kiểm thử: Bấm để bật/tắt nhanh trạng thái xem video"
-                                >
-                                    {isVideoCompleted ? '⚡ [Test] Đặt lại: Chưa xem video' : '⚡ [Test] Mở khóa nhanh Quiz'}
-                                </button>
                             )}
                         </div>
 
